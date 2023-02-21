@@ -1,0 +1,32 @@
+#!/bin/bash
+
+REMOTE_REPO="https://github.com/Omico/dotfiles"
+
+function main {
+  check-dependencies
+  chezmoi init $REMOTE_REPO
+  chezmoi apply
+  brewup restore
+}
+
+function check-dependencies {
+  echo "Checking dependencies..."
+  check-brew
+  install-via-brew "chezmoi"
+}
+
+function check-brew {
+  if ! [ -x "$(command -v brew)" ]; then
+    echo "Installing brew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+  fi
+}
+
+function install-via-brew {
+  if ! [ -x "$(command -v $1)" ]; then
+    echo "Installing $1..."
+    brew install "$1"
+  fi
+}
+
+main "$@"

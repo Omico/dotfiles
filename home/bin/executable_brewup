@@ -1,0 +1,35 @@
+#!/bin/bash
+
+function main {
+  case "$1" in
+    backup)
+      backup
+      ;;
+    restore)
+      restore
+      ;;
+    update)
+      update
+      ;;
+    *)
+      echo "Usage: brewup {backup|restore|update}"
+      ;;
+  esac
+}
+
+function backup {
+  echo "Backing up Brewfile..."
+  brew bundle dump --force --file=~/.local/share/chezmoi/Brewfile
+}
+
+function restore {
+  echo "Restoring Brewfile..."
+  brew bundle --file=~/.local/share/chezmoi/Brewfile
+}
+
+function update {
+  brew upgrade
+  brew cleanup
+}
+
+main "$@"
