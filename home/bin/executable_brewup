@@ -19,7 +19,7 @@ function main {
 
 function backup {
   echo "Backing up Brewfile..."
-  brew bundle dump --force --file=~/.local/share/chezmoi/Brewfile
+  brew bundle dump --taps --brews --casks --mas --whalebrew --force --file=~/.local/share/chezmoi/Brewfile
 }
 
 function restore {
@@ -30,6 +30,7 @@ function restore {
 function update {
   brew upgrade
   brew cleanup
+  mas upgrade
 }
 
 main "$@"
