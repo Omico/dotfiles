@@ -13,8 +13,9 @@ brew "git"
 brew "gnu-tar"
 brew "gnupg"
 brew "gperf"
-brew "hopenpgp-tools"
 brew "openjdk"
+brew "gradle"
+brew "hopenpgp-tools"
 brew "jadx"
 brew "jenv"
 brew "kdoctor"
@@ -56,6 +57,7 @@ cask "playcover-community"
 cask "prusaslicer"
 cask "snipaste"
 cask "squirrel"
+cask "tailscale"
 cask "telegram-desktop"
 cask "temurin@11"
 cask "temurin@17"
@@ -77,6 +79,5 @@ mas "Numbers", id: 409203825
 mas "OneDrive", id: 823766827
 mas "Pages", id: 409201541
 mas "Slack", id: 803453959
-mas "Tailscale", id: 1475387142
 mas "WireGuard", id: 1451685025
 mas "Xcode", id: 497799835
