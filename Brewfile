@@ -66,8 +66,6 @@ cask "visual-studio-code"
 cask "zerotier-one"
 mas "Bitwarden", id: 1352778147
 mas "Developer", id: 640199958
-mas "GarageBand", id: 682658836
-mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
 mas "Microsoft Excel", id: 462058435
 mas "Microsoft OneNote", id: 784801555
