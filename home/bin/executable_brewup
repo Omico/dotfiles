@@ -20,6 +20,11 @@ function main {
 function backup {
   echo "Backing up Brewfile..."
   brew bundle dump --taps --brews --casks --mas --whalebrew --force --file=~/.local/share/chezmoi/Brewfile
+  managed_files=$(chezmoi managed --include=files --path-style=absolute | awk '{print $1}')
+  echo "$managed_files" | while IFS= read -r file; do
+    file=$(echo $file | sed -e "s|/Users/$(whoami)|~|")
+    chezmoi re-add $file
+  done
 }
 
 function restore {

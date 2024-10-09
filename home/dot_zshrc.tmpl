@@ -6,6 +6,11 @@ ZSH_THEME="agnoster"
 zstyle ':omz:update' mode auto
 zstyle ':omz:update' frequency 1
 
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+source $ZSH/oh-my-zsh.sh
+
 plugins=(
   git
   zsh-autosuggestions
