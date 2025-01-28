@@ -16,13 +16,10 @@ By default, `Terminal` is located at `Applications > Utilities > Terminal`.
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Omico/dotfiles/main/install)"
 ```
 
-#### 3. Configure Terminal
+#### 3. Configure macOS settings
 
 ```shell
-open "$HOME/.local/share/chezmoi/My.terminal"
-defaults write com.apple.terminal "Default Window Settings" -string "My"
-defaults write com.apple.terminal "Startup Window Settings" -string "My"
-killall Terminal
+/bin/bash -c "$HOME/.local/share/chezmoi/macos"
 ```
 
 #### 4. Install Homebrew packages
