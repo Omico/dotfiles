@@ -10,12 +10,6 @@ function check-brew {
   fi
 }
 
-function configure-gpg {
-  sudo rm /usr/local/MacGPG2/bin/gpg 2>/dev/null
-  sudo rm /usr/local/MacGPG2/bin/gpg-agent 2>/dev/null
-  sudo rm /usr/local/bin/gpg 2>/dev/null
-}
-
 function setup-chezmoi {
   if ! [ -x "$(command -v chezmoi)" ]; then
     echo "Installing chezmoi..."
@@ -47,7 +41,6 @@ function clone-rime-auto-deploy {
 }
 
 check-brew
-configure-gpg
 brew install git
 brew install --cask visual-studio-code
 setup-chezmoi
