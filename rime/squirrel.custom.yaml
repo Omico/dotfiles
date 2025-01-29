@@ -2,6 +2,16 @@ patch:
   style:
     color_scheme: mac_light_omico
     color_scheme_dark: mac_dark_omico
+    text_orientation: horizontal
+    candidate_list_layout: linear
+    inline_preedit: true
+    corner_radius: 10
+    hilited_corner_radius: 0
+    border_height: 0
+    border_width: 0
+    line_spacing: 5
+    spacing: 10
+    comment_font_point: 12
 
   preset_color_schemes:
     mac_light_omico:
