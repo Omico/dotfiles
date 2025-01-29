@@ -34,3 +34,9 @@ brewup restore
 cd "$HOME/Git/Mark24Code/rime-auto-deploy"
 ./installer.rb
 ```
+
+## Update
+
+```shell
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Omico/dotfiles/main/upgrade)"
+```
