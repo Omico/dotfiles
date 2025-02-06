@@ -1,6 +1,5 @@
 # Homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
-HOMEBREW_PREFIX=$(brew --prefix)
 
 # The Fuck
 eval "$(thefuck --alias)"
@@ -46,7 +45,7 @@ export LC_ALL=en_US.UTF-8
 export PATH="$HOME/bin:$PATH"
 
 # Android SDK
-export ANDROID_SDK_ROOT="$HOMEBREW_PREFIX/share/android-commandlinetools"
+export ANDROID_SDK_ROOT="/opt/homebrew/share/android-commandlinetools"
 export PATH="$ANDROID_SDK_ROOT/platform-tools:$PATH"
 
 # NVM
