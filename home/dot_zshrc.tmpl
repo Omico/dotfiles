@@ -62,3 +62,22 @@ export GPG_TTY=$(tty)
 # jEnv
 export PATH="$HOME/.jenv/bin:$PATH"
 eval "$(jenv init -)"
+
+# Git
+alias gi='
+if [ -d .git ]; then
+  echo "Git repository already exists."
+  echo "Do you want to delete it? [y/N]"
+  read -k 1 REPLY
+  echo
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    rm -rf .git
+  else
+    return 1
+  fi
+fi
+git init
+git add .
+git commit -m "Initial commit"
+git branch -M main
+'
