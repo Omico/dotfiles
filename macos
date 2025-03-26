@@ -10,7 +10,11 @@ osascript -e 'tell application "System Preferences" to quit'
 sudo -v
 
 # Keep-alive: update existing `sudo` time stamp until `.macos` has finished
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+while true; do
+  sudo -n true
+  sleep 60
+  kill -0 "$$" || exit
+done 2>/dev/null &
 
 ###############################################################################
 # Finder                                                                      #
@@ -30,9 +34,6 @@ defaults write com.apple.finder ShowStatusBar -bool true
 
 # Finder: show path bar
 defaults write com.apple.finder ShowPathbar -bool true
-
-# Display full POSIX path as Finder window title
-defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
 
 # Keep folders on top when sorting by name
 defaults write com.apple.finder _FXSortFoldersFirst -bool true
@@ -112,3 +113,13 @@ defaults write com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true
 
 # Turn on app auto-update
 defaults write com.apple.commerce AutoUpdate -bool true
+
+###############################################################################
+# Mouse                                                                       #
+###############################################################################
+
+# Disable mouse acceleration
+defaults write -g com.apple.mouse.linear 1
+
+# Set mouse speed
+defaults write -g com.apple.mouse.scaling 1
