@@ -1,3 +1,5 @@
+tap "cirruslabs/cli"
+tap "hashicorp/tap"
 tap "homebrew/autoupdate"
 tap "homebrew/bundle"
 brew "chezmoi"
@@ -28,6 +30,8 @@ brew "tldr"
 brew "wget"
 brew "ykman"
 brew "ykpers"
+brew "cirruslabs/cli/tart"
+brew "hashicorp/tap/packer"
 cask "android-commandlinetools"
 cask "anydesk"
 cask "anythingllm"
@@ -66,6 +70,7 @@ cask "visual-studio-code"
 cask "windows-app"
 mas "Bitwarden", id: 1352778147
 mas "Developer", id: 640199958
+mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
 mas "Numbers", id: 409203825
 mas "Pages", id: 409201541
