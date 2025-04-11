@@ -19,12 +19,12 @@ function main {
 
 function backup {
   echo "Backing up Brewfile..."
-  brew bundle dump --taps --brews --casks --mas --whalebrew --force --file=~/.local/share/chezmoi/Brewfile
-  managed_files=$(chezmoi managed --include=files --path-style=absolute | awk '{print $1}')
-  echo "$managed_files" | while IFS= read -r file; do
-    file="${file/\/Users\/$(whoami)/~}"
-    chezmoi re-add "$file"
-  done
+  BREWFILE_PATH="$HOME/.local/share/chezmoi/Brewfile"
+  brew bundle dump --taps --brews --casks --mas --whalebrew --force --file="$BREWFILE_PATH"
+  if ! chezmoi git -- diff --quiet "$BREWFILE_PATH"; then
+    chezmoi git -- add "$BREWFILE_PATH"
+    chezmoi git -- commit -m "Update Brewfile"
+  fi
 }
 
 function restore {
