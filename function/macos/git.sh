@@ -25,3 +25,22 @@ function gi() {
     git branch -M main
   fi
 }
+
+function update-git-repo() {
+  local repo_dir="$1"
+
+  if [ ! -d "$repo_dir/.git" ]; then
+    echo "❌ Not a git repository: $repo_dir"
+    return 1
+  fi
+
+  echo "🔄 Updating git repository: $repo_dir"
+  git -C "$repo_dir" fetch --all || {
+    echo "❌ Failed to fetch in $repo_dir"
+    return 1
+  }
+  git -C "$repo_dir" reset --hard origin/HEAD || {
+    echo "❌ Failed to reset in $repo_dir"
+    return 1
+  }
+}
