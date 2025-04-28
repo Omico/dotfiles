@@ -1,8 +1,8 @@
 function gi() {
   if [ -d .git ]; then
     echo "⚠️ Git repository already exists."
-    read -rp "❓ Do you want to delete it? [y/N]" REPLY
-    echo
+    echo "❓ Do you want to delete it? [y/N]"
+    read -k 1 REPLY
     if [[ $REPLY =~ ^[Yy]$ ]]; then
       echo "🗑️  Removing existing .git directory..."
       rm -rf .git
