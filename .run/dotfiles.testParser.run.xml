@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="dotfiles.testParser" type="JetRunConfigurationType">
+    <option name="MAIN_CLASS_NAME" value="me.omico.dotfiles.homebrew.internal.ParserTesterKt" />
+    <module name="dotfiles-profiles.test" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
