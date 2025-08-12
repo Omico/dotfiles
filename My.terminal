@@ -107,6 +107,24 @@
 	eAB+AIsAoACnALwA6QDrAO0A7wD2APsBAQEDAQUBBw1TDVgNYw1sDXkNfA2JDZINlw2f
 	AAAAAAAAAgEAAAAAAAAAKAAAAAAAAAAAAAAAAAAADaI=
 	</data>
+	<key>ANSIBrightWhiteColor</key>
+	<data>
+	YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMS
+	AAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwTVSRudWxs0w0ODxARElVO
+	U1JHQlxOU0NvbG9yU3BhY2VWJGNsYXNzTxAnMC44OTgwMzkyMTU3IDAuODk4MDM5MjE1
+	NyAwLjkwMTk2MDc4NDMAEAKAAtIUFRYXWiRjbGFzc25hbWVYJGNsYXNzZXNXTlNDb2xv
+	cqIWGFhOU09iamVjdAgRGiQpMjdJTFFTV11kand+qKqssbzFzdAAAAAAAAABAQAAAAAA
+	AAAZAAAAAAAAAAAAAAAAAAAA2Q==
+	</data>
+	<key>ANSIMagentaColor</key>
+	<data>
+	YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMS
+	AAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwTVSRudWxs0w0ODxARElVO
+	U1JHQlxOU0NvbG9yU3BhY2VWJGNsYXNzTxAnMC42OTgwMzkyMTU3IDAuMzg0MzEzNzI1
+	NSAwLjY5ODAzOTIxNTcAEAKAAtIUFRYXWiRjbGFzc25hbWVYJGNsYXNzZXNXTlNDb2xv
+	cqIWGFhOU09iamVjdAgRGiQpMjdJTFFTV11kand+qKqssbzFzdAAAAAAAAABAQAAAAAA
+	AAAZAAAAAAAAAAAAAAAAAAAA2Q==
+	</data>
 	<key>ANSIRedColor</key>
 	<data>
 	YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMS
@@ -129,6 +147,15 @@
 	YWNlWE5TT2JqZWN00h8gJidXTlNDb2xvcqImJAAIABEAGgAkACkAMgA3AEkATABRAFMA
 	WgBgAGsAeAB+AIsAoACnANIA8QDzAPUA9wD+AQQBDgEQARIBFAMwAzUDQANJA1YDWQNm
 	A28DdAN8AAAAAAAAAgEAAAAAAAAAKAAAAAAAAAAAAAAAAAAAA38=
+	</data>
+	<key>ANSIWhiteColor</key>
+	<data>
+	YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMS
+	AAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwTVSRudWxs0w0ODxARElVO
+	U1JHQlxOU0NvbG9yU3BhY2VWJGNsYXNzTxAfMC43NDkwMTk2MDc4IDAuNzUgMC43NDkw
+	MTk2MDc4ABACgALSFBUWF1okY2xhc3NuYW1lWCRjbGFzc2VzV05TQ29sb3KiFhhYTlNP
+	YmplY3QIERokKTI3SUxRU1ddZGp3fqCipKm0vcXIAAAAAAAAAQEAAAAAAAAAGQAAAAAA
+	AAAAAAAAAAAAANE=
 	</data>
 	<key>ANSIYellowColor</key>
 	<data>
@@ -179,6 +206,16 @@
 	IwElA0EDRgNRA1oDZwNqA3cDgAOFA40AAAAAAAACAQAAAAAAAAAoAAAAAAAAAAAAAAAA
 	AAADkA==
 	</data>
+	<key>BellBadge</key>
+	<true/>
+	<key>BellBounce</key>
+	<true/>
+	<key>BellBounceCritical</key>
+	<false/>
+	<key>BlinkText</key>
+	<true/>
+	<key>ConvertNewlinesOnPaste</key>
+	<true/>
 	<key>CursorBlink</key>
 	<true/>
 	<key>CursorColor</key>
@@ -205,14 +242,20 @@
 	</data>
 	<key>CursorType</key>
 	<integer>2</integer>
+	<key>DisableANSIColor</key>
+	<false/>
+	<key>EnableSmoothResizing</key>
+	<false/>
+	<key>EscapeNonASCIICharacters</key>
+	<false/>
 	<key>Font</key>
 	<data>
 	YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMS
 	AAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGkCwwVFlUkbnVsbNQNDg8QERIT
-	FFZOU1NpemVYTlNmRmxhZ3NWTlNOYW1lViRjbGFzcyNAMAAAAAAAABAQgAKAA18QEkZp
-	cmFNb25vTkYtUmVndWxhctIXGBkaWiRjbGFzc25hbWVYJGNsYXNzZXNWTlNGb250ohkb
-	WE5TT2JqZWN0CBEaJCkyN0lMUVNYXmdud36FjpCSlKmuucLJzAAAAAAAAAEBAAAAAAAA
-	ABwAAAAAAAAAAAAAAAAAAADV
+	FFZOU1NpemVYTlNmRmxhZ3NWTlNOYW1lViRjbGFzcyNAMAAAAAAAABAQgAKAA18QE0Zp
+	cmFNb25vTkZNLVJlZ3VsYXLSFxgZGlokY2xhc3NuYW1lWCRjbGFzc2VzVk5TRm9udKIZ
+	G1hOU09iamVjdAgRGiQpMjdJTFFTWF5nbnd+hY6QkpSqr7rDys0AAAAAAAABAQAAAAAA
+	AAAcAAAAAAAAAAAAAAAAAAAA1g==
 	</data>
 	<key>FontAntialias</key>
 	<true/>
@@ -249,6 +292,8 @@
 	<true/>
 	<key>ShowActiveProcessInTitle</key>
 	<false/>
+	<key>ShowCommandKeyInTitle</key>
+	<false/>
 	<key>ShowDimensionsInTitle</key>
 	<false/>
 	<key>ShowRepresentedURLInTabTitle</key>
@@ -257,10 +302,18 @@
 	<false/>
 	<key>ShowRepresentedURLPathInTitle</key>
 	<true/>
+	<key>ShowShellCommandInTitle</key>
+	<false/>
 	<key>ShowTTYNameInTabTitle</key>
+	<false/>
+	<key>ShowTTYNameInTitle</key>
 	<false/>
 	<key>ShowTerminalInDockIcon</key>
 	<true/>
+	<key>ShowWindowSettingsNameInTitle</key>
+	<false/>
+	<key>TerminalType</key>
+	<string>xterm-256color</string>
 	<key>TextBoldColor</key>
 	<data>
 	YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMS
@@ -315,6 +368,8 @@
 	<string>My</string>
 	<key>rowCount</key>
 	<integer>30</integer>
+	<key>scrollOnInput</key>
+	<true/>
 	<key>type</key>
 	<string>Window Settings</string>
 </dict>
