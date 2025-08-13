@@ -52,6 +52,13 @@ for plugin in "${THIRD_PLUGINS[@]}"; do
   zinit light $plugin
 done
 
+zinit for \
+  atload"zicompinit; zicdreplay" \
+  blockf \
+  lucid \
+  wait \
+  zsh-users/zsh-completions
+
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 
