@@ -5,7 +5,12 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${USER}.zsh" ]]; t
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${USER}.zsh"
 fi
 
+# Zprof
+# Uncomment the next line to enable Zsh profiling
+# zmodload zsh/zprof
+
 # Homebrew
+export HOMEBREW_NO_ANALYTICS=1
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Zinit
@@ -13,6 +18,12 @@ ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
 [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 source "${ZINIT_HOME}/zinit.zsh"
+
+setopt AUTO_CD
+setopt PUSHD_SILENT
+setopt PUSHD_IGNORE_DUPS
+setopt PUSHD_TO_HOME
+setopt PUSHDMINUS
 
 for plugin in git ssh sudo; do
   zinit snippet OMZP::$plugin
@@ -102,3 +113,7 @@ if [[ "$OSTYPE" == darwin* ]]; then
     source "$file"
   done
 fi
+
+# Zprof
+# Uncomment the next line to enable Zsh profiling
+# zprof
