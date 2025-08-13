@@ -8,7 +8,7 @@ function dotfiles-upgrade() {
   zinit update --all --parallel 60
 
   echo "🍺 Updating Homebrew packages..."
-  brewup update
+  brew-update
 
   echo "🔤 Updating Rime configurations..."
   update-git-repo "$HOME/Library/Rime"
