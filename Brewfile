@@ -88,14 +88,14 @@ cask "squirrel-app"
 cask "steam"
 cask "tailscale-app"
 cask "telegram-desktop"
-cask "temurin@11"
-cask "temurin@17"
-cask "temurin@21"
-cask "temurin@8"
 cask "tencent-meeting"
 cask "visual-studio-code"
 cask "warp"
 cask "windows-app"
+cask "zulu@11"
+cask "zulu@17"
+cask "zulu@21"
+cask "zulu@8"
 mas "Bitwarden", id: 1352778147
 mas "Compressor", id: 424390742
 mas "Developer", id: 640199958
