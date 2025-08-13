@@ -4,6 +4,9 @@ function dotfiles-upgrade() {
   chezmoi apply
   source "$HOME"/.zshrc
 
+  echo "🔄 Updating Zinit..."
+  zinit update --all --parallel 60
+
   echo "🍺 Updating Homebrew packages..."
   brewup update
 
