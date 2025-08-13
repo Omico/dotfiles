@@ -26,18 +26,6 @@ function clone-rime-auto-deploy {
   cp -f "$HOME"/.local/share/chezmoi/rime/*.custom.yaml "$HOME/Git/Mark24Code/rime-auto-deploy/custom"
 }
 
-function setup-cloudflare-warp {
-  brew install --cask cloudflare-warp
-  warp-cli registration new
-  warp-cli connect
-  warp-cli mode warp+doh
-  warp-cli tunnel host add "*.tailscale.com"
-  curl -s https://controlplane.tailscale.com/derpmap/default | jq -r '.Regions[] | .Nodes[] | [.IPv4, .IPv6] | @tsv' | while IFS=$'\t' read -r ipv4 ipv6; do
-    warp-cli tunnel ip add "$ipv4" >/dev/null 2>&1
-    warp-cli tunnel ip add "$ipv6" >/dev/null 2>&1
-  done
-}
-
 check-brew
 brew install git
 brew install --cask visual-studio-code
@@ -45,4 +33,3 @@ brew install --cask font-fira-mono-nerd-font
 setup-chezmoi
 chezmoi apply
 clone-rime-auto-deploy
-setup-cloudflare-warp
