@@ -2,8 +2,12 @@
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${USER}.zsh" ]]; then
+  # shellcheck disable=SC1090
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${USER}.zsh"
 fi
+
+# shellcheck disable=SC2034
+typeset -U PATH path
 
 # Zprof
 # Uncomment the next line to enable Zsh profiling
@@ -15,8 +19,8 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Zinit
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
-[ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
-[ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+[ ! -d "$ZINIT_HOME" ] && mkdir -p "$(dirname "$ZINIT_HOME")"
+[ ! -d "$ZINIT_HOME"/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 source "${ZINIT_HOME}/zinit.zsh"
 
 setopt AUTO_CD
@@ -49,7 +53,7 @@ OMZ_PLUGINS=(
 
 for plugin in "${OMZ_PLUGINS[@]}"; do
   zinit ice wait lucid
-  zinit snippet OMZP::$plugin
+  zinit snippet OMZP::"$plugin"
 done
 
 THIRD_PLUGINS=(
@@ -60,7 +64,7 @@ THIRD_PLUGINS=(
 
 for plugin in "${THIRD_PLUGINS[@]}"; do
   zinit ice wait lucid
-  zinit light $plugin
+  zinit light "$plugin"
 done
 
 zinit for \
@@ -75,7 +79,7 @@ bindkey '^[[B' history-substring-search-down
 
 zinit ice depth=1
 zinit light romkatv/powerlevel10k
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+[[ ! -f ~/.p10k.zsh ]] || source "$HOME/.p10k.zsh"
 
 # Aliases
 alias zshconfig="code ~/.zshrc"
@@ -89,7 +93,7 @@ export ANDROID_SDK_ROOT="/opt/homebrew/share/android-commandlinetools"
 export PATH="$ANDROID_SDK_ROOT/platform-tools:$PATH"
 
 # Fast Node Manager (fnm)
-eval "$(fnm env --use-on-cd --shell zsh)"
+command -v fnm >/dev/null 2>&1 && eval "$(fnm env --use-on-cd --shell zsh)"
 
 # Ruby
 export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
@@ -99,8 +103,10 @@ export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
 export GPG_TTY=$(tty)
 
 # jEnv
-export PATH="$HOME/.jenv/bin:$PATH"
-eval "$(jenv init -)"
+[[ -d "$HOME/.jenv" ]] && {
+  export PATH="$HOME/.jenv/bin:$PATH"
+  eval "$(jenv init -)"
+}
 
 # depot_tools
 [[ ":$PATH:" != *":$HOME/.depot_tools:"* ]] &&
@@ -110,6 +116,7 @@ eval "$(jenv init -)"
 if [[ "$OSTYPE" == darwin* ]]; then
   for file in "$HOME"/.local/share/chezmoi/function/macos/*.sh; do
     [ -e "$file" ] || continue
+    # shellcheck disable=SC1090
     source "$file"
   done
 fi
