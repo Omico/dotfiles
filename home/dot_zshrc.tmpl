@@ -67,6 +67,10 @@ for plugin in "${THIRD_PLUGINS[@]}"; do
   zinit light "$plugin"
 done
 
+# NVM
+zinit ice wait"1" lucid
+zinit snippet https://raw.githubusercontent.com/nvm-sh/nvm/master/nvm.sh
+
 zinit for \
   atload"zicompinit; zicdreplay" \
   blockf \
