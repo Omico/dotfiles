@@ -39,13 +39,11 @@ OMZ_PLUGINS=(
   colorize
   command-not-found
   docker
-  docker-compose
   gh
   gradle
   pip
   python
   thefuck
-  themes
   tldr
   vscode
   xcode
@@ -83,7 +81,7 @@ bindkey '^[[B' history-substring-search-down
 
 zinit ice depth=1
 zinit light romkatv/powerlevel10k
-[[ ! -f ~/.p10k.zsh ]] || source "$HOME/.p10k.zsh"
+[[ ! -f $HOME/.p10k.zsh ]] || source "$HOME/.p10k.zsh"
 
 # Aliases
 alias zshconfig="code ~/.zshrc"
