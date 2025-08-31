@@ -69,6 +69,11 @@ done
 zinit ice wait"1" lucid
 zinit snippet https://raw.githubusercontent.com/nvm-sh/nvm/master/nvm.sh
 
+# rbenv
+# shellcheck disable=SC2016
+zinit ice atload'eval "$(rbenv init - zsh)"'
+zinit light rbenv/rbenv
+
 zinit for \
   atload"zicompinit; zicdreplay" \
   blockf \
@@ -84,7 +89,7 @@ zinit light romkatv/powerlevel10k
 [[ ! -f $HOME/.p10k.zsh ]] || source "$HOME/.p10k.zsh"
 
 # Aliases
-alias zshconfig="code ~/.zshrc"
+alias zshconfig='code $HOME/.zshrc'
 
 # Common
 export LC_ALL=en_US.UTF-8
@@ -93,12 +98,11 @@ export PATH="$HOME/bin:$PATH"
 # Android SDK
 export ANDROID_SDK_ROOT="/opt/homebrew/share/android-commandlinetools"
 export PATH="$ANDROID_SDK_ROOT/platform-tools:$PATH"
+# For legacy reasons, some tools expect ANDROID_HOME to be set
+export ANDROID_HOME="$ANDROID_SDK_ROOT"
 
 # Fast Node Manager (fnm)
 command -v fnm >/dev/null 2>&1 && eval "$(fnm env --use-on-cd --shell zsh)"
-
-# Ruby
-export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
 
 # GPG
 # shellcheck disable=SC2155
@@ -113,6 +117,10 @@ export GPG_TTY=$(tty)
 # depot_tools
 [[ ":$PATH:" != *":$HOME/.depot_tools:"* ]] &&
   export PATH="$HOME/.depot_tools:$PATH"
+
+# Zip & Unzip
+export PATH="/opt/homebrew/opt/zip/bin:$PATH"
+export PATH="/opt/homebrew/opt/unzip/bin:$PATH"
 
 # macOS specific functions
 if [[ "$OSTYPE" == darwin* ]]; then
