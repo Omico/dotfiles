@@ -52,6 +52,9 @@ defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
 # Dock                                                                        #
 ###############################################################################
 
+# Set the icon size of Dock items to 48 pixels
+defaults write com.apple.dock tilesize -int 48
+
 # Automatically hide and show the Dock
 defaults write com.apple.dock autohide -bool true
 
@@ -103,6 +106,9 @@ tell application "Terminal"
 
 end tell
 EOD
+
+# Don’t display the annoying prompt when quitting iTerm
+defaults write com.googlecode.iterm2 PromptOnQuit -bool false
 
 ###############################################################################
 # Mac App Store                                                               #
