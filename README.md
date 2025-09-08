@@ -25,7 +25,7 @@ By default, `Terminal` is located at `Applications > Utilities > Terminal`.
 #### 4. Install Homebrew packages
 
 ```shell
-brewup restore
+brew-restore
 ```
 
 #### 5. Run Rime auto deploy
