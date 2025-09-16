@@ -46,6 +46,7 @@ brew "unzip"
 brew "virtualenv"
 brew "wgcf"
 brew "wget"
+brew "xcodegen"
 brew "ykman"
 brew "ykpers"
 brew "yq"
@@ -54,6 +55,7 @@ cask "android-commandlinetools"
 cask "anydesk"
 cask "anythingllm"
 cask "autodesk-fusion"
+cask "balenaetcher"
 cask "beyond-compare"
 cask "bricklink-studio"
 cask "clash-verge-rev"
@@ -110,4 +112,3 @@ mas "MainStage", id: 634159523
 mas "Motion", id: 434290957
 mas "Numbers", id: 409203825
 mas "Pages", id: 409201541
-mas "Xcode", id: 497799835
