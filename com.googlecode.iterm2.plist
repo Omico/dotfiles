@@ -24,10 +24,18 @@
 	<integer>32768</integer>
 	<key>AitermURL</key>
 	<string>https://api.openai.com/v1/responses</string>
+	<key>AutoHideTmuxClientSession</key>
+	<false/>
 	<key>ClickToSelectCommand</key>
 	<false/>
 	<key>Default Bookmark Guid</key>
 	<string>E22AF1F5-F530-4976-B94A-992B2083EFC5</string>
+	<key>DimBackgroundWindows</key>
+	<false/>
+	<key>DimInactiveSplitPanes</key>
+	<true/>
+	<key>DimOnlyText</key>
+	<false/>
 	<key>HapticFeedbackForEsc</key>
 	<false/>
 	<key>HotkeyMigratedFromSingleToMulti</key>
@@ -48,52 +56,52 @@
 				<key>Alpha Component</key>
 				<integer>1</integer>
 				<key>Blue Component</key>
-				<real>0.11764705926179886</real>
+				<real>0.10000000000000001</real>
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.098039217293262454</real>
+				<real>0.10000000000000001</real>
 				<key>Red Component</key>
-				<real>0.078431375324726105</real>
+				<real>0.10000000000000001</real>
 			</dict>
 			<key>Ansi 0 Color (Dark)</key>
 			<dict>
 				<key>Alpha Component</key>
 				<integer>1</integer>
 				<key>Blue Component</key>
-				<real>0.11764705926179886</real>
+				<real>0.10000000000000001</real>
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.098039217293262454</real>
+				<real>0.10000000000000001</real>
 				<key>Red Component</key>
-				<real>0.078431375324726105</real>
+				<real>0.10000000000000001</real>
 			</dict>
 			<key>Ansi 0 Color (Light)</key>
 			<dict>
 				<key>Alpha Component</key>
 				<integer>1</integer>
 				<key>Blue Component</key>
-				<real>0.11764705926179886</real>
+				<real>0.10000000000000001</real>
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.098039217293262454</real>
+				<real>0.10000000000000001</real>
 				<key>Red Component</key>
-				<real>0.078431375324726105</real>
+				<real>0.10000000000000001</real>
 			</dict>
 			<key>Ansi 1 Color</key>
 			<dict>
 				<key>Alpha Component</key>
 				<integer>1</integer>
 				<key>Blue Component</key>
-				<real>0.16300037503242493</real>
+				<real>0.16</real>
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.23660069704055786</real>
+				<real>0.40000000000000002</real>
 				<key>Red Component</key>
-				<real>0.7074432373046875</real>
+				<real>0.69999999999999996</real>
 			</dict>
 			<key>Ansi 1 Color (Dark)</key>
 			<dict>
@@ -111,15 +119,15 @@
 			<key>Ansi 1 Color (Light)</key>
 			<dict>
 				<key>Alpha Component</key>
-				<integer>1</integer>
+				<real>1</real>
 				<key>Blue Component</key>
-				<real>0.16300037503242493</real>
+				<real>0.19585752487182617</real>
 				<key>Color Space</key>
-				<string>sRGB</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.23660069704055786</real>
+				<real>0.27032440900802612</real>
 				<key>Red Component</key>
-				<real>0.7074432373046875</real>
+				<real>0.84581123154981552</real>
 			</dict>
 			<key>Ansi 10 Color</key>
 			<dict>
@@ -462,15 +470,15 @@
 			<key>Ansi 4 Color (Light)</key>
 			<dict>
 				<key>Alpha Component</key>
-				<integer>1</integer>
+				<real>1</real>
 				<key>Blue Component</key>
-				<real>0.76248329877853394</real>
+				<real>1</real>
 				<key>Color Space</key>
 				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.55446451902389526</real>
+				<real>0.89503574723247237</real>
 				<key>Red Component</key>
-				<real>0.33875221014022827</real>
+				<real>0.28654001383763839</real>
 			</dict>
 			<key>Ansi 5 Color</key>
 			<dict>
@@ -579,15 +587,15 @@
 			<key>Ansi 7 Color (Light)</key>
 			<dict>
 				<key>Alpha Component</key>
-				<integer>1</integer>
+				<real>1</real>
 				<key>Blue Component</key>
-				<real>0.78104829788208008</real>
+				<real>0.83502197265625</real>
 				<key>Color Space</key>
-				<string>sRGB</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.78105825185775757</real>
+				<real>0.83502191305160522</real>
 				<key>Red Component</key>
-				<real>0.7810397744178772</real>
+				<real>0.83502191305160522</real>
 			</dict>
 			<key>Ansi 8 Color</key>
 			<dict>
@@ -618,15 +626,15 @@
 			<key>Ansi 8 Color (Light)</key>
 			<dict>
 				<key>Alpha Component</key>
-				<integer>1</integer>
+				<real>1</real>
 				<key>Blue Component</key>
-				<real>0.4078223705291748</real>
+				<real>0.549560546875</real>
 				<key>Color Space</key>
-				<string>sRGB</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.40782788395881653</real>
+				<real>0.549560546875</real>
 				<key>Red Component</key>
-				<real>0.40781760215759277</real>
+				<real>0.549560546875</real>
 			</dict>
 			<key>Ansi 9 Color</key>
 			<dict>
@@ -667,6 +675,8 @@
 				<key>Red Component</key>
 				<real>0.8659515380859375</real>
 			</dict>
+			<key>Automatically Enable Alternate Mouse Scroll</key>
+			<false/>
 			<key>BM Growl</key>
 			<true/>
 			<key>Background Color</key>
@@ -674,42 +684,40 @@
 				<key>Alpha Component</key>
 				<integer>1</integer>
 				<key>Blue Component</key>
-				<real>0.97999999999999998</real>
+				<real>1</real>
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.97999999999999998</real>
+				<real>1</real>
 				<key>Red Component</key>
-				<real>0.97999999999999998</real>
+				<real>1</real>
 			</dict>
 			<key>Background Color (Dark)</key>
 			<dict>
 				<key>Alpha Component</key>
-				<integer>1</integer>
+				<real>1</real>
 				<key>Blue Component</key>
-				<real>0.12103271484375</real>
+				<real>0.10000000000000001</real>
 				<key>Color Space</key>
-				<string>sRGB</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.099111050367355347</real>
+				<real>0.10000000000000001</real>
 				<key>Red Component</key>
-				<real>0.0806884765625</real>
+				<real>0.10000000000000001</real>
 			</dict>
 			<key>Background Color (Light)</key>
 			<dict>
 				<key>Alpha Component</key>
-				<integer>1</integer>
+				<real>1</real>
 				<key>Blue Component</key>
-				<real>0.12103271484375</real>
+				<real>0.10000000000000001</real>
 				<key>Color Space</key>
-				<string>sRGB</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.099111050367355347</real>
+				<real>0.10000000000000001</real>
 				<key>Red Component</key>
-				<real>0.0806884765625</real>
+				<real>0.10000000000000001</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
 			<key>Background Image Mode</key>
 			<integer>0</integer>
 			<key>Badge Color</key>
@@ -717,13 +725,13 @@
 				<key>Alpha Component</key>
 				<real>0.5</real>
 				<key>Blue Component</key>
-				<real>0.11610633134841919</real>
+				<real>0.11</real>
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.11610633134841919</real>
+				<real>0.11</real>
 				<key>Red Component</key>
-				<real>0.74613857269287109</real>
+				<real>0.75</real>
 			</dict>
 			<key>Badge Color (Dark)</key>
 			<dict>
@@ -766,13 +774,13 @@
 				<key>Alpha Component</key>
 				<integer>1</integer>
 				<key>Blue Component</key>
-				<real>0.062745101749896975</real>
+				<real>0.0</real>
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.062745101749896975</real>
+				<real>0.0</real>
 				<key>Red Component</key>
-				<real>0.062745101749896975</real>
+				<real>0.0</real>
 			</dict>
 			<key>Bold Color (Dark)</key>
 			<dict>
@@ -798,8 +806,12 @@
 				<key>Green Component</key>
 				<integer>1</integer>
 				<key>Red Component</key>
-				<real>0.99999600648880005</real>
+				<integer>1</integer>
 			</dict>
+			<key>Brighten Bold Text (Dark)</key>
+			<true/>
+			<key>Brighten Bold Text (Light)</key>
+			<true/>
 			<key>Character Encoding</key>
 			<integer>4</integer>
 			<key>Close Sessions On End</key>
@@ -808,6 +820,10 @@
 			<integer>80</integer>
 			<key>Command</key>
 			<string></string>
+			<key>Cursor Boost (Dark)</key>
+			<real>0.0</real>
+			<key>Cursor Boost (Light)</key>
+			<real>0.0</real>
 			<key>Cursor Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -824,28 +840,28 @@
 			<key>Cursor Color (Dark)</key>
 			<dict>
 				<key>Alpha Component</key>
-				<integer>1</integer>
+				<real>1</real>
 				<key>Blue Component</key>
-				<real>0.99998724460601807</real>
+				<real>1</real>
 				<key>Color Space</key>
-				<string>sRGB</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<integer>1</integer>
+				<real>1</real>
 				<key>Red Component</key>
-				<real>0.99997633695602417</real>
+				<real>1</real>
 			</dict>
 			<key>Cursor Color (Light)</key>
 			<dict>
 				<key>Alpha Component</key>
-				<integer>1</integer>
+				<real>1</real>
 				<key>Blue Component</key>
-				<real>0.99998724460601807</real>
+				<real>1</real>
 				<key>Color Space</key>
-				<string>sRGB</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<integer>1</integer>
+				<real>1</real>
 				<key>Red Component</key>
-				<real>0.99997633695602417</real>
+				<real>1</real>
 			</dict>
 			<key>Cursor Guide Color</key>
 			<dict>
@@ -869,9 +885,9 @@
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.9268307089805603</real>
+				<real>0.90000000000000002</real>
 				<key>Red Component</key>
-				<real>0.70213186740875244</real>
+				<real>0.69999999999999996</real>
 			</dict>
 			<key>Cursor Guide Color (Light)</key>
 			<dict>
@@ -882,10 +898,12 @@
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.9268307089805603</real>
+				<real>0.90000000000000002</real>
 				<key>Red Component</key>
-				<real>0.70213186740875244</real>
+				<real>0.69999999999999996</real>
 			</dict>
+			<key>Cursor Hidden When Unfocused</key>
+			<false/>
 			<key>Cursor Shadow</key>
 			<false/>
 			<key>Cursor Text Color</key>
@@ -939,8 +957,12 @@
 			<string>Default</string>
 			<key>Disable Window Resizing</key>
 			<true/>
+			<key>Draw Powerline Glyphs</key>
+			<false/>
+			<key>Faint Text Alpha (Dark)</key>
+			<real>0.5</real>
 			<key>Faint Text Alpha (Light)</key>
-			<real>0.50095238095238093</real>
+			<real>0.5</real>
 			<key>Flashing Bell</key>
 			<false/>
 			<key>Foreground Color</key>
@@ -948,48 +970,76 @@
 				<key>Alpha Component</key>
 				<integer>1</integer>
 				<key>Blue Component</key>
-				<real>0.062745101749896975</real>
+				<integer>1</integer>
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.062745101749896975</real>
+				<integer>1</integer>
 				<key>Red Component</key>
-				<real>0.062745101749896975</real>
+				<integer>1</integer>
 			</dict>
 			<key>Foreground Color (Dark)</key>
 			<dict>
 				<key>Alpha Component</key>
-				<integer>1</integer>
+				<real>1</real>
 				<key>Blue Component</key>
-				<real>0.86198854446411133</real>
+				<real>1</real>
 				<key>Color Space</key>
-				<string>sRGB</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.86199951171875</real>
+				<real>1</real>
 				<key>Red Component</key>
-				<real>0.86197912693023682</real>
+				<real>1</real>
 			</dict>
 			<key>Foreground Color (Light)</key>
 			<dict>
 				<key>Alpha Component</key>
-				<integer>1</integer>
+				<real>1</real>
 				<key>Blue Component</key>
-				<real>0.86198854446411133</real>
+				<real>1</real>
 				<key>Color Space</key>
-				<string>sRGB</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.86199951171875</real>
+				<real>1</real>
 				<key>Red Component</key>
-				<real>0.86197912693023682</real>
+				<integer>1</integer>
 			</dict>
 			<key>Guid</key>
 			<string>E22AF1F5-F530-4976-B94A-992B2083EFC5</string>
+			<key>Has Hotkey</key>
+			<false/>
 			<key>Horizontal Spacing</key>
-			<integer>1</integer>
+			<real>1</real>
+			<key>HotKey Activated By Modifier</key>
+			<false/>
+			<key>HotKey Alternate Shortcuts</key>
+			<array/>
+			<key>HotKey Characters</key>
+			<string></string>
+			<key>HotKey Characters Ignoring Modifiers</key>
+			<string></string>
+			<key>HotKey Key Code</key>
+			<integer>122</integer>
+			<key>HotKey Modifier Activation</key>
+			<integer>0</integer>
+			<key>HotKey Modifier Flags</key>
+			<integer>131072</integer>
+			<key>HotKey Window Animates</key>
+			<true/>
+			<key>HotKey Window AutoHides</key>
+			<true/>
+			<key>HotKey Window Dock Click Action</key>
+			<integer>0</integer>
+			<key>HotKey Window Floats</key>
+			<true/>
+			<key>HotKey Window Reopens On Activation</key>
+			<false/>
 			<key>Icon</key>
 			<integer>0</integer>
 			<key>Idle Code</key>
 			<integer>0</integer>
+			<key>Initial Use Transparency</key>
+			<true/>
 			<key>Jobs to Ignore</key>
 			<array>
 				<string>rlogin</string>
@@ -1004,39 +1054,39 @@
 				<key>Alpha Component</key>
 				<integer>1</integer>
 				<key>Blue Component</key>
-				<real>0.9337158203125</real>
+				<integer>1</integer>
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.55789834260940552</real>
+				<real>0.55000000000000004</real>
 				<key>Red Component</key>
-				<real>0.19802422821521759</real>
+				<real>0.20000000000000001</real>
 			</dict>
 			<key>Link Color (Dark)</key>
 			<dict>
 				<key>Alpha Component</key>
 				<integer>1</integer>
 				<key>Blue Component</key>
-				<real>0.9337158203125</real>
+				<real>0.93000000000000005</real>
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.55789834260940552</real>
+				<real>0.55000000000000004</real>
 				<key>Red Component</key>
-				<real>0.19802422821521759</real>
+				<real>0.20000000000000001</real>
 			</dict>
 			<key>Link Color (Light)</key>
 			<dict>
 				<key>Alpha Component</key>
-				<integer>1</integer>
+				<real>1</real>
 				<key>Blue Component</key>
-				<real>0.9337158203125</real>
+				<real>0.69999999999999996</real>
 				<key>Color Space</key>
-				<string>sRGB</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.55789834260940552</real>
+				<real>0.41999999999999998</real>
 				<key>Red Component</key>
-				<real>0.19802422821521759</real>
+				<real>0.28000000000000003</real>
 			</dict>
 			<key>Load Shell Integration Automatically</key>
 			<true/>
@@ -1045,27 +1095,31 @@
 				<key>Alpha Component</key>
 				<integer>1</integer>
 				<key>Blue Component</key>
-				<real>0.32116127014160156</real>
+				<real>0.32000000000000001</real>
 				<key>Color Space</key>
 				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.98600882291793823</real>
+				<integer>1</integer>
 				<key>Red Component</key>
-				<real>0.99697142839431763</real>
+				<integer>1</integer>
 			</dict>
 			<key>Match Background Color (Light)</key>
 			<dict>
 				<key>Alpha Component</key>
 				<integer>1</integer>
 				<key>Blue Component</key>
-				<real>0.32116127014160156</real>
+				<real>0.32000000000000001</real>
 				<key>Color Space</key>
 				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.98600882291793823</real>
+				<integer>1</integer>
 				<key>Red Component</key>
-				<real>0.99697142839431763</real>
+				<integer>1</integer>
 			</dict>
+			<key>Minimum Contrast (Dark)</key>
+			<real>0.0</real>
+			<key>Minimum Contrast (Light)</key>
+			<real>0.0</real>
 			<key>Mouse Reporting</key>
 			<true/>
 			<key>Name</key>
@@ -1078,8 +1132,14 @@
 			<string>FiraMonoNF-Regular 16</string>
 			<key>Only The Default BG Color Uses Transparency</key>
 			<true/>
+			<key>Open Password Manager Automatically</key>
+			<true/>
+			<key>Open Toolbelt</key>
+			<false/>
 			<key>Option Key Sends</key>
 			<integer>0</integer>
+			<key>Prevent Opening in a Tab</key>
+			<true/>
 			<key>Prompt Before Closing 2</key>
 			<false/>
 			<key>Right Option Key Sends</key>
@@ -1089,7 +1149,7 @@
 			<key>Screen</key>
 			<integer>-1</integer>
 			<key>Scrollback Lines</key>
-			<integer>1000</integer>
+			<integer>0</integer>
 			<key>Selected Text Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -1138,9 +1198,9 @@
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.84313726425170898</real>
+				<real>0.83999999999999997</real>
 				<key>Red Component</key>
-				<real>0.70196080207824707</real>
+				<real>0.69999999999999996</real>
 			</dict>
 			<key>Selection Color (Dark)</key>
 			<dict>
@@ -1151,9 +1211,9 @@
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.84313726425170898</real>
+				<real>0.83999999999999997</real>
 				<key>Red Component</key>
-				<real>0.70196080207824707</real>
+				<real>0.69999999999999996</real>
 			</dict>
 			<key>Selection Color (Light)</key>
 			<dict>
@@ -1164,15 +1224,19 @@
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.84313726425170898</real>
+				<real>0.83999999999999997</real>
 				<key>Red Component</key>
-				<real>0.70196080207824707</real>
+				<real>0.69999999999999996</real>
 			</dict>
 			<key>Send Code When Idle</key>
 			<false/>
 			<key>Shortcut</key>
 			<string></string>
 			<key>Silence Bell</key>
+			<false/>
+			<key>Smart Cursor Color (Dark)</key>
+			<false/>
+			<key>Smart Cursor Color (Light)</key>
 			<false/>
 			<key>Sync Title</key>
 			<false/>
@@ -1185,38 +1249,413 @@
 			<key>Title Components</key>
 			<integer>0</integer>
 			<key>Transparency</key>
-			<real>0.6042857142857142</real>
+			<real>0.59999999999999998</real>
 			<key>Unicode Normalization</key>
 			<integer>0</integer>
+			<key>Unicode Version</key>
+			<integer>9</integer>
 			<key>Unlimited Scrollback</key>
-			<false/>
+			<true/>
 			<key>Use Bold Font</key>
 			<true/>
 			<key>Use Bright Bold</key>
 			<true/>
+			<key>Use Bright Bold (Dark)</key>
+			<true/>
+			<key>Use Bright Bold (Light)</key>
+			<true/>
+			<key>Use Cursor Guide (Dark)</key>
+			<false/>
+			<key>Use Cursor Guide (Light)</key>
+			<false/>
 			<key>Use Italic Font</key>
 			<true/>
 			<key>Use Non-ASCII Font</key>
 			<false/>
+			<key>Use Selected Text Color (Dark)</key>
+			<true/>
 			<key>Use Selected Text Color (Light)</key>
 			<true/>
 			<key>Use Separate Colors for Light and Dark Mode</key>
 			<true/>
+			<key>Use Tab Color (Dark)</key>
+			<false/>
 			<key>Use Tab Color (Light)</key>
 			<false/>
+			<key>Use Underline Color (Dark)</key>
+			<false/>
+			<key>Use Underline Color (Light)</key>
+			<false/>
 			<key>Vertical Spacing</key>
-			<integer>1</integer>
+			<real>1</real>
 			<key>Visual Bell</key>
 			<true/>
 			<key>Window Type</key>
 			<integer>0</integer>
-			<key>Working Directory</key>
-			<string>/Users/omico</string>
 		</dict>
 	</array>
+	<key>PointerActions</key>
+	<dict>
+		<key>Button,1,1,,</key>
+		<dict>
+			<key>Action</key>
+			<string>kContextMenuPointerAction</string>
+		</dict>
+		<key>Button,2,1,,</key>
+		<dict>
+			<key>Action</key>
+			<string>kPasteFromClipboardPointerAction</string>
+		</dict>
+		<key>Gesture,ThreeFingerSwipeDown,,</key>
+		<dict>
+			<key>Action</key>
+			<string>kPrevWindowPointerAction</string>
+		</dict>
+		<key>Gesture,ThreeFingerSwipeLeft,,</key>
+		<dict>
+			<key>Action</key>
+			<string>kPrevTabPointerAction</string>
+		</dict>
+		<key>Gesture,ThreeFingerSwipeRight,,</key>
+		<dict>
+			<key>Action</key>
+			<string>kNextTabPointerAction</string>
+		</dict>
+		<key>Gesture,ThreeFingerSwipeUp,,</key>
+		<dict>
+			<key>Action</key>
+			<string>kNextWindowPointerAction</string>
+		</dict>
+	</dict>
+	<key>PromptOnQuit</key>
+	<false/>
 	<key>SoundForEsc</key>
 	<false/>
+	<key>SplitPaneDimmingAmount</key>
+	<real>0.40000000000000002</real>
 	<key>VisualIndicatorForEsc</key>
+	<false/>
+	<key>kCPFavoritesUserDefaultsKey</key>
+	<array>
+		<data>
+		YnBsaXN0MDDUAQIDBAUGBw5YJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9i
+		amVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctMICQoLDA1UbmFtZVVjb2xv
+		clppZGVudGlmaWVygAGAAoAHqQ8QER4kJSwvM1UkbnVsbFVCbGFja9YSExQV
+		FhcYGRobHB1WJGNsYXNzXE5TQ29tcG9uZW50c1VOU1JHQlxOU0NvbG9yU3Bh
+		Y2VfEBJOU0N1c3RvbUNvbG9yU3BhY2VfEBBOU0xpbmVhckV4cG9zdXJlgAZH
+		MCAwIDAgMUYwIDAgMAAQAYADQTHTHxIgISIjVU5TSUNDWU5TU3BhY2VJRIAE
+		gAUQDE8RAhgAAAIYYXBwbAQAAABtbnRyUkdCIFhZWiAH5gABAAEAAAAAAABh
+		Y3NwQVBQTAAAAABBUFBMAAAAAAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLWFw
+		cGzs/aOOOIVHw220vU962hgvAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+		AAAAAApkZXNjAAAA/AAAADBjcHJ0AAABLAAAAFB3dHB0AAABfAAAABRyWFla
+		AAABkAAAABRnWFlaAAABpAAAABRiWFlaAAABuAAAABRyVFJDAAABzAAAACBj
+		aGFkAAAB7AAAACxiVFJDAAABzAAAACBnVFJDAAABzAAAACBtbHVjAAAAAAAA
+		AAEAAAAMZW5VUwAAABQAAAAcAEQAaQBzAHAAbABhAHkAIABQADNtbHVjAAAA
+		AAAAAAEAAAAMZW5VUwAAADQAAAAcAEMAbwBwAHkAcgBpAGcAaAB0ACAAQQBw
+		AHAAbABlACAASQBuAGMALgAsACAAMgAwADIAMlhZWiAAAAAAAAD21QABAAAA
+		ANMsWFlaIAAAAAAAAIPfAAA9v////7tYWVogAAAAAAAASr8AALE3AAAKuVhZ
+		WiAAAAAAAAAoOAAAEQsAAMi5cGFyYQAAAAAAAwAAAAJmZgAA8qcAAA1ZAAAT
+		0AAACltzZjMyAAAAAAABDEIAAAXe///zJgAAB5MAAP2Q///7ov///aMAAAPc
+		AADAbtImJygpWiRjbGFzc25hbWVYJGNsYXNzZXNcTlNDb2xvclNwYWNloior
+		XE5TQ29sb3JTcGFjZVhOU09iamVjdNImJy0uV05TQ29sb3KiLSvSEjAxMllO
+		Uy5zdHJpbmeACF8QJEMzNDQ3NkNBLUJFNjAtNEYyRC04NUI1LUExNzk4NzQ1
+		NURFQtImJzQ1XxAPTlNNdXRhYmxlU3RyaW5nozQ2K1hOU1N0cmluZwAIABEA
+		GgAkACkAMgA3AEkAUABVAFsAZgBoAGoAbAB2AHwAggCPAJYAowCpALYAywDe
+		AOAA6ADvAPEA8wD1APwBAgEMAQ4BEAESAy4DMwM+A0cDVANXA2QDbQNyA3oD
+		fQOCA4wDjgO1A7oDzAPQAAAAAAAAAgEAAAAAAAAANwAAAAAAAAAAAAAAAAAA
+		A9k=
+		</data>
+		<data>
+		YnBsaXN0MDDUAQIDBAUGBw5YJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9i
+		amVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctMICQoLDA1UbmFtZVVjb2xv
+		clppZGVudGlmaWVygAGAAoAHqQ8QER4kJSwvM1UkbnVsbFgxMCUgR3JhedYS
+		ExQVFhcYGRobHB1WJGNsYXNzXE5TQ29tcG9uZW50c1VOU1JHQlxOU0NvbG9y
+		U3BhY2VfEBJOU0N1c3RvbUNvbG9yU3BhY2VfEBBOU0xpbmVhckV4cG9zdXJl
+		gAZNMC4xIDAuMSAwLjEgMU8QJzAuMDc3NTI0NDgzMiAwLjA3NzUyNDQ4MzIg
+		MC4wNzc1MjQ0ODMyABABgANBMdMfEiAhIiNVTlNJQ0NZTlNTcGFjZUlEgASA
+		BRAMTxECGAAAAhhhcHBsBAAAAG1udHJSR0IgWFlaIAfmAAEAAQAAAAAAAGFj
+		c3BBUFBMAAAAAEFQUEwAAAAAAAAAAAAAAAAAAAAAAAD21gABAAAAANMtYXBw
+		bOz9o444hUfDbbS9T3raGC8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+		AAAACmRlc2MAAAD8AAAAMGNwcnQAAAEsAAAAUHd0cHQAAAF8AAAAFHJYWVoA
+		AAGQAAAAFGdYWVoAAAGkAAAAFGJYWVoAAAG4AAAAFHJUUkMAAAHMAAAAIGNo
+		YWQAAAHsAAAALGJUUkMAAAHMAAAAIGdUUkMAAAHMAAAAIG1sdWMAAAAAAAAA
+		AQAAAAxlblVTAAAAFAAAABwARABpAHMAcABsAGEAeQAgAFAAM21sdWMAAAAA
+		AAAAAQAAAAxlblVTAAAANAAAABwAQwBvAHAAeQByAGkAZwBoAHQAIABBAHAA
+		cABsAGUAIABJAG4AYwAuACwAIAAyADAAMgAyWFlaIAAAAAAAAPbVAAEAAAAA
+		0yxYWVogAAAAAAAAg98AAD2/////u1hZWiAAAAAAAABKvwAAsTcAAAq5WFla
+		IAAAAAAAACg4AAARCwAAyLlwYXJhAAAAAAADAAAAAmZmAADypwAADVkAABPQ
+		AAAKW3NmMzIAAAAAAAEMQgAABd7///MmAAAHkwAA/ZD///ui///9owAAA9wA
+		AMBu0iYnKClaJGNsYXNzbmFtZVgkY2xhc3Nlc1xOU0NvbG9yU3BhY2WiKitc
+		TlNDb2xvclNwYWNlWE5TT2JqZWN00iYnLS5XTlNDb2xvcqItK9ISMDEyWU5T
+		LnN0cmluZ4AIXxAkQzFDREYxMTktQTNGNy00MkJFLTk2Q0YtQjg0MTU3Q0VD
+		MDY40iYnNDVfEA9OU011dGFibGVTdHJpbmejNDYrWE5TU3RyaW5nAAgAEQAa
+		ACQAKQAyADcASQBQAFUAWwBmAGgAagBsAHYAfACFAJIAmQCmAKwAuQDOAOEA
+		4wDxARsBHQEfASEBKAEuATgBOgE8AT4DWgNfA2oDcwOAA4MDkAOZA54DpgOp
+		A64DuAO6A+ED5gP4A/wAAAAAAAACAQAAAAAAAAA3AAAAAAAAAAAAAAAAAAAE
+		BQ==
+		</data>
+		<data>
+		YnBsaXN0MDDUAQIDBAUGBw5YJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9i
+		amVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctMICQoLDA1UbmFtZVVjb2xv
+		clppZGVudGlmaWVygAGAAoAHqQ8QER4kJSwvM1UkbnVsbFgyMCUgR3JhedYS
+		ExQVFhcYGRobHB1WJGNsYXNzXE5TQ29tcG9uZW50c1VOU1JHQlxOU0NvbG9y
+		U3BhY2VfEBJOU0N1c3RvbUNvbG9yU3BhY2VfEBBOU0xpbmVhckV4cG9zdXJl
+		gAZNMC4yIDAuMiAwLjIgMU8QJzAuMTUwNTYyNTA5OSAwLjE1MDU2MjUwOTkg
+		MC4xNTA1NjI1MDk5ABABgANBMdMfEiAhIiNVTlNJQ0NZTlNTcGFjZUlEgASA
+		BRAMTxECGAAAAhhhcHBsBAAAAG1udHJSR0IgWFlaIAfmAAEAAQAAAAAAAGFj
+		c3BBUFBMAAAAAEFQUEwAAAAAAAAAAAAAAAAAAAAAAAD21gABAAAAANMtYXBw
+		bOz9o444hUfDbbS9T3raGC8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+		AAAACmRlc2MAAAD8AAAAMGNwcnQAAAEsAAAAUHd0cHQAAAF8AAAAFHJYWVoA
+		AAGQAAAAFGdYWVoAAAGkAAAAFGJYWVoAAAG4AAAAFHJUUkMAAAHMAAAAIGNo
+		YWQAAAHsAAAALGJUUkMAAAHMAAAAIGdUUkMAAAHMAAAAIG1sdWMAAAAAAAAA
+		AQAAAAxlblVTAAAAFAAAABwARABpAHMAcABsAGEAeQAgAFAAM21sdWMAAAAA
+		AAAAAQAAAAxlblVTAAAANAAAABwAQwBvAHAAeQByAGkAZwBoAHQAIABBAHAA
+		cABsAGUAIABJAG4AYwAuACwAIAAyADAAMgAyWFlaIAAAAAAAAPbVAAEAAAAA
+		0yxYWVogAAAAAAAAg98AAD2/////u1hZWiAAAAAAAABKvwAAsTcAAAq5WFla
+		IAAAAAAAACg4AAARCwAAyLlwYXJhAAAAAAADAAAAAmZmAADypwAADVkAABPQ
+		AAAKW3NmMzIAAAAAAAEMQgAABd7///MmAAAHkwAA/ZD///ui///9owAAA9wA
+		AMBu0iYnKClaJGNsYXNzbmFtZVgkY2xhc3Nlc1xOU0NvbG9yU3BhY2WiKitc
+		TlNDb2xvclNwYWNlWE5TT2JqZWN00iYnLS5XTlNDb2xvcqItK9ISMDEyWU5T
+		LnN0cmluZ4AIXxAkNEFBNTMzNEItMDU2Ri00MDM1LUJBOEItRjUwQkFDQzk3
+		N0Ex0iYnNDVfEA9OU011dGFibGVTdHJpbmejNDYrWE5TU3RyaW5nAAgAEQAa
+		ACQAKQAyADcASQBQAFUAWwBmAGgAagBsAHYAfACFAJIAmQCmAKwAuQDOAOEA
+		4wDxARsBHQEfASEBKAEuATgBOgE8AT4DWgNfA2oDcwOAA4MDkAOZA54DpgOp
+		A64DuAO6A+ED5gP4A/wAAAAAAAACAQAAAAAAAAA3AAAAAAAAAAAAAAAAAAAE
+		BQ==
+		</data>
+		<data>
+		YnBsaXN0MDDUAQIDBAUGBw5YJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9i
+		amVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctMICQoLDA1UbmFtZVVjb2xv
+		clppZGVudGlmaWVygAGAAoAHqQ8QER4kJSwvM1UkbnVsbFgzMCUgR3JhedYS
+		ExQVFhcYGRobHB1WJGNsYXNzXE5TQ29tcG9uZW50c1VOU1JHQlxOU0NvbG9y
+		U3BhY2VfEBJOU0N1c3RvbUNvbG9yU3BhY2VfEBBOU0xpbmVhckV4cG9zdXJl
+		gAZNMC4zIDAuMyAwLjMgMU8QJzAuMjM0MDQ1OTgyNCAwLjIzNDA0NTk4MjQg
+		MC4yMzQwNDU5ODI0ABABgANBMdMfEiAhIiNVTlNJQ0NZTlNTcGFjZUlEgASA
+		BRAMTxECGAAAAhhhcHBsBAAAAG1udHJSR0IgWFlaIAfmAAEAAQAAAAAAAGFj
+		c3BBUFBMAAAAAEFQUEwAAAAAAAAAAAAAAAAAAAAAAAD21gABAAAAANMtYXBw
+		bOz9o444hUfDbbS9T3raGC8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+		AAAACmRlc2MAAAD8AAAAMGNwcnQAAAEsAAAAUHd0cHQAAAF8AAAAFHJYWVoA
+		AAGQAAAAFGdYWVoAAAGkAAAAFGJYWVoAAAG4AAAAFHJUUkMAAAHMAAAAIGNo
+		YWQAAAHsAAAALGJUUkMAAAHMAAAAIGdUUkMAAAHMAAAAIG1sdWMAAAAAAAAA
+		AQAAAAxlblVTAAAAFAAAABwARABpAHMAcABsAGEAeQAgAFAAM21sdWMAAAAA
+		AAAAAQAAAAxlblVTAAAANAAAABwAQwBvAHAAeQByAGkAZwBoAHQAIABBAHAA
+		cABsAGUAIABJAG4AYwAuACwAIAAyADAAMgAyWFlaIAAAAAAAAPbVAAEAAAAA
+		0yxYWVogAAAAAAAAg98AAD2/////u1hZWiAAAAAAAABKvwAAsTcAAAq5WFla
+		IAAAAAAAACg4AAARCwAAyLlwYXJhAAAAAAADAAAAAmZmAADypwAADVkAABPQ
+		AAAKW3NmMzIAAAAAAAEMQgAABd7///MmAAAHkwAA/ZD///ui///9owAAA9wA
+		AMBu0iYnKClaJGNsYXNzbmFtZVgkY2xhc3Nlc1xOU0NvbG9yU3BhY2WiKitc
+		TlNDb2xvclNwYWNlWE5TT2JqZWN00iYnLS5XTlNDb2xvcqItK9ISMDEyWU5T
+		LnN0cmluZ4AIXxAkMjExQTA5RkUtQTdCNS00RUQwLThDOTktRkY3M0JDQUY1
+		OEJD0iYnNDVfEA9OU011dGFibGVTdHJpbmejNDYrWE5TU3RyaW5nAAgAEQAa
+		ACQAKQAyADcASQBQAFUAWwBmAGgAagBsAHYAfACFAJIAmQCmAKwAuQDOAOEA
+		4wDxARsBHQEfASEBKAEuATgBOgE8AT4DWgNfA2oDcwOAA4MDkAOZA54DpgOp
+		A64DuAO6A+ED5gP4A/wAAAAAAAACAQAAAAAAAAA3AAAAAAAAAAAAAAAAAAAE
+		BQ==
+		</data>
+		<data>
+		YnBsaXN0MDDUAQIDBAUGBw5YJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9i
+		amVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctMICQoLDA1UbmFtZVVjb2xv
+		clppZGVudGlmaWVygAGAAoAHqQ8QER4kJSwvM1UkbnVsbFg0MCUgR3JhedYS
+		ExQVFhcYGRobHB1WJGNsYXNzXE5TQ29tcG9uZW50c1VOU1JHQlxOU0NvbG9y
+		U3BhY2VfEBJOU0N1c3RvbUNvbG9yU3BhY2VfEBBOU0xpbmVhckV4cG9zdXJl
+		gAZNMC40IDAuNCAwLjQgMU8QJzAuMzI1ODQ1NTk5MiAwLjMyNTg0NTU5OTIg
+		MC4zMjU4NDU1OTkyABABgANBMdMfEiAhIiNVTlNJQ0NZTlNTcGFjZUlEgASA
+		BRAMTxECGAAAAhhhcHBsBAAAAG1udHJSR0IgWFlaIAfmAAEAAQAAAAAAAGFj
+		c3BBUFBMAAAAAEFQUEwAAAAAAAAAAAAAAAAAAAAAAAD21gABAAAAANMtYXBw
+		bOz9o444hUfDbbS9T3raGC8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+		AAAACmRlc2MAAAD8AAAAMGNwcnQAAAEsAAAAUHd0cHQAAAF8AAAAFHJYWVoA
+		AAGQAAAAFGdYWVoAAAGkAAAAFGJYWVoAAAG4AAAAFHJUUkMAAAHMAAAAIGNo
+		YWQAAAHsAAAALGJUUkMAAAHMAAAAIGdUUkMAAAHMAAAAIG1sdWMAAAAAAAAA
+		AQAAAAxlblVTAAAAFAAAABwARABpAHMAcABsAGEAeQAgAFAAM21sdWMAAAAA
+		AAAAAQAAAAxlblVTAAAANAAAABwAQwBvAHAAeQByAGkAZwBoAHQAIABBAHAA
+		cABsAGUAIABJAG4AYwAuACwAIAAyADAAMgAyWFlaIAAAAAAAAPbVAAEAAAAA
+		0yxYWVogAAAAAAAAg98AAD2/////u1hZWiAAAAAAAABKvwAAsTcAAAq5WFla
+		IAAAAAAAACg4AAARCwAAyLlwYXJhAAAAAAADAAAAAmZmAADypwAADVkAABPQ
+		AAAKW3NmMzIAAAAAAAEMQgAABd7///MmAAAHkwAA/ZD///ui///9owAAA9wA
+		AMBu0iYnKClaJGNsYXNzbmFtZVgkY2xhc3Nlc1xOU0NvbG9yU3BhY2WiKitc
+		TlNDb2xvclNwYWNlWE5TT2JqZWN00iYnLS5XTlNDb2xvcqItK9ISMDEyWU5T
+		LnN0cmluZ4AIXxAkRjhBMkY3QzEtQTQwMC00NjJBLTkxNkUtMUFGNzBGODhG
+		OEZC0iYnNDVfEA9OU011dGFibGVTdHJpbmejNDYrWE5TU3RyaW5nAAgAEQAa
+		ACQAKQAyADcASQBQAFUAWwBmAGgAagBsAHYAfACFAJIAmQCmAKwAuQDOAOEA
+		4wDxARsBHQEfASEBKAEuATgBOgE8AT4DWgNfA2oDcwOAA4MDkAOZA54DpgOp
+		A64DuAO6A+ED5gP4A/wAAAAAAAACAQAAAAAAAAA3AAAAAAAAAAAAAAAAAAAE
+		BQ==
+		</data>
+		<data>
+		YnBsaXN0MDDUAQIDBAUGBw5YJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9i
+		amVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctMICQoLDA1UbmFtZVVjb2xv
+		clppZGVudGlmaWVygAGAAoAHqQ8QER4kJSwvM1UkbnVsbFg1MCUgR3JhedYS
+		ExQVFhcYGRobHB1WJGNsYXNzXE5TQ29tcG9uZW50c1VOU1JHQlxOU0NvbG9y
+		U3BhY2VfEBJOU0N1c3RvbUNvbG9yU3BhY2VfEBBOU0xpbmVhckV4cG9zdXJl
+		gAZNMC41IDAuNSAwLjUgMU8QJzAuNDI0NjcyNDI0OCAwLjQyNDY3MjM2NTIg
+		MC40MjQ2NzIzNjUyABABgANBMdMfEiAhIiNVTlNJQ0NZTlNTcGFjZUlEgASA
+		BRAMTxECGAAAAhhhcHBsBAAAAG1udHJSR0IgWFlaIAfmAAEAAQAAAAAAAGFj
+		c3BBUFBMAAAAAEFQUEwAAAAAAAAAAAAAAAAAAAAAAAD21gABAAAAANMtYXBw
+		bOz9o444hUfDbbS9T3raGC8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+		AAAACmRlc2MAAAD8AAAAMGNwcnQAAAEsAAAAUHd0cHQAAAF8AAAAFHJYWVoA
+		AAGQAAAAFGdYWVoAAAGkAAAAFGJYWVoAAAG4AAAAFHJUUkMAAAHMAAAAIGNo
+		YWQAAAHsAAAALGJUUkMAAAHMAAAAIGdUUkMAAAHMAAAAIG1sdWMAAAAAAAAA
+		AQAAAAxlblVTAAAAFAAAABwARABpAHMAcABsAGEAeQAgAFAAM21sdWMAAAAA
+		AAAAAQAAAAxlblVTAAAANAAAABwAQwBvAHAAeQByAGkAZwBoAHQAIABBAHAA
+		cABsAGUAIABJAG4AYwAuACwAIAAyADAAMgAyWFlaIAAAAAAAAPbVAAEAAAAA
+		0yxYWVogAAAAAAAAg98AAD2/////u1hZWiAAAAAAAABKvwAAsTcAAAq5WFla
+		IAAAAAAAACg4AAARCwAAyLlwYXJhAAAAAAADAAAAAmZmAADypwAADVkAABPQ
+		AAAKW3NmMzIAAAAAAAEMQgAABd7///MmAAAHkwAA/ZD///ui///9owAAA9wA
+		AMBu0iYnKClaJGNsYXNzbmFtZVgkY2xhc3Nlc1xOU0NvbG9yU3BhY2WiKitc
+		TlNDb2xvclNwYWNlWE5TT2JqZWN00iYnLS5XTlNDb2xvcqItK9ISMDEyWU5T
+		LnN0cmluZ4AIXxAkMjcyMDNEMTQtNzY4RC00QTg3LTlBMTUtMkY2M0U5N0Uy
+		OURD0iYnNDVfEA9OU011dGFibGVTdHJpbmejNDYrWE5TU3RyaW5nAAgAEQAa
+		ACQAKQAyADcASQBQAFUAWwBmAGgAagBsAHYAfACFAJIAmQCmAKwAuQDOAOEA
+		4wDxARsBHQEfASEBKAEuATgBOgE8AT4DWgNfA2oDcwOAA4MDkAOZA54DpgOp
+		A64DuAO6A+ED5gP4A/wAAAAAAAACAQAAAAAAAAA3AAAAAAAAAAAAAAAAAAAE
+		BQ==
+		</data>
+		<data>
+		YnBsaXN0MDDUAQIDBAUGBw5YJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9i
+		amVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctMICQoLDA1UbmFtZVVjb2xv
+		clppZGVudGlmaWVygAGAAoAHqQ8QER4kJSwvM1UkbnVsbFg2MCUgR3JhedYS
+		ExQVFhcYGRobHB1WJGNsYXNzXE5TQ29tcG9uZW50c1VOU1JHQlxOU0NvbG9y
+		U3BhY2VfEBJOU0N1c3RvbUNvbG9yU3BhY2VfEBBOU0xpbmVhckV4cG9zdXJl
+		gAZNMC42IDAuNiAwLjYgMU8QJzAuNTI5NjQ1MzIzOCAwLjUyOTY0NTMyMzgg
+		MC41Mjk2NDUzMjM4ABABgANBMdMfEiAhIiNVTlNJQ0NZTlNTcGFjZUlEgASA
+		BRAMTxECGAAAAhhhcHBsBAAAAG1udHJSR0IgWFlaIAfmAAEAAQAAAAAAAGFj
+		c3BBUFBMAAAAAEFQUEwAAAAAAAAAAAAAAAAAAAAAAAD21gABAAAAANMtYXBw
+		bOz9o444hUfDbbS9T3raGC8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+		AAAACmRlc2MAAAD8AAAAMGNwcnQAAAEsAAAAUHd0cHQAAAF8AAAAFHJYWVoA
+		AAGQAAAAFGdYWVoAAAGkAAAAFGJYWVoAAAG4AAAAFHJUUkMAAAHMAAAAIGNo
+		YWQAAAHsAAAALGJUUkMAAAHMAAAAIGdUUkMAAAHMAAAAIG1sdWMAAAAAAAAA
+		AQAAAAxlblVTAAAAFAAAABwARABpAHMAcABsAGEAeQAgAFAAM21sdWMAAAAA
+		AAAAAQAAAAxlblVTAAAANAAAABwAQwBvAHAAeQByAGkAZwBoAHQAIABBAHAA
+		cABsAGUAIABJAG4AYwAuACwAIAAyADAAMgAyWFlaIAAAAAAAAPbVAAEAAAAA
+		0yxYWVogAAAAAAAAg98AAD2/////u1hZWiAAAAAAAABKvwAAsTcAAAq5WFla
+		IAAAAAAAACg4AAARCwAAyLlwYXJhAAAAAAADAAAAAmZmAADypwAADVkAABPQ
+		AAAKW3NmMzIAAAAAAAEMQgAABd7///MmAAAHkwAA/ZD///ui///9owAAA9wA
+		AMBu0iYnKClaJGNsYXNzbmFtZVgkY2xhc3Nlc1xOU0NvbG9yU3BhY2WiKitc
+		TlNDb2xvclNwYWNlWE5TT2JqZWN00iYnLS5XTlNDb2xvcqItK9ISMDEyWU5T
+		LnN0cmluZ4AIXxAkNTZGNDlDRDctREE4QS00QTg1LThFODktQUNGOTJENzAx
+		QTZE0iYnNDVfEA9OU011dGFibGVTdHJpbmejNDYrWE5TU3RyaW5nAAgAEQAa
+		ACQAKQAyADcASQBQAFUAWwBmAGgAagBsAHYAfACFAJIAmQCmAKwAuQDOAOEA
+		4wDxARsBHQEfASEBKAEuATgBOgE8AT4DWgNfA2oDcwOAA4MDkAOZA54DpgOp
+		A64DuAO6A+ED5gP4A/wAAAAAAAACAQAAAAAAAAA3AAAAAAAAAAAAAAAAAAAE
+		BQ==
+		</data>
+		<data>
+		YnBsaXN0MDDUAQIDBAUGBw5YJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9i
+		amVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctMICQoLDA1UbmFtZVVjb2xv
+		clppZGVudGlmaWVygAGAAoAHqQ8QER4kJSwvM1UkbnVsbFg3MCUgR3JhedYS
+		ExQVFhcYGRobHB1WJGNsYXNzXE5TQ29tcG9uZW50c1VOU1JHQlxOU0NvbG9y
+		U3BhY2VfEBJOU0N1c3RvbUNvbG9yU3BhY2VfEBBOU0xpbmVhckV4cG9zdXJl
+		gAZNMC43IDAuNyAwLjcgMU8QITAuNjQwMTE2OTMgMC42NDAxMTY5MyAwLjY0
+		MDExNjkzABABgANBMdMfEiAhIiNVTlNJQ0NZTlNTcGFjZUlEgASABRAMTxEC
+		GAAAAhhhcHBsBAAAAG1udHJSR0IgWFlaIAfmAAEAAQAAAAAAAGFjc3BBUFBM
+		AAAAAEFQUEwAAAAAAAAAAAAAAAAAAAAAAAD21gABAAAAANMtYXBwbOz9o444
+		hUfDbbS9T3raGC8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACmRl
+		c2MAAAD8AAAAMGNwcnQAAAEsAAAAUHd0cHQAAAF8AAAAFHJYWVoAAAGQAAAA
+		FGdYWVoAAAGkAAAAFGJYWVoAAAG4AAAAFHJUUkMAAAHMAAAAIGNoYWQAAAHs
+		AAAALGJUUkMAAAHMAAAAIGdUUkMAAAHMAAAAIG1sdWMAAAAAAAAAAQAAAAxl
+		blVTAAAAFAAAABwARABpAHMAcABsAGEAeQAgAFAAM21sdWMAAAAAAAAAAQAA
+		AAxlblVTAAAANAAAABwAQwBvAHAAeQByAGkAZwBoAHQAIABBAHAAcABsAGUA
+		IABJAG4AYwAuACwAIAAyADAAMgAyWFlaIAAAAAAAAPbVAAEAAAAA0yxYWVog
+		AAAAAAAAg98AAD2/////u1hZWiAAAAAAAABKvwAAsTcAAAq5WFlaIAAAAAAA
+		ACg4AAARCwAAyLlwYXJhAAAAAAADAAAAAmZmAADypwAADVkAABPQAAAKW3Nm
+		MzIAAAAAAAEMQgAABd7///MmAAAHkwAA/ZD///ui///9owAAA9wAAMBu0iYn
+		KClaJGNsYXNzbmFtZVgkY2xhc3Nlc1xOU0NvbG9yU3BhY2WiKitcTlNDb2xv
+		clNwYWNlWE5TT2JqZWN00iYnLS5XTlNDb2xvcqItK9ISMDEyWU5TLnN0cmlu
+		Z4AIXxAkNjMwODEyREYtNDBGRC00MkFDLUFERTQtMEU4NTM1MTU3NjBD0iYn
+		NDVfEA9OU011dGFibGVTdHJpbmejNDYrWE5TU3RyaW5nAAgAEQAaACQAKQAy
+		ADcASQBQAFUAWwBmAGgAagBsAHYAfACFAJIAmQCmAKwAuQDOAOEA4wDxARUB
+		FwEZARsBIgEoATIBNAE2ATgDVANZA2QDbQN6A30DigOTA5gDoAOjA6gDsgO0
+		A9sD4APyA/YAAAAAAAACAQAAAAAAAAA3AAAAAAAAAAAAAAAAAAAD/w==
+		</data>
+		<data>
+		YnBsaXN0MDDUAQIDBAUGBw5YJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9i
+		amVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctMICQoLDA1UbmFtZVVjb2xv
+		clppZGVudGlmaWVygAGAAoAHqQ8QER4kJSwvM1UkbnVsbFg4MCUgR3JhedYS
+		ExQVFhcYGRobHB1WJGNsYXNzXE5TQ29tcG9uZW50c1VOU1JHQlxOU0NvbG9y
+		U3BhY2VfEBJOU0N1c3RvbUNvbG9yU3BhY2VfEBBOU0xpbmVhckV4cG9zdXJl
+		gAZNMC44IDAuOCAwLjggMU8QJDAuNzU1NTg3Njk3IDAuNzU1NTg3Njk3IDAu
+		NzU1NTg3Njk3ABABgANBMdMfEiAhIiNVTlNJQ0NZTlNTcGFjZUlEgASABRAM
+		TxECGAAAAhhhcHBsBAAAAG1udHJSR0IgWFlaIAfmAAEAAQAAAAAAAGFjc3BB
+		UFBMAAAAAEFQUEwAAAAAAAAAAAAAAAAAAAAAAAD21gABAAAAANMtYXBwbOz9
+		o444hUfDbbS9T3raGC8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+		CmRlc2MAAAD8AAAAMGNwcnQAAAEsAAAAUHd0cHQAAAF8AAAAFHJYWVoAAAGQ
+		AAAAFGdYWVoAAAGkAAAAFGJYWVoAAAG4AAAAFHJUUkMAAAHMAAAAIGNoYWQA
+		AAHsAAAALGJUUkMAAAHMAAAAIGdUUkMAAAHMAAAAIG1sdWMAAAAAAAAAAQAA
+		AAxlblVTAAAAFAAAABwARABpAHMAcABsAGEAeQAgAFAAM21sdWMAAAAAAAAA
+		AQAAAAxlblVTAAAANAAAABwAQwBvAHAAeQByAGkAZwBoAHQAIABBAHAAcABs
+		AGUAIABJAG4AYwAuACwAIAAyADAAMgAyWFlaIAAAAAAAAPbVAAEAAAAA0yxY
+		WVogAAAAAAAAg98AAD2/////u1hZWiAAAAAAAABKvwAAsTcAAAq5WFlaIAAA
+		AAAAACg4AAARCwAAyLlwYXJhAAAAAAADAAAAAmZmAADypwAADVkAABPQAAAK
+		W3NmMzIAAAAAAAEMQgAABd7///MmAAAHkwAA/ZD///ui///9owAAA9wAAMBu
+		0iYnKClaJGNsYXNzbmFtZVgkY2xhc3Nlc1xOU0NvbG9yU3BhY2WiKitcTlND
+		b2xvclNwYWNlWE5TT2JqZWN00iYnLS5XTlNDb2xvcqItK9ISMDEyWU5TLnN0
+		cmluZ4AIXxAkRTQyMzk1OTctQUJFQi00MkVBLUFCQTEtMjY0QjJDNUY0QTc1
+		0iYnNDVfEA9OU011dGFibGVTdHJpbmejNDYrWE5TU3RyaW5nAAgAEQAaACQA
+		KQAyADcASQBQAFUAWwBmAGgAagBsAHYAfACFAJIAmQCmAKwAuQDOAOEA4wDx
+		ARgBGgEcAR4BJQErATUBNwE5ATsDVwNcA2cDcAN9A4ADjQOWA5sDowOmA6sD
+		tQO3A94D4wP1A/kAAAAAAAACAQAAAAAAAAA3AAAAAAAAAAAAAAAAAAAEAg==
+		</data>
+		<data>
+		YnBsaXN0MDDUAQIDBAUGBw5YJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9i
+		amVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctMICQoLDA1UbmFtZVVjb2xv
+		clppZGVudGlmaWVygAGAAoAHqQ8QER4kJSwvM1UkbnVsbFg5MCUgR3JhedYS
+		ExQVFhcYGRobHB1WJGNsYXNzXE5TQ29tcG9uZW50c1VOU1JHQlxOU0NvbG9y
+		U3BhY2VfEBJOU0N1c3RvbUNvbG9yU3BhY2VfEBBOU0xpbmVhckV4cG9zdXJl
+		gAZNMC45IDAuOSAwLjkgMU8QJzAuODc1NjU4MDM1MyAwLjg3NTY1ODAzNTMg
+		MC44NzU2NTc5MTYxABABgANBMdMfEiAhIiNVTlNJQ0NZTlNTcGFjZUlEgASA
+		BRAMTxECGAAAAhhhcHBsBAAAAG1udHJSR0IgWFlaIAfmAAEAAQAAAAAAAGFj
+		c3BBUFBMAAAAAEFQUEwAAAAAAAAAAAAAAAAAAAAAAAD21gABAAAAANMtYXBw
+		bOz9o444hUfDbbS9T3raGC8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+		AAAACmRlc2MAAAD8AAAAMGNwcnQAAAEsAAAAUHd0cHQAAAF8AAAAFHJYWVoA
+		AAGQAAAAFGdYWVoAAAGkAAAAFGJYWVoAAAG4AAAAFHJUUkMAAAHMAAAAIGNo
+		YWQAAAHsAAAALGJUUkMAAAHMAAAAIGdUUkMAAAHMAAAAIG1sdWMAAAAAAAAA
+		AQAAAAxlblVTAAAAFAAAABwARABpAHMAcABsAGEAeQAgAFAAM21sdWMAAAAA
+		AAAAAQAAAAxlblVTAAAANAAAABwAQwBvAHAAeQByAGkAZwBoAHQAIABBAHAA
+		cABsAGUAIABJAG4AYwAuACwAIAAyADAAMgAyWFlaIAAAAAAAAPbVAAEAAAAA
+		0yxYWVogAAAAAAAAg98AAD2/////u1hZWiAAAAAAAABKvwAAsTcAAAq5WFla
+		IAAAAAAAACg4AAARCwAAyLlwYXJhAAAAAAADAAAAAmZmAADypwAADVkAABPQ
+		AAAKW3NmMzIAAAAAAAEMQgAABd7///MmAAAHkwAA/ZD///ui///9owAAA9wA
+		AMBu0iYnKClaJGNsYXNzbmFtZVgkY2xhc3Nlc1xOU0NvbG9yU3BhY2WiKitc
+		TlNDb2xvclNwYWNlWE5TT2JqZWN00iYnLS5XTlNDb2xvcqItK9ISMDEyWU5T
+		LnN0cmluZ4AIXxAkQTc0OEE5NEMtQjU0OC00RjUyLTlENDctQjNBRkIxOUJC
+		NDY40iYnNDVfEA9OU011dGFibGVTdHJpbmejNDYrWE5TU3RyaW5nAAgAEQAa
+		ACQAKQAyADcASQBQAFUAWwBmAGgAagBsAHYAfACFAJIAmQCmAKwAuQDOAOEA
+		4wDxARsBHQEfASEBKAEuATgBOgE8AT4DWgNfA2oDcwOAA4MDkAOZA54DpgOp
+		A64DuAO6A+ED5gP4A/wAAAAAAAACAQAAAAAAAAA3AAAAAAAAAAAAAAAAAAAE
+		BQ==
+		</data>
+		<data>
+		YnBsaXN0MDDUAQIDBAUGBw5YJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9i
+		amVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctMICQoLDA1UbmFtZVVjb2xv
+		clppZGVudGlmaWVygAGAAoAHqQ8QER4kJSwvM1UkbnVsbFVXaGl0ZdYSExQV
+		FhcYGRobHB1WJGNsYXNzXE5TQ29tcG9uZW50c1VOU1JHQlxOU0NvbG9yU3Bh
+		Y2VfEBJOU0N1c3RvbUNvbG9yU3BhY2VfEBBOU0xpbmVhckV4cG9zdXJlgAZH
+		MSAxIDEgMUYxIDEgMQAQAYADQTHTHxIgISIjVU5TSUNDWU5TU3BhY2VJRIAE
+		gAUQDE8RAhgAAAIYYXBwbAQAAABtbnRyUkdCIFhZWiAH5gABAAEAAAAAAABh
+		Y3NwQVBQTAAAAABBUFBMAAAAAAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLWFw
+		cGzs/aOOOIVHw220vU962hgvAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+		AAAAAApkZXNjAAAA/AAAADBjcHJ0AAABLAAAAFB3dHB0AAABfAAAABRyWFla
+		AAABkAAAABRnWFlaAAABpAAAABRiWFlaAAABuAAAABRyVFJDAAABzAAAACBj
+		aGFkAAAB7AAAACxiVFJDAAABzAAAACBnVFJDAAABzAAAACBtbHVjAAAAAAAA
+		AAEAAAAMZW5VUwAAABQAAAAcAEQAaQBzAHAAbABhAHkAIABQADNtbHVjAAAA
+		AAAAAAEAAAAMZW5VUwAAADQAAAAcAEMAbwBwAHkAcgBpAGcAaAB0ACAAQQBw
+		AHAAbABlACAASQBuAGMALgAsACAAMgAwADIAMlhZWiAAAAAAAAD21QABAAAA
+		ANMsWFlaIAAAAAAAAIPfAAA9v////7tYWVogAAAAAAAASr8AALE3AAAKuVhZ
+		WiAAAAAAAAAoOAAAEQsAAMi5cGFyYQAAAAAAAwAAAAJmZgAA8qcAAA1ZAAAT
+		0AAACltzZjMyAAAAAAABDEIAAAXe///zJgAAB5MAAP2Q///7ov///aMAAAPc
+		AADAbtImJygpWiRjbGFzc25hbWVYJGNsYXNzZXNcTlNDb2xvclNwYWNloior
+		XE5TQ29sb3JTcGFjZVhOU09iamVjdNImJy0uV05TQ29sb3KiLSvSEjAxMllO
+		Uy5zdHJpbmeACF8QJDhDREE0MEM5LTBCQTctNDRGMi1CRTI2LTY4OTYwNzUz
+		RDY2N9ImJzQ1XxAPTlNNdXRhYmxlU3RyaW5nozQ2K1hOU1N0cmluZwAIABEA
+		GgAkACkAMgA3AEkAUABVAFsAZgBoAGoAbAB2AHwAggCPAJYAowCpALYAywDe
+		AOAA6ADvAPEA8wD1APwBAgEMAQ4BEAESAy4DMwM+A0cDVANXA2QDbQNyA3oD
+		fQOCA4wDjgO1A7oDzAPQAAAAAAAAAgEAAAAAAAAANwAAAAAAAAAAAAAAAAAA
+		A9k=
+		</data>
+	</array>
+	<key>kCPKSelectionViewPreferredModeKey</key>
+	<integer>7</integer>
+	<key>kCPKSelectionViewShowHSBTextFieldsKey</key>
 	<false/>
 </dict>
 </plist>
