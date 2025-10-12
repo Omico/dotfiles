@@ -6,7 +6,6 @@ if not set -q fish_platform
         case Darwin
             set -g fish_platform darwin
         case Linux
-            # 区分 WSL
             if string match -q "*microsoft*" (uname -r)
                 set -g fish_platform wsl
             else

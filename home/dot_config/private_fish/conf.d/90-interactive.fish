@@ -3,7 +3,6 @@
 if status --is-interactive
     # Aliases
     alias fish_edit_config='code ~/.config/fish/config.fish'
-    alias fish_reload='source ~/.config/fish/config.fish'
 
     # Fast Node Manager (fnm)
     if type -q fnm
