@@ -30,6 +30,8 @@
 	<false/>
 	<key>Default Bookmark Guid</key>
 	<string>E22AF1F5-F530-4976-B94A-992B2083EFC5</string>
+	<key>Default Browser Profile Guid</key>
+	<string>E22AF1F5-F530-4976-B94A-992B2083EFC5</string>
 	<key>DimBackgroundWindows</key>
 	<false/>
 	<key>DimInactiveSplitPanes</key>
@@ -760,7 +762,7 @@
 				<integer>1</integer>
 			</dict>
 			<key>Blend</key>
-			<real>0.49729927007299268</real>
+			<real>1</real>
 			<key>Blink Allowed</key>
 			<true/>
 			<key>Blinking Cursor</key>
@@ -1035,7 +1037,7 @@
 			<key>HotKey Window Reopens On Activation</key>
 			<false/>
 			<key>Icon</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>Idle Code</key>
 			<integer>0</integer>
 			<key>Initial Use Transparency</key>
@@ -1133,7 +1135,7 @@
 			<key>Only The Default BG Color Uses Transparency</key>
 			<true/>
 			<key>Open Password Manager Automatically</key>
-			<true/>
+			<false/>
 			<key>Open Toolbelt</key>
 			<false/>
 			<key>Option Key Sends</key>
@@ -1249,7 +1251,7 @@
 			<key>Title Components</key>
 			<integer>0</integer>
 			<key>Transparency</key>
-			<real>0.59999999999999998</real>
+			<real>0.39797983156028366</real>
 			<key>Unicode Normalization</key>
 			<integer>0</integer>
 			<key>Unicode Version</key>
@@ -1327,8 +1329,12 @@
 			<string>kNextWindowPointerAction</string>
 		</dict>
 	</dict>
+	<key>ProbeForPassword</key>
+	<false/>
 	<key>PromptOnQuit</key>
 	<false/>
+	<key>QuitWhenAllWindowsClosed</key>
+	<true/>
 	<key>SoundForEsc</key>
 	<false/>
 	<key>SplitPaneDimmingAmount</key>
