@@ -23,3 +23,7 @@ function brew-update --description "Update Homebrew packages"
       mas upgrade
   end
 end
+
+function brew-bump-omico --description "Bump omico/tap packages"
+  brew bump --tap omico/tap --no-fork --open-pr
+end
