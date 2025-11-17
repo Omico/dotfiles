@@ -59,6 +59,7 @@ cask "anythingllm"
 cask "autodesk-fusion"
 cask "balenaetcher"
 cask "beyond-compare"
+cask "bitwarden"
 cask "bricklink-studio"
 cask "calibre"
 cask "clash-verge-rev"
@@ -99,12 +100,12 @@ cask "tailscale-app"
 cask "telegram-desktop"
 cask "tencent-meeting"
 cask "visual-studio-code"
+cask "warp"
 cask "windows-app"
 cask "zulu@11"
 cask "zulu@17"
 cask "zulu@21"
 cask "zulu@8"
-mas "Bitwarden", id: 1352778147
 mas "Compressor", id: 424390742
 mas "Developer", id: 640199958
 mas "Final Cut Pro", id: 424389933
