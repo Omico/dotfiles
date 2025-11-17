@@ -3,7 +3,7 @@
 function brew-backup --description "Backup Homebrew bundle to Brewfile"
   echo "Backing up Brewfile..."
   set -l BREWFILE_PATH "$HOME/.local/share/chezmoi/Brewfile"
-  brew bundle dump --taps --brews --casks --mas --whalebrew --force --file="$BREWFILE_PATH"
+  brew bundle dump --taps --brews --casks --mas --force --file="$BREWFILE_PATH"
   chezmoi git -- diff --quiet "$BREWFILE_PATH"; or begin
     chezmoi git -- add "$BREWFILE_PATH"
     chezmoi git -- commit -m "Update Brewfile"
