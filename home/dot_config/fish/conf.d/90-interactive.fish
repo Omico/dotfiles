@@ -2,7 +2,7 @@
 
 if status --is-interactive
     # Aliases
-    alias fish_edit_config='code ~/.config/fish/config.fish'
+    alias fish_edit_config='$EDITOR ~/.config/fish/config.fish'
 
     # Fast Node Manager (fnm)
     if type -q fnm
@@ -15,8 +15,8 @@ if status --is-interactive
     end
 
     # jEnv
-    if test -d $HOME/.jenv
-        fish_add_path $HOME/.jenv/bin
+    if test -d "$HOME/.jenv"
+        fish_add_path "$HOME/.jenv/bin"
         source (jenv init - | psub)
     end
 

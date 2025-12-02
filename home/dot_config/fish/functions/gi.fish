@@ -1,6 +1,11 @@
 #!/usr/bin/env fish
 
 function gi --description "Initialize a new git repo with initial commit and rename branch"
+  if type -q git
+    echo "❌ Git command not found."
+    return 1
+  end
+
   if test -d .git
     echo "⚠️ Git repository already exists."
     echo "❓ Do you want to delete .git directory and recreate it? [y/N]"

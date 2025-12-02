@@ -5,10 +5,6 @@ set -U fish_color_command green
 
 set -gx LC_ALL en_US.UTF-8
 
-if test -d $HOME/bin
-    fish_add_path $HOME/bin
-end
+set -gx EDITOR "code"
 
-if test -d $HOME/.local/bin
-    fish_add_path $HOME/.local/bin
-end
+fish_add_path_if_exists "$HOME/bin" "$HOME/.local/bin"
