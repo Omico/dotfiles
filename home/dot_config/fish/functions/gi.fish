@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 
 function gi --description "Initialize a new git repo with initial commit and rename branch"
-  if type -q git
+  if not type -q git
     echo "❌ Git command not found."
     return 1
   end
