@@ -18,28 +18,28 @@ function get_linux_distro
     end
 
     if test -f /etc/debian_version
-        echo "debian"
+        echo debian
         return 0
     else if test -f /etc/redhat-release
         set -l release (cat /etc/redhat-release 2>/dev/null | string lower)
         if string match -q "*fedora*" "$release"
-            echo "fedora"
+            echo fedora
         else if string match -q "*centos*" "$release"
-            echo "centos"
+            echo centos
         else if string match -q "*rhel*" "$release"
-            echo "rhel"
+            echo rhel
         else
-            echo "redhat"
+            echo redhat
         end
         return 0
     else if test -f /etc/arch-release
-        echo "arch"
+        echo arch
         return 0
     else if test -f /etc/alpine-release
-        echo "alpine"
+        echo alpine
         return 0
     else if test -f /etc/SuSE-release
-        echo "opensuse"
+        echo opensuse
         return 0
     end
 
@@ -54,29 +54,29 @@ function is_distro
 end
 
 function is_ubuntu
-    is_distro "ubuntu"
+    is_distro ubuntu
 end
 
 function is_debian
-    is_distro "debian"
+    is_distro debian
 end
 
 function is_fedora
-    is_distro "fedora"
+    is_distro fedora
 end
 
 function is_arch
-    is_distro "arch"
+    is_distro arch
 end
 
 function is_centos
-    is_distro "centos"
+    is_distro centos
 end
 
 function is_alpine
-    is_distro "alpine"
+    is_distro alpine
 end
 
 function is_opensuse
-    is_distro "opensuse"
+    is_distro opensuse
 end

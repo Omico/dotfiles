@@ -8,7 +8,7 @@ function dotfiles-upgrade --description "Upgrade dotfiles"
     source $HOME/.config/fish/functions/fish-reload.fish
     fish-reload
 
-    if test "$fish_platform" = "darwin"
+    if test "$fish_platform" = darwin
         echo "🍺 Updating Homebrew packages..."
         brew-update
 
@@ -17,7 +17,7 @@ function dotfiles-upgrade --description "Upgrade dotfiles"
         cp -fv "$HOME"/.local/share/chezmoi/rime/*.custom.yaml "$HOME/Library/Rime/"
     end
 
-    if contains "$fish_linux_distro" "ubuntu"
+    if contains "$fish_linux_distro" ubuntu
         echo "🐧 Updating Snap packages..."
         sudo snap refresh
     end

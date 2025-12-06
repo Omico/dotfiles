@@ -6,7 +6,7 @@ if test -x /opt/homebrew/bin/brew
 end
 
 # Android SDK
-fish_add_android_sdk_root "/opt/homebrew/share/android-commandlinetools"
+fish_add_android_sdk_root /opt/homebrew/share/android-commandlinetools
 
 # Zip & Unzip
-fish_add_path_if_exists "/opt/homebrew/opt/zip/bin" "/opt/homebrew/opt/unzip/bin"
+fish_add_path_if_exists /opt/homebrew/opt/zip/bin /opt/homebrew/opt/unzip/bin
