@@ -58,6 +58,9 @@ defaults write com.apple.dock tilesize -int 48
 # Automatically hide and show the Dock
 defaults write com.apple.dock autohide -bool true
 
+# Show suggested and recent apps in Dock
+defaults write com.apple.dock show-recents -bool false
+
 ###############################################################################
 # Terminal                                                                    #
 ###############################################################################
