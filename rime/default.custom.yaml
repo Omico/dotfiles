@@ -13,3 +13,16 @@ patch:
       Shift_R: commit_code
       Control_L: noop
       Control_R: noop
+
+  key_binder:
+    bindings:
+      - accept: Control+Shift+space
+        toggle: full_shape
+        when: always
+
+  switcher:
+    save_options:
+      - ascii_punct
+      - traditionalization
+      - emoji
+      - search_single_char
