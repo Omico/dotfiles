@@ -4,17 +4,24 @@
 
 ### macOS
 
-#### 1. Grant Full Disk Access for Terminal via System Settings
-
-Go to `System Settings > Privacy & Security > Full Disk Access` and add `Terminal` to the list.
-
-By default, `Terminal` is located at `Applications > Utilities > Terminal`.
-
-#### 2. Run the installation script
+#### 1. Run the installation script
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Omico/dotfiles/main/install)"
 ```
+
+#### 2. Grant Full Disk Access for Terminal and iTerm2 via System Settings
+
+Open the Full Disk Access pane (or go to `System Settings > Privacy & Security > Full Disk Access`):
+
+```shell
+open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
+```
+
+Add both to the list:
+
+- **Terminal** — `Applications > Utilities > Terminal`
+- **iTerm2** — `Applications > iTerm.app`
 
 #### 3. Configure macOS settings
 
