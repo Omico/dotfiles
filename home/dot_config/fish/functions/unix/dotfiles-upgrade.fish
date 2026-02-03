@@ -22,5 +22,7 @@ function dotfiles-upgrade --description "Upgrade dotfiles"
         sudo snap refresh
     end
 
+    command -q fnm; and fnm-upgrade-latest-lts
+
     echo "✅ All upgrades completed!"
 end
