@@ -1,0 +1,436 @@
+#!/usr/bin/env fish
+
+# orchard: lightweight manager for macOS apps installed via dmg/zip/pkg (no brew)
+#
+# Structure:
+#   1. Initialization (paths)
+#   2. Public API: orchard_fetch_* (callable from app .fish resolve callbacks)
+#   3. Usage and app loading (load app .fish, validate vars, installed/version helpers)
+#   4. DMG helpers (detach, mount, unmount, install from mount, cache validation)
+#   5. Command: list
+#   6. Command: install (args, download, ensure archive, install by type)
+#   7. Command: cleanup (remove cache dir)
+#   8. Main entry (dispatch by subcommand)
+
+# -----------------------------------------------------------------------------
+# 1. Initialization
+# -----------------------------------------------------------------------------
+set -q XDG_CONFIG_HOME; or set XDG_CONFIG_HOME "$HOME/.config"
+set -q XDG_CACHE_HOME; or set XDG_CACHE_HOME "$HOME/.cache"
+set -g _orchard_dir "$XDG_CONFIG_HOME/orchard"
+set -g _orchard_apps_dir "$_orchard_dir/apps"
+set -g _orchard_cache_dir "$XDG_CACHE_HOME/orchard"
+
+# -----------------------------------------------------------------------------
+# 2. Public API: orchard_fetch_* (callable from app .fish resolve callbacks)
+# -----------------------------------------------------------------------------
+# These functions are part of the public API. App packages in apps/*.fish may
+# call them inside orchard_resolve_download_url_callback to get download URLs.
+# They are defined first so they are available when app files are sourced.
+
+# GET a GitHub API path; print response body to stdout.
+# Returns 0 on HTTP 200 with non-empty body, 1 otherwise (writes error to stderr).
+#
+# Usage:
+#   set -l json (orchard_fetch_github_api "repos/owner/repo/releases/latest")
+#
+# Arguments:
+#   path  API path under https://api.github.com/ (e.g. repos/foo/bar/releases/latest)
+#
+# Example (in app .fish):
+#   set -l json (orchard_fetch_github_api "repos/clash-verge-rev/clash-verge-rev/releases/latest")
+#   set -l url (echo "$json" | jq -r '.assets[0].browser_download_url')
+function orchard_fetch_github_api -a path
+    set -l url "https://api.github.com/$path"
+    set -l body (curl -sL -w "\n%{http_code}" "$url" 2>/dev/null)
+    set -l code (printf '%s\n' $body | tail -n1)
+    set -l out (printf '%s\n' $body | sed '$d')
+    if test "$code" != 200; or test -z "$out"
+        echo "Failed to fetch GitHub API (HTTP $code or empty response)." >&2
+        return 1
+    end
+    printf '%s\n' "$out"
+end
+
+# Get the browser_download_url of the first asset in the latest release whose
+# name matches a regex. Prints the URL to stdout; returns 0 if found, 1 otherwise.
+#
+# Usage:
+#   set -l url (orchard_fetch_github_release_asset_url "owner/repo" "pattern")
+#
+# Arguments:
+#   repo    GitHub repo as "owner/repo" (e.g. clash-verge-rev/clash-verge-rev)
+#   pattern jq test() regex for asset .name (e.g. 'Clash\.Verge_.*_aarch64\.dmg$')
+#           Use single quotes so $ is literal; escape dots as \.
+#
+# Example (in app .fish, pick DMG by arch):
+#   set -l pattern 'Clash\.Verge_.*_aarch64\.dmg$'
+#   test (uname -m) != arm64; and set pattern 'Clash\.Verge_.*_x64\.dmg$'
+#   set -g orchard_app_download_url (orchard_fetch_github_release_asset_url "owner/repo" "$pattern")
+function orchard_fetch_github_release_asset_url -a repo pattern
+    set -l json (orchard_fetch_github_api "repos/$repo/releases/latest"); or return 1
+    set -l url (echo "$json" | jq -r --arg re "$pattern" '.assets[] | select(.name | test($re)) | .browser_download_url' | head -n1)
+    if test -z "$url"; or test "$url" = null
+        echo "No asset matching pattern in GitHub release." >&2
+        return 1
+    end
+    echo "$url"
+end
+
+# -----------------------------------------------------------------------------
+# 3. Usage and app loading
+# -----------------------------------------------------------------------------
+function _orchard_usage
+    echo "Usage:"
+    echo "  orchard list"
+    echo "  orchard install <app_id> [--force]"
+    echo "  orchard cleanup"
+end
+
+function _orchard_load_app -a app_id
+    set -l file "$_orchard_apps_dir/$app_id.fish"
+    if not test -f "$file"
+        echo "Unknown app: $app_id"
+        exit 1
+    end
+    source "$file"
+
+    set -l missing
+    test -z "$orchard_app_id"; and set missing $missing orchard_app_id
+    test -z "$orchard_app_display_name"; and set missing $missing orchard_app_display_name
+    test -z "$orchard_app_download_url"; and not functions -q orchard_resolve_download_url_callback; and set missing $missing orchard_app_download_url
+    test -z "$orchard_app_download_type"; and set missing $missing orchard_app_download_type
+    test (count $missing) -gt 0; and echo "$app_id missing: "(string join ", " $missing); and exit 1
+    not set -q orchard_app_bundle_name; and set -q orchard_app_display_name; and set -g orchard_app_bundle_name "$orchard_app_display_name.app"
+    not set -q orchard_app_bundle_path; and set -q orchard_app_bundle_name; and set -g orchard_app_bundle_path "/Applications/$orchard_app_bundle_name"
+end
+
+# Create /usr/local/bin/<cli> wrapper that execs .app/Contents/MacOS/<binary>
+# Usage: _orchard_cli_wrapper <cli_name> [binary_name]
+#   cli_name: command name (e.g. firefox, tailscale)
+#   binary_name: executable inside .app (default: cli_name)
+function _orchard_cli_wrapper -a cli_name binary_name
+    set -q binary_name[1]; or set binary_name "$cli_name"
+    printf '%s\n' '#!/bin/bash' "exec '$orchard_app_bundle_path/Contents/MacOS/$binary_name' \"\$@\"" | sudo tee /usr/local/bin/$cli_name >/dev/null
+    sudo chmod +x /usr/local/bin/$cli_name
+end
+
+# Symlink .app binary to /usr/local/bin/<cli>
+# Usage: _orchard_cli_symlink <cli_name> <relative_path>
+#   relative_path: path inside .app (e.g. Contents/Resources/ollama)
+function _orchard_cli_symlink -a cli_name relative_path
+    sudo ln -sf "$orchard_app_bundle_path/$relative_path" /usr/local/bin/$cli_name
+end
+
+# Whether current app is installed (used by list and install)
+function _orchard_installed
+    set -q orchard_app_bundle_path; and test -d "$orchard_app_bundle_path"
+end
+
+# Version string when current app is installed; use orchard_resolve_installed_version_callback if defined, else default (Info.plist)
+function _orchard_version
+    if functions -q orchard_resolve_installed_version_callback
+        orchard_resolve_installed_version_callback
+        return
+    end
+    set -l version ""
+    set -q orchard_app_bundle_path; and set version (/usr/bin/defaults read "$orchard_app_bundle_path/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null)
+    test -n "$version"; and echo "$version"; or echo unknown
+end
+
+# -----------------------------------------------------------------------------
+# 4. DMG: detach / mount / unmount / install .app
+# -----------------------------------------------------------------------------
+function _orchard_dmg_detach_if_mounted -a archive
+    set -l mounts (hdiutil info 2>/dev/null | awk -v arch="$archive" '
+        /^$/ { mp=""; want_mp=0 }
+        /image-path[ \t]/ && index($0, arch) > 0 { if (mp != "") { print mp; mp="" }; want_mp=1 }
+        /^\/dev\/disk[0-9]+.*Apple_HFS/ { if (want_mp) { print $NF; want_mp=0 }; mp=$NF }
+    ')
+    for m in $mounts
+        hdiutil detach "$m" -force -quiet 2>/dev/null
+    end
+    set -l base (string replace -r '\.dmg$' '' -- (basename "$archive"))
+    set -l vol (string upper (string sub -l 1 -- "$base"))(string sub -s 2 -- "$base")
+    hdiutil detach "/Volumes/$vol" -force -quiet 2>/dev/null
+    for m in (mount 2>/dev/null | awk -v c="$_orchard_cache_dir" 'index($3, c) == 1 { print $3 }')
+        hdiutil detach "$m" -force -quiet 2>/dev/null
+    end
+end
+
+function _orchard_dmg_mount -a archive
+    _orchard_dmg_detach_if_mounted "$archive"
+    set -l name (string replace -r '\.dmg$' '' -- (basename "$archive"))
+    set -l mount_point "$_orchard_cache_dir/$name.mount"
+    mkdir -p "$mount_point"
+    set -l err (hdiutil attach "$archive" -nobrowse -mountpoint "$mount_point" 2>&1)
+    if test $status -ne 0
+        set -l e (string join " " $err)
+        if string match -q "*image not recognized*" "$e"; or string match -q "*no mountable file systems*" "$e"
+            rm -f "$archive"
+            return 2
+        end
+        echo "Mount failed: $archive" >&2
+        printf '%s\n' $err >&2
+        return 1
+    end
+    echo "$mount_point"
+    return 0
+end
+
+function _orchard_dmg_unmount -a mount_point
+    hdiutil detach "$mount_point" -force -quiet 2>/dev/null
+    string match -q "$_orchard_cache_dir/*" "$mount_point"; and rmdir "$mount_point" 2>/dev/null
+end
+
+function _orchard_dmg_install_app -a mount_point
+    set -l name "$orchard_app_bundle_name"
+    set -l src "$mount_point/$name"
+    if not test -d "$src"
+        set src (find "$mount_point" -maxdepth 3 -name "$name" -type d 2>/dev/null | head -1)
+    end
+    if test -z "$src"; or not test -d "$src"
+        echo "Not found in mounted volume: $name"
+        return 1
+    end
+    echo "Copying $orchard_app_display_name to $orchard_app_bundle_path..."
+    sudo rm -rf "$orchard_app_bundle_path"
+    sudo ditto "$src" "$orchard_app_bundle_path"
+end
+
+# Whether dmg cache is valid (mountable)
+function _orchard_dmg_cache_valid -a archive
+    hdiutil imageinfo "$archive" >/dev/null 2>&1
+    if test $status -ne 0
+        return 1
+    end
+    set -l trial (mktemp -d -t orchard.trial.XXXXXX)
+    hdiutil attach "$archive" -nobrowse -mountpoint "$trial" >/dev/null 2>&1
+    set -l mount_status $status
+    if test $mount_status -eq 0
+        hdiutil detach "$trial" -force -quiet 2>/dev/null
+    end
+    rmdir "$trial" 2>/dev/null
+    return $mount_status
+end
+
+# -----------------------------------------------------------------------------
+# 5. Command: list
+# -----------------------------------------------------------------------------
+function _orchard_cmd_list
+    if not test -d "$_orchard_apps_dir"
+        echo "No app definitions found; add *.fish files under $_orchard_apps_dir."
+        return 0
+    end
+    for file in $_orchard_apps_dir/*.fish
+        set -l id (string replace -r '.*/([^/]+)\.fish$' '$1' -- "$file")
+        _orchard_load_app $id
+        if _orchard_installed
+            set -l ver (_orchard_version)
+            echo "$orchard_app_id  (installed: $ver)"
+        else
+            echo "$orchard_app_id  (not installed)"
+        end
+    end
+end
+
+# -----------------------------------------------------------------------------
+# 6. Command: install
+# -----------------------------------------------------------------------------
+function _orchard_parse_install_args
+    set -g _orchard_force false
+    set -g _orchard_install_id ""
+    for arg in $argv[2..-1]
+        if test "$arg" = --force
+            set _orchard_force true
+        else if test -n "$arg"; and test -z "$_orchard_install_id"
+            set _orchard_install_id "$arg"
+        end
+    end
+end
+
+# Download to current app cache path; return curl status (_orchard_app_archive_cache_path set in _orchard_load_app)
+function _orchard_download_archive
+    curl -L --progress-bar -C - "$orchard_app_download_url" -o "$_orchard_app_archive_cache_path"
+    return $status
+end
+
+# Ensure valid cache; delete and re-download if invalid; return archive path
+function _orchard_ensure_archive
+    mkdir -p "$_orchard_cache_dir"
+    if test -f "$_orchard_app_archive_cache_path"
+        set -l valid false
+        switch $orchard_app_download_type
+            case dmg
+                _orchard_dmg_cache_valid "$_orchard_app_archive_cache_path"; and set valid true
+            case zip
+                unzip -t "$_orchard_app_archive_cache_path" >/dev/null 2>&1; and set valid true
+            case pkg
+                pkgutil --check-signature "$_orchard_app_archive_cache_path" >/dev/null 2>&1; and set valid true
+            case '*'
+                set valid true
+        end
+        test "$valid" = false; and rm -f "$_orchard_app_archive_cache_path"
+    end
+    if not test -f "$_orchard_app_archive_cache_path"
+        echo "Downloading $orchard_app_display_name..." >&2
+        if not _orchard_download_archive
+            echo "Download failed." >&2
+            return 1
+        end
+    else
+        echo "Using cache: $_orchard_app_archive_cache_path" >&2
+    end
+    return 0
+end
+
+function _orchard_install_dmg
+    echo "Mounting dmg..."
+    set -l mount_point (_orchard_dmg_mount "$_orchard_app_archive_cache_path")
+    set -l mount_status $status
+    if test $mount_status -eq 2
+        echo "Downloading $orchard_app_display_name..."
+        if not _orchard_download_archive
+            echo "Re-download failed."
+            return 1
+        end
+        set mount_point (_orchard_dmg_mount "$_orchard_app_archive_cache_path")
+        set mount_status $status
+    end
+    if test $mount_status -ne 0 -o -z "$mount_point"
+        echo "Mount failed."
+        return 1
+    end
+    set -l ok 0
+    if set -q orchard_app_bundle_name
+        _orchard_dmg_install_app "$mount_point"
+        set ok $status
+    else
+        echo "$orchard_app_id: define orchard_app_bundle_name."
+        _orchard_dmg_unmount "$mount_point"
+        return 1
+    end
+    echo "Unmounting dmg..."
+    _orchard_dmg_unmount "$mount_point"
+    return $ok
+end
+
+function _orchard_install_zip
+    set -l name "$orchard_app_bundle_name"
+    set -l extract_dir (mktemp -d -t orchard.zip.XXXXXX)
+    echo "Extracting zip..."
+    if not unzip -q -o "$_orchard_app_archive_cache_path" -d "$extract_dir"
+        echo "Extract failed."
+        rm -rf "$extract_dir"
+        return 1
+    end
+    set -l src "$extract_dir/$name"
+    if not test -d "$src"
+        set src (find "$extract_dir" -maxdepth 3 -name "$name" -type d 2>/dev/null | head -1)
+    end
+    if test -z "$src"; or not test -d "$src"
+        echo "Not found in zip: $name"
+        rm -rf "$extract_dir"
+        return 1
+    end
+    echo "Copying $orchard_app_display_name to $orchard_app_bundle_path (admin required)..."
+    sudo rm -rf "$orchard_app_bundle_path"
+    sudo ditto "$src" "$orchard_app_bundle_path"
+    set -l ok $status
+    rm -rf "$extract_dir"
+    return $ok
+end
+
+function _orchard_install_pkg
+    echo "Installing pkg (admin required)..."
+    sudo installer -pkg "$_orchard_app_archive_cache_path" -target /
+    return $status
+end
+
+function _orchard_cmd_install
+    _orchard_parse_install_args $argv
+    if test -z "$_orchard_install_id"
+        _orchard_usage
+        exit 1
+    end
+    _orchard_load_app $_orchard_install_id
+    if _orchard_installed; and test "$_orchard_force" != true
+        echo "$orchard_app_display_name is already installed."
+        return 0
+    end
+    if _orchard_installed; and test "$_orchard_force" = true
+        echo "Reinstalling $orchard_app_display_name..."
+    end
+
+    if functions -q orchard_resolve_download_url_callback
+        echo "Resolving latest download URL for $orchard_app_display_name..." >&2
+        orchard_resolve_download_url_callback
+        if test $status -ne 0; or test -z "$orchard_app_download_url"
+            echo "Failed to resolve download URL." >&2
+            exit 1
+        end
+    end
+
+    set -g _orchard_app_download_url_hash (echo -n "$orchard_app_download_url" | shasum -a 256 2>/dev/null | string split -m1 ' ')[1]
+    test -z "$_orchard_app_download_url_hash"; and set -g _orchard_app_download_url_hash default
+    set -g _orchard_app_download_url_hash (string sub -l 16 $_orchard_app_download_url_hash)
+    set -g _orchard_app_archive_cache_path "$_orchard_cache_dir/$orchard_app_id-$_orchard_app_download_url_hash.$orchard_app_download_type"
+
+    if test -d "$orchard_app_bundle_path"
+        echo "Killing $orchard_app_display_name..."
+        osascript -e "tell application \"$orchard_app_display_name\" to quit" 2>/dev/null
+        or true
+    end
+
+    if functions -q orchard_before_install_callback
+        orchard_before_install_callback
+    end
+
+    _orchard_ensure_archive
+    test $status -ne 0; and exit 1
+    switch $orchard_app_download_type
+        case dmg
+            _orchard_install_dmg
+        case zip
+            _orchard_install_zip
+        case pkg
+            _orchard_install_pkg
+        case '*'
+            echo "Unsupported download type: $orchard_app_download_type"
+            exit 1
+    end
+    test $status -ne 0; and exit 1
+    echo "$orchard_app_display_name installed."
+
+    if functions -q orchard_after_install_callback
+        orchard_after_install_callback
+    end
+end
+
+# -----------------------------------------------------------------------------
+# 7. Command: cleanup
+# -----------------------------------------------------------------------------
+function _orchard_cmd_cleanup
+    if test -d "$_orchard_cache_dir"
+        rm -rf "$_orchard_cache_dir"
+        echo "Cache cleared: $_orchard_cache_dir"
+    else
+        echo "Cache is already empty: $_orchard_cache_dir"
+    end
+end
+
+# -----------------------------------------------------------------------------
+# 8. Main entry
+# -----------------------------------------------------------------------------
+set -l cmd "$argv[1]"
+switch "$cmd"
+    case list
+        _orchard_cmd_list
+    case install
+        _orchard_cmd_install $argv
+    case cleanup
+        _orchard_cmd_cleanup
+    case '' '*'
+        _orchard_usage
+        exit 1
+end

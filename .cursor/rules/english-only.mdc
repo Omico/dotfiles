@@ -1,0 +1,39 @@
+---
+description: All script and code content must be in English only
+alwaysApply: true
+---
+
+# English only in scripts
+
+All script and code files **must contain only English**.
+
+- Comments, echo/print strings, error messages, and any other text in scripts must be in English.
+- Do not use Chinese or other languages in the codebase.
+- Exception: user-facing display names or UI strings that are intentionally localized (e.g. in config for end users) may stay in another language if required; when in doubt, use English.
+- Exception: files under `rime/` (Rime input method config) may use Chinese or other languages in comments and strings; that directory is locale-specific.
+
+## Examples
+
+### Good (English only)
+
+```fish
+# Update version in URL when a new release is available
+echo "Download failed."
+```
+
+```bash
+# Install pkg to system volume
+echo "Mount failed."
+```
+
+### Bad (non-English — do not use)
+
+```fish
+# 换最新版：替换下面 URL 中的版本号
+echo "下载失败。"
+```
+
+```bash
+# 安装 pkg 到系统卷
+echo "挂载失败。"
+```
