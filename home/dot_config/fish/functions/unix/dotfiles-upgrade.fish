@@ -12,9 +12,11 @@ function dotfiles-upgrade --description "Upgrade dotfiles"
         echo "🍺 Updating Homebrew packages..."
         brew-update
 
-        echo "🔤 Updating Rime configurations..."
-        update-git-repo "$HOME/Library/Rime"; or echo "❌ Failed to update $HOME/Library/Rime"
-        cp -fv "$HOME"/.local/share/chezmoi/rime/*.custom.yaml "$HOME/Library/Rime/"
+        if test -d "$HOME/Library/Rime"
+            echo "🔤 Updating Rime configurations..."
+            update-git-repo "$HOME/Library/Rime"; or echo "❌ Failed to update $HOME/Library/Rime"
+            cp -fv "$HOME"/.local/share/chezmoi/rime/*.custom.yaml "$HOME/Library/Rime/"
+        end
     end
 
     if contains "$fish_linux_distro" ubuntu
