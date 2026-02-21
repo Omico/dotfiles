@@ -1,7 +1,36 @@
 #!/bin/bash
+set -e
+set -o pipefail
 
 # Record the user to configure (correct when script is run with sudo)
 INSTALL_USER=${SUDO_USER:-$(whoami)}
+
+trap 'echo "Error: install failed at line $LINENO (last command: $BASH_COMMAND)" >&2; exit 1' ERR
+
+# -----------------------------------------------------------------------
+# macOS-only constants start
+# -----------------------------------------------------------------------
+HOMEBREW_FORMULA_PACKAGES=(
+	chezmoi
+	fish
+	git
+	starship
+)
+
+HOMEBREW_CASK_PACKAGES=(
+	font-fira-mono-nerd-font
+)
+
+ORCHARD_APPS=(
+	firefox
+	google-chrome
+	iterm2
+	itermbrowserplugin
+	visual-studio-code
+)
+# -----------------------------------------------------------------------
+# macOS-only constants end
+# -----------------------------------------------------------------------
 
 # Ask for the administrator password upfront
 sudo -v
@@ -13,6 +42,30 @@ while true; do
 	kill -0 "$$" || exit
 done 2>/dev/null &
 
+function setup-chezmoi {
+	chezmoi init Omico --depth 1 --force
+	chezmoi apply
+}
+
+function setup-fish {
+	# Setup fish as the default shell
+	if ! grep -q "/opt/homebrew/bin/fish" /etc/shells; then
+		echo "/opt/homebrew/bin/fish" | sudo tee -a /etc/shells
+		sudo chsh -s /opt/homebrew/bin/fish "$INSTALL_USER"
+	fi
+}
+
+function clone-rime-auto-deploy {
+	if [ ! -d "$HOME/Git/Mark24Code/rime-auto-deploy" ]; then
+		echo "Cloning rime-auto-deploy..."
+		git clone --depth=1 https://github.com/Mark24Code/rime-auto-deploy.git --branch latest "$HOME/Git/Mark24Code/rime-auto-deploy"
+	fi
+	rsync -u "$HOME/.local/share/chezmoi/rime/"*.custom.yaml "$HOME/Git/Mark24Code/rime-auto-deploy/custom/"
+}
+
+# -----------------------------------------------------------------------
+# macOS-only functions start
+# -----------------------------------------------------------------------
 function setup-brew {
 	if ! [ -x "$(command -v brew)" ]; then
 		if ! [ -x "$(command -v /opt/homebrew/bin/brew)" ]; then
@@ -40,60 +93,28 @@ function install-brew-packages {
 	done
 }
 
-function setup-chezmoi {
-	chezmoi init Omico --depth 1 --force
-	chezmoi apply
-}
-
-function setup-fish {
-	# Setup fish as the default shell
-	if ! grep -q "/opt/homebrew/bin/fish" /etc/shells; then
-		echo "/opt/homebrew/bin/fish" | sudo tee -a /etc/shells
-		sudo chsh -s /opt/homebrew/bin/fish "$INSTALL_USER"
-	fi
-}
-
 function install-orchard-apps {
 	for app in "$@"; do
 		echo "Installing $app via Orchard..."
 		fish -c "orchard install $app"
 	done
 }
+# -----------------------------------------------------------------------
+# macOS-only functions end
+# -----------------------------------------------------------------------
 
-function clone-rime-auto-deploy {
-	if [ ! -d "$HOME/Git/Mark24Code/rime-auto-deploy" ]; then
-		echo "Cloning rime-auto-deploy..."
-		git clone --depth=1 https://github.com/Mark24Code/rime-auto-deploy.git --branch latest "$HOME/Git/Mark24Code/rime-auto-deploy"
-	fi
-	rsync -u "$HOME/.local/share/chezmoi/rime/"*.custom.yaml "$HOME/Git/Mark24Code/rime-auto-deploy/custom/"
-}
-
-setup-brew
-
-brew_formula_packages=(
-	chezmoi
-	fish
-	git
-	starship
-)
-install-brew-packages formula "${brew_formula_packages[@]}"
-
-brew_cask_packages=(
-	font-fira-mono-nerd-font
-)
-install-brew-packages cask "${brew_cask_packages[@]}"
-
-setup-chezmoi
-
-setup-fish
-
-orchard_apps=(
-	firefox
-	google-chrome
-	iterm2
-	itermbrowserplugin
-	visual-studio-code
-)
-install-orchard-apps "${orchard_apps[@]}"
-
-clone-rime-auto-deploy
+case "$(uname)" in
+Darwin)
+	setup-brew
+	install-brew-packages formula "${HOMEBREW_FORMULA_PACKAGES[@]}"
+	install-brew-packages cask "${HOMEBREW_CASK_PACKAGES[@]}"
+	setup-chezmoi
+	setup-fish
+	install-orchard-apps "${ORCHARD_APPS[@]}"
+	clone-rime-auto-deploy
+	;;
+*)
+	echo "This install script currently only supports macOS. Current OS: $(uname)" >&2
+	exit 1
+	;;
+esac

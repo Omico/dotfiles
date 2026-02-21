@@ -1,0 +1,6 @@
+# macOS-only
+{{- if ne .chezmoi.os "darwin" }}
+home/dot_config/fish/completions/orchard.fish
+home/dot_config/orchard
+home/dot_local/bin/executable_orchard
+{{- end }}
