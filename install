@@ -32,6 +32,54 @@ ORCHARD_APPS=(
 # macOS-only constants end
 # -----------------------------------------------------------------------
 
+# -----------------------------------------------------------------------
+# Linux-only constants start
+# -----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
+# Ubuntu-only constants start
+# -----------------------------------------------------------------------
+UBUNTU_APT_PPAS=(
+	ppa:git-core/ppa
+	ppa:fish-shell/release-4
+)
+
+UBUNTU_APT_PACKAGES=(
+	apt-transport-https
+	bridge-utils
+	code
+	cpu-checker
+	curl
+	fcitx5-rime
+	fish
+	gedit
+	git
+	git-lfs
+	gpg
+	jq
+	libvirt-clients
+	libvirt-daemon-system
+	mesa-utils
+	openjdk-11-jdk
+	openjdk-17-jdk
+	openjdk-21-jdk
+	openssh-server
+	python3-pip
+	qemu-kvm
+	ruby
+	synaptic
+	unzip
+	xclip
+	zip
+)
+# -----------------------------------------------------------------------
+# Ubuntu-only constants end
+# -----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
+# Linux-only constants end
+# -----------------------------------------------------------------------
+
 # Ask for the administrator password upfront
 sudo -v
 
@@ -42,16 +90,49 @@ while true; do
 	kill -0 "$$" || exit
 done 2>/dev/null &
 
+# Outputs a platform token for case dispatch. Only darwin and ubuntu-24.04 are supported; others yield unknown.
+function detect-platform {
+	case "$(uname)" in
+	Darwin) echo "darwin" ;;
+	Linux)
+		[ -f /etc/os-release ] || {
+			echo "unknown"
+			return
+		}
+		local id version_id
+		# shellcheck disable=SC1091
+		id=$(. /etc/os-release 2>/dev/null && echo "${ID:-}")
+		# shellcheck disable=SC1091
+		version_id=$(. /etc/os-release 2>/dev/null && echo "${VERSION_ID:-}")
+		if [ "$id" = "ubuntu" ] && [ "$version_id" = "24.04" ]; then
+			echo "ubuntu-24.04"
+		else
+			echo "unknown"
+		fi
+		;;
+	*) echo "unknown" ;;
+	esac
+}
+
 function setup-chezmoi {
 	chezmoi init Omico --depth 1 --force
 	chezmoi apply
 }
 
+# Set fish as the default shell. Usage: setup-fish <fish_path>
+# /etc/shells is not POSIX-mandated but present on macOS and common Linux.
 function setup-fish {
-	# Setup fish as the default shell
-	if ! grep -q "/opt/homebrew/bin/fish" /etc/shells; then
-		echo "/opt/homebrew/bin/fish" | sudo tee -a /etc/shells
-		sudo chsh -s /opt/homebrew/bin/fish "$INSTALL_USER"
+	local fish_path="${1:?setup-fish requires fish_path}"
+	if [ -f /etc/shells ] && ! grep -qF "$fish_path" /etc/shells; then
+		echo "$fish_path" | sudo tee -a /etc/shells
+	fi
+	sudo chsh -s "$fish_path" "$INSTALL_USER"
+}
+
+function install-starship {
+	if ! command -v starship &>/dev/null; then
+		echo "Installing starship..."
+		curl -sS https://starship.rs/install.sh | sh -s -- -y
 	fi
 }
 
@@ -103,18 +184,144 @@ function install-orchard-apps {
 # macOS-only functions end
 # -----------------------------------------------------------------------
 
-case "$(uname)" in
-Darwin)
+# -----------------------------------------------------------------------
+# Linux-only functions start
+# -----------------------------------------------------------------------
+function setup-inotify-max-user-watches {
+	local conf=/etc/sysctl.d/99-inotify-max-user-watches.conf
+	local want="fs.inotify.max_user_watches=1048576"
+	if [ -f "$conf" ] && grep -qF 'fs.inotify.max_user_watches=' "$conf" 2>/dev/null; then
+		return
+	fi
+	echo "Setting fs.inotify.max_user_watches..."
+	echo "$want" | sudo tee "$conf" >/dev/null
+	sudo sysctl -p --system
+}
+
+function install-fnm {
+	curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell
+}
+
+function install-fira-mono-nerd-font {
+	local font_dir="${HOME}/.local/share/fonts"
+	local repo="ryanoasis/nerd-fonts"
+	local tag zip_url tmpdir
+	tag=$(curl -s "https://api.github.com/repos/${repo}/releases/latest" | jq -r '.tag_name // empty')
+	if [ -z "$tag" ] || [ "$tag" = "null" ]; then
+		echo "install-fira-mono-nerd-font: failed to get latest release from ${repo}" >&2
+		return 1
+	fi
+	zip_url="https://github.com/${repo}/releases/download/${tag}/FiraMono.zip"
+	tmpdir=$(mktemp -d)
+	trap 'rm -rf "$tmpdir"' RETURN
+	echo "Installing Fira Mono Nerd Font from ${tag}..."
+	if ! curl -fsSL -o "${tmpdir}/FiraMono.zip" "$zip_url"; then
+		echo "install-fira-mono-nerd-font: download failed" >&2
+		return 1
+	fi
+	mkdir -p "$font_dir"
+	unzip -qo "${tmpdir}/FiraMono.zip" -d "$font_dir"
+	fc-cache -fv
+}
+
+# -----------------------------------------------------------------------
+# apt-based (Ubuntu/Debian) functions start
+# -----------------------------------------------------------------------
+function add-apt-ppas {
+	local ppa name
+	for ppa in "$@"; do
+		name="${ppa#ppa:}"
+		if [ -z "$name" ] || [ "$name" = "$ppa" ]; then
+			echo "add-apt-ppas: invalid PPA format (expected ppa:owner/name): $ppa" >&2
+			return 1
+		fi
+		if grep -rqF "$name" /etc/apt/sources.list /etc/apt/sources.list.d/ 2>/dev/null; then
+			continue
+		fi
+		sudo add-apt-repository -y "$ppa"
+	done
+	sudo apt update
+}
+
+function setup-git-lfs-deb-repository {
+	if command -v git-lfs &>/dev/null; then
+		return
+	fi
+	curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+}
+
+function setup-visual-studio-code-deb-repository {
+	if command -v code &>/dev/null; then
+		return
+	fi
+	echo "code code/add-microsoft-repo boolean true" | sudo debconf-set-selections
+	curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg >/dev/null
+	sudo sh -c 'echo "deb [arch=$(dpkg --print-architecture)] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.sources'
+	sudo apt update
+}
+
+function install-basic-apt-packages {
+	sudo apt install -y "$@"
+}
+# -----------------------------------------------------------------------
+# apt-based (Ubuntu/Debian) functions end
+# -----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
+# Ubuntu-only functions start
+# -----------------------------------------------------------------------
+function prepare-ubuntu-upgrade {
+	sudo apt update
+	sudo apt upgrade -y
+	sudo apt autoremove -y
+	sudo apt clean
+	if command -v snap &>/dev/null; then
+		sudo snap refresh
+	fi
+}
+
+function install-chezmoi-via-snap {
+	if command -v chezmoi &>/dev/null; then
+		return
+	fi
+	echo "Installing chezmoi..."
+	sudo snap install chezmoi --classic
+}
+# -----------------------------------------------------------------------
+# Ubuntu-only functions end
+# -----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
+# Linux-only functions end
+# -----------------------------------------------------------------------
+
+case "$(detect-platform)" in
+darwin)
 	setup-brew
 	install-brew-packages formula "${HOMEBREW_FORMULA_PACKAGES[@]}"
 	install-brew-packages cask "${HOMEBREW_CASK_PACKAGES[@]}"
 	setup-chezmoi
-	setup-fish
+	setup-fish "$(brew --prefix)/bin/fish"
 	install-orchard-apps "${ORCHARD_APPS[@]}"
 	clone-rime-auto-deploy
 	;;
+ubuntu-24.04)
+	prepare-ubuntu-upgrade
+	add-apt-ppas "${UBUNTU_APT_PPAS[@]}"
+	setup-git-lfs-deb-repository
+	setup-visual-studio-code-deb-repository
+	install-basic-apt-packages "${UBUNTU_APT_PACKAGES[@]}"
+	setup-inotify-max-user-watches
+	install-fnm
+	install-fira-mono-nerd-font
+	install-starship
+	install-chezmoi-via-snap
+	setup-chezmoi
+	setup-fish /usr/bin/fish
+	clone-rime-auto-deploy
+	;;
 *)
-	echo "This install script currently only supports macOS. Current OS: $(uname)" >&2
+	echo "This install script only supports macOS and Ubuntu 24.04. Current: $(uname)" >&2
 	exit 1
 	;;
 esac
