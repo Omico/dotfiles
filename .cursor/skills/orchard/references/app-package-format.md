@@ -1,17 +1,17 @@
----
-description: Orchard app package format and required fields (apps/*.fish)
-globs: home/dot_config/orchard/apps/*.fish
-alwaysApply: false
----
-
-# Orchard app package rules
+# Orchard app package format
 
 Each package is defined in `home/dot_config/orchard/apps/<app_id>.fish`, read by `executable_orchard` for `orchard list` and `orchard install <app_id>`.
+
+Apply this format when creating or editing app `.fish` files.
+
+---
 
 ## File and naming
 
 - **Path**: `home/dot_config/orchard/apps/<app_id>.fish`
 - **app_id**: lowercase, may contain hyphens (e.g. `anythingllm`, `codex-app`, `chatgpt-atlas`); must match the filename prefix.
+
+---
 
 ## Required variables (Fish set -g)
 
@@ -22,12 +22,16 @@ Each package is defined in `home/dot_config/orchard/apps/<app_id>.fish`, read by
 | `orchard_app_download_url`  | Direct download URL (dmg/zip/pkg), in double quotes. Can be empty if `orchard_resolve_download_url_callback` is defined. |
 | `orchard_app_download_type` | `dmg`, `zip`, or `pkg`                                                                                                   |
 
+---
+
 ## Optional variables (Fish set -g)
 
 | Variable                  | Description                                                                                                        |
 | ------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | `orchard_app_bundle_name` | .app name inside the dmg/zip (default: `orchard_app_display_name.app`). Set when the volume uses a different name. |
 | `orchard_app_bundle_path` | Install path of the .app (default: `/Applications/$orchard_app_bundle_name`). Set to install to a different path.  |
+
+---
 
 ## Optional callbacks (no arguments)
 
@@ -40,7 +44,7 @@ All callback names use the `_callback` suffix. Lifecycle: `orchard_<phase>_insta
 | `orchard_resolve_download_url_callback`      | Called once during `orchard install` (before download). Must set `orchard_app_download_url`. Leave URL empty in the app file when using this. |
 | `orchard_resolve_installed_version_callback` | Used by `orchard list` to show the installed version. Must echo the version string. Else read from Info.plist.                                |
 
-Define in the app’s `.fish` file as needed:
+Define in the app's `.fish` file as needed:
 
 ```fish
 function orchard_before_install_callback
@@ -51,6 +55,8 @@ function orchard_after_install_callback
     open -a "My App"
 end
 ```
+
+---
 
 ## Public API
 
@@ -72,6 +78,8 @@ function orchard_resolve_download_url_callback
 end
 ```
 
+---
+
 ## Template
 
 ```fish
@@ -80,6 +88,8 @@ set -g orchard_app_display_name "<display name>"
 set -g orchard_app_download_url "<direct URL>"
 set -g orchard_app_download_type dmg
 ```
+
+---
 
 ## Examples
 
@@ -111,22 +121,29 @@ set -g orchard_app_download_url "https://example.com/MyApp.dmg"
 set -g orchard_app_download_type dmg
 ```
 
-**Resolve the latest URL from a page (e.g. Antigravity):**
+**Resolve URL from custom API (e.g. Antigravity uses zip + API):**
 
 ```fish
 set -g orchard_app_id antigravity
 set -g orchard_app_display_name Antigravity
-set -g orchard_app_download_type dmg
+set -g orchard_app_download_type zip
 
 function orchard_resolve_download_url_callback
-    # Fetch page, parse link, set: set -g orchard_app_download_url "$url"
-    # Return 0 on success, 1 on failure.
+    set -l json (curl -sL "https://example.com/api/latest" 2>/dev/null)
+    set -l url (echo "$json" | jq -r '.url')
+    test -z "$url"; and return 1
+    set -g orchard_app_download_url "$url"
+    return 0
 end
 ```
+
+---
 
 ## Reference: Homebrew Cask
 
 When creating a new orchard package, use **`brew info --cask <cask_name>`** as a reference. It shows homepage, version, and (when the cask is installed or cached) the artifact URL and .app name, which you can map to `orchard_app_display_name`, `orchard_app_download_url`, `orchard_app_download_type`, and `orchard_app_bundle_name` as needed.
+
+---
 
 ## Finding casks to convert to orchard
 
@@ -144,9 +161,12 @@ comm -23 \
 
 For each candidate, run **`brew info --cask <cask_name>`** to confirm it uses a direct dmg/zip/pkg URL (or a redirect), then add `home/dot_config/orchard/apps/<cask_name>.fish` using the mapping in "Reference: Homebrew Cask" above.
 
+---
+
 ## Notes
 
 - **URL**: Must be a direct dmg/zip/pkg link (or a page that 302-redirects to the file).
+- **Resolve from HTML (no API)**: Use `curl -sL <page_url>` then parse with Fish `string match -r` to extract the download link, e.g. `set -l url (echo "$html" | string match -r 'href="(https://[^"]+\.dmg)"')[2]`; set `orchard_app_download_url` and `return 0` on success.
 - **Set by Orchard (do not set in the app file unless overriding):**
   - When loading an app: `orchard_app_bundle_path` defaults to `/Applications/$orchard_app_bundle_name` if unset.
   - During `orchard install` only: `_orchard_app_download_url_hash` and `_orchard_app_archive_cache_path` (after `orchard_resolve_download_url_callback` if defined).

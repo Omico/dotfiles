@@ -1,0 +1,17 @@
+---
+description: Orchard development and maintenance (macOS app manager in this chezmoi repo)
+globs: home/dot_config/orchard/apps/*.fish,home/dot_local/bin/executable_orchard,home/dot_config/fish/completions/orchard.fish
+alwaysApply: false
+---
+
+# Orchard
+
+This rule is for **developing and maintaining orchard** in this chezmoi repo. Orchard is a lightweight macOS app manager (dmg/zip/pkg, no Homebrew). Paths below are **source paths** (e.g. `home/dot_config/...` → `~/.config/...` after apply).
+
+**Orchard-related files:**
+
+- **App packages**: `home/dot_config/orchard/apps/<app_id>.fish` — use [app-package-format](.cursor/skills/orchard/references/app-package-format.md) for variables, callbacks, and examples.
+- **Main script**: `home/dot_local/bin/executable_orchard` — entrypoint `orchard list` / `orchard install` / `orchard cleanup`.
+- **Completions**: `home/dot_config/fish/completions/orchard.fish`.
+
+**References:** [development.md](.cursor/skills/orchard/references/development.md) for architecture, install flow, and maintainer conventions. Apply the **orchard** skill when adding/editing packages or changing the script; the skill defines when to use it and the workflow.
