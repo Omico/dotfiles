@@ -22,5 +22,5 @@ function orchard_resolve_download_url_callback
 end
 
 function orchard_after_install_callback
-    _orchard_cli_symlink antigravity Contents/MacOS/Electron
+    orchard_cli_symlink antigravity Contents/MacOS/Electron
 end

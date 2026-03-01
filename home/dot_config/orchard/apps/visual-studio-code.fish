@@ -4,5 +4,5 @@ set -g orchard_app_download_url "https://code.visualstudio.com/sha/download?buil
 set -g orchard_app_download_type dmg
 
 function orchard_after_install_callback
-    _orchard_cli_symlink code Contents/Resources/app/bin/code
+    orchard_cli_symlink code Contents/Resources/app/bin/code
 end

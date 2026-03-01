@@ -77,6 +77,34 @@ function orchard_fetch_github_release_asset_url -a repo pattern
     echo "$url"
 end
 
+# Create /usr/local/bin/<cli> wrapper that execs .app/Contents/MacOS/<binary>.
+# For use by orchard app packages (e.g. in orchard_after_install_callback).
+# Usage: orchard_cli_wrapper <cli_name> [binary_name]
+#   cli_name: command name (e.g. firefox, tailscale)
+#   binary_name: executable inside .app (default: cli_name)
+function orchard_cli_wrapper -a cli_name binary_name
+    _orchard_ensure_local_bin
+    set -q binary_name[1]; or set binary_name "$cli_name"
+    printf '%s\n' '#!/bin/bash' "exec '$orchard_app_bundle_path/Contents/MacOS/$binary_name' \"\$@\"" | sudo tee /usr/local/bin/$cli_name >/dev/null
+    sudo chmod +x /usr/local/bin/$cli_name
+end
+
+# Symlink .app binary to /usr/local/bin/<cli>.
+# For use by orchard app packages (e.g. in orchard_after_install_callback).
+# Usage: orchard_cli_symlink <cli_name> <relative_path>
+#   relative_path: path inside .app (e.g. Contents/Resources/ollama)
+function orchard_cli_symlink -a cli_name relative_path
+    _orchard_ensure_local_bin
+    sudo ln -sf "$orchard_app_bundle_path/$relative_path" /usr/local/bin/$cli_name
+end
+
+# Ensure /usr/local/bin exists (used by orchard_cli_wrapper and orchard_cli_symlink).
+function _orchard_ensure_local_bin
+    if not test -d /usr/local/bin
+        mkdir -p /usr/local/bin
+    end
+end
+
 # -----------------------------------------------------------------------------
 # 3. Usage and app loading
 # -----------------------------------------------------------------------------
@@ -103,23 +131,6 @@ function _orchard_load_app -a app_id
     test (count $missing) -gt 0; and echo "$app_id missing: "(string join ", " $missing); and exit 1
     not set -q orchard_app_bundle_name; and set -q orchard_app_display_name; and set -g orchard_app_bundle_name "$orchard_app_display_name.app"
     not set -q orchard_app_bundle_path; and set -q orchard_app_bundle_name; and set -g orchard_app_bundle_path "/Applications/$orchard_app_bundle_name"
-end
-
-# Create /usr/local/bin/<cli> wrapper that execs .app/Contents/MacOS/<binary>
-# Usage: _orchard_cli_wrapper <cli_name> [binary_name]
-#   cli_name: command name (e.g. firefox, tailscale)
-#   binary_name: executable inside .app (default: cli_name)
-function _orchard_cli_wrapper -a cli_name binary_name
-    set -q binary_name[1]; or set binary_name "$cli_name"
-    printf '%s\n' '#!/bin/bash' "exec '$orchard_app_bundle_path/Contents/MacOS/$binary_name' \"\$@\"" | sudo tee /usr/local/bin/$cli_name >/dev/null
-    sudo chmod +x /usr/local/bin/$cli_name
-end
-
-# Symlink .app binary to /usr/local/bin/<cli>
-# Usage: _orchard_cli_symlink <cli_name> <relative_path>
-#   relative_path: path inside .app (e.g. Contents/Resources/ollama)
-function _orchard_cli_symlink -a cli_name relative_path
-    sudo ln -sf "$orchard_app_bundle_path/$relative_path" /usr/local/bin/$cli_name
 end
 
 # Whether current app is installed (used by list and install)

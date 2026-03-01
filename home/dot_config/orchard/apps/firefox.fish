@@ -4,5 +4,5 @@ set -g orchard_app_download_url "https://download.mozilla.org/?product=firefox-l
 set -g orchard_app_download_type dmg
 
 function orchard_after_install_callback
-    _orchard_cli_wrapper firefox
+    orchard_cli_wrapper firefox
 end

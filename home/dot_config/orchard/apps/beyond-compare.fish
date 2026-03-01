@@ -21,5 +21,5 @@ function orchard_resolve_download_url_callback
 end
 
 function orchard_after_install_callback
-    _orchard_cli_symlink bcomp Contents/MacOS/bcomp
+    orchard_cli_symlink bcomp Contents/MacOS/bcomp
 end

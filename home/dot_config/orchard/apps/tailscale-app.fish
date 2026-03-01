@@ -4,5 +4,5 @@ set -g orchard_app_download_url "https://pkgs.tailscale.com/stable/Tailscale-lat
 set -g orchard_app_download_type pkg
 
 function orchard_after_install_callback
-    _orchard_cli_wrapper tailscale Tailscale
+    orchard_cli_wrapper tailscale Tailscale
 end
