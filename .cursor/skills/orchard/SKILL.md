@@ -9,6 +9,8 @@ Orchard is a lightweight manager for macOS apps installed via dmg/zip/pkg (no Ho
 
 **App package format** (required/optional variables, callbacks, public API, template, examples, Homebrew Cask reference): [references/app-package-format.md](references/app-package-format.md).
 
+**Development guidelines** (standards for app packages and for editing `executable_orchard`): [references/development-guidelines.md](references/development-guidelines.md).
+
 **Architecture, install flow, and maintainer conventions** (e.g. editing `executable_orchard`): [references/development.md](references/development.md).
 
 ---

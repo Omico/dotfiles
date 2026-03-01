@@ -2,7 +2,9 @@
 
 Orchard is a lightweight manager for macOS apps installed via DMG/ZIP/PKG, without Homebrew. The main script is a Fish executable that lists apps, installs them from direct URLs (or resolved at install time), and cleans the cache.
 
-This document is for:
+**Docs:** **Standards and checklists** → [development-guidelines.md](development-guidelines.md). **Package reference** (variables, callbacks, examples) → [app-package-format.md](app-package-format.md).
+
+This guide is for:
 
 - **App package authors**: adding or editing `apps/<app_id>.fish`
 - **Orchard maintainers**: modifying `home/dot_local/bin/executable_orchard`
@@ -202,7 +204,7 @@ See the **orchard** skill **Quick workflow** (in `.cursor/skills/orchard/SKILL.m
 
 ## 8. Related files
 
-- **Cursor rule for app packages**: `.cursor/rules/orchard-app-package.mdc` — detailed app package rules, examples, and "finding casks to convert" notes. Applies to `home/dot_config/orchard/apps/*.fish`.
-- **Orchard config directory**: `home/dot_config/orchard/` (chezmoi); contains `apps/`.
+- **Cursor rule**: `.cursor/rules/orchard.mdc` — applies to `apps/*.fish`, `executable_orchard`, and completions; links to [development-guidelines.md](development-guidelines.md) and [app-package-format.md](app-package-format.md).
+- **Orchard config**: `home/dot_config/orchard/` (chezmoi); contains `apps/`.
 - **Executable**: `home/dot_local/bin/executable_orchard` (installed as `orchard` under `~/.local/bin`).
-- **This guide**: `.cursor/skills/orchard/references/development.md`.
+- **References**: `.cursor/skills/orchard/references/` — this guide, development-guidelines.md, app-package-format.md.

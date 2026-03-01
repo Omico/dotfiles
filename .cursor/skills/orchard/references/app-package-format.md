@@ -2,6 +2,8 @@
 
 Each package is defined in `home/dot_config/orchard/apps/<app_id>.fish`, read by `executable_orchard` for `orchard list` and `orchard install <app_id>`.
 
+**Standards and checklists:** [development-guidelines.md](development-guidelines.md). **Architecture and workflow:** [development.md](development.md).
+
 Apply this format when creating or editing app `.fish` files.
 
 ---
