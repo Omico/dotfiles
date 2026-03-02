@@ -10,11 +10,15 @@ function __orchard_app_ids
     end
 end
 
-# First arg: list / install / cleanup
-complete -c orchard -c executable_orchard -f -n 'not __fish_seen_subcommand_from list install cleanup' -a 'list' -d 'List all app definitions and install status'
-complete -c orchard -c executable_orchard -f -n 'not __fish_seen_subcommand_from list install cleanup' -a 'install' -d 'Download and install the given app'
-complete -c orchard -c executable_orchard -f -n 'not __fish_seen_subcommand_from list install cleanup' -a 'cleanup' -d 'Remove orchard cache directory'
+# First arg: list / install / migrate / cleanup
+complete -c orchard -c executable_orchard -f -n 'not __fish_seen_subcommand_from list install migrate cleanup' -a 'list' -d 'List all app definitions and install status'
+complete -c orchard -c executable_orchard -f -n 'not __fish_seen_subcommand_from list install migrate cleanup' -a 'install' -d 'Download and install the given app'
+complete -c orchard -c executable_orchard -f -n 'not __fish_seen_subcommand_from list install migrate cleanup' -a 'migrate' -d 'Migrate from other sources (e.g. Homebrew casks)'
+complete -c orchard -c executable_orchard -f -n 'not __fish_seen_subcommand_from list install migrate cleanup' -a 'cleanup' -d 'Remove orchard cache directory'
 
 # After install: --force or app_id
 complete -c orchard -c executable_orchard -n '__fish_seen_subcommand_from install' -l force -d 'Force re-download'
 complete -c orchard -c executable_orchard -n '__fish_seen_subcommand_from install' -xa '(__orchard_app_ids)'
+
+# After migrate: source (currently brew)
+complete -c orchard -c executable_orchard -n '__fish_seen_subcommand_from migrate' -a 'brew' -d 'Migrate outdated Homebrew casks to orchard'

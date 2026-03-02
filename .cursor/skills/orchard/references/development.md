@@ -20,11 +20,12 @@ This guide is for:
 
 ### Commands
 
-| Command                              | Description                                                                                      |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| `orchard list`                       | List all apps defined in `apps/*.fish` and whether each is installed (and version if available). |
-| `orchard install <app_id> [--force]` | Download (if needed), then install the app. With `--force`, reinstall even if already installed. |
-| `orchard cleanup`                    | Remove the cache directory (downloaded archives).                                                |
+| Command                              | Description                                                                                                    |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| `orchard list`                       | List all apps defined in `apps/*.fish` and whether each is installed (and version if available).               |
+| `orchard install <app_id> [--force]` | Download (if needed), then install the app. With `--force`, reinstall even if already installed.               |
+| `orchard migrate brew`               | Migrate outdated Homebrew casks to orchard apps where a matching app package exists; report casks without one. |
+| `orchard cleanup`                    | Remove the cache directory (downloaded archives).                                                              |
 
 ---
 
@@ -42,8 +43,9 @@ The script is organized in sections (see the header comment):
 | 4. DMG helpers           | Mount, unmount, install from mount, cache validation.                                                                                                                             |
 | 5. Command: list         | Iterate `apps/*.fish`, load each app, print installed status and version.                                                                                                         |
 | 6. Command: install      | Parse args, load app, resolve URL (if callback), ensure archive, install by type (dmg/zip/pkg), run after-install callback.                                                       |
-| 7. Command: cleanup      | Delete cache dir.                                                                                                                                                                 |
-| 8. Main entry            | Dispatch by subcommand.                                                                                                                                                           |
+| 7. Command: migrate      | Implement migration flows (currently: from Homebrew casks).                                                                                                                       |
+| 8. Command: cleanup      | Delete cache dir.                                                                                                                                                                 |
+| 9. Main entry            | Dispatch by subcommand.                                                                                                                                                           |
 
 **Convention**: Functions whose names start with `_` are internal. They must **not** be defined above any non-`_` (public) function in the same logical section, so that "public first, internal below" is clear.
 

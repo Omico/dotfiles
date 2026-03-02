@@ -77,7 +77,7 @@ _Script structure and section list: [development.md § 2. Architecture](developm
 
 ## 4. Completions
 
-- Keep `home/dot_config/fish/completions/orchard.fish` in sync with subcommands and options: `list`, `install [--force] <app_id>`, `cleanup`.
+- Keep `home/dot_config/fish/completions/orchard.fish` in sync with subcommands and options: `list`, `install [--force] <app_id>`, `migrate brew`, `cleanup`.
 
 ---
 

@@ -9,8 +9,9 @@
 #   4. DMG helpers (detach, mount, unmount, install from mount, cache validation)
 #   5. Command: list
 #   6. Command: install (args, download, ensure archive, install by type)
-#   7. Command: cleanup (remove cache dir)
-#   8. Main entry (dispatch by subcommand)
+#   7. Command: migrate (e.g. from Homebrew casks)
+#   8. Command: cleanup (remove cache dir)
+#   9. Main entry (dispatch by subcommand)
 
 # -----------------------------------------------------------------------------
 # 1. Initialization
@@ -419,7 +420,60 @@ function _orchard_cmd_install
 end
 
 # -----------------------------------------------------------------------------
-# 7. Command: cleanup
+# 7. Command: migrate
+# -----------------------------------------------------------------------------
+function _orchard_cmd_migrate_brew
+    set -l outdated (brew outdated --cask --greedy --quiet 2>/dev/null)
+    if test (count $outdated) -eq 0
+        echo "No outdated Homebrew casks to migrate."
+        return 0
+    end
+
+    set -l missing
+    for cask_id in $outdated
+        set -l app_file "$_orchard_apps_dir/$cask_id.fish"
+        if not test -f "$app_file"
+            set missing $missing "$cask_id"
+            continue
+        end
+
+        echo "Migrating Homebrew cask '$cask_id' to Orchard app '$cask_id'..."
+        brew uninstall --cask "$cask_id"
+        if test $status -ne 0
+            echo "Uninstall failed for Homebrew cask '$cask_id'; skipping." >&2
+            continue
+        end
+
+        echo "Installing Orchard app '$cask_id'..."
+        orchard install "$cask_id"
+        if test $status -ne 0
+            echo "Orchard install failed for app '$cask_id'." >&2
+        end
+    end
+
+    if test (count $missing) -gt 0
+        set_color yellow
+        echo "No Orchard package found for these Homebrew casks:"
+        for cask_id in $missing
+            echo "  $cask_id"
+        end
+        set_color normal
+    end
+end
+
+function _orchard_cmd_migrate -a source
+    switch "$source"
+        case brew
+            _orchard_cmd_migrate_brew
+        case '' '*'
+            echo "Unknown migrate source: $source" >&2
+            echo "Supported sources: brew" >&2
+            return 1
+    end
+end
+
+# -----------------------------------------------------------------------------
+# 8. Command: cleanup
 # -----------------------------------------------------------------------------
 function _orchard_cmd_cleanup
     if test -d "$_orchard_cache_dir"
@@ -431,7 +485,7 @@ function _orchard_cmd_cleanup
 end
 
 # -----------------------------------------------------------------------------
-# 8. Main entry
+# 9. Main entry
 # -----------------------------------------------------------------------------
 set -l cmd "$argv[1]"
 switch "$cmd"
@@ -439,6 +493,8 @@ switch "$cmd"
         _orchard_cmd_list
     case install
         _orchard_cmd_install $argv
+    case migrate
+        _orchard_cmd_migrate $argv[2]
     case cleanup
         _orchard_cmd_cleanup
     case '' '*'
