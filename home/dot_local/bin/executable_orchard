@@ -3,18 +3,18 @@
 # orchard: lightweight manager for macOS apps installed via dmg/zip/pkg (no brew)
 #
 # Structure:
-#   1. Initialization (paths)
-#   2. Public API: orchard_fetch_* (callable from app .fish resolve callbacks)
-#   3. Usage and app loading (load app .fish, validate vars, installed/version helpers)
-#   4. DMG helpers (detach, mount, unmount, install from mount, cache validation)
-#   5. Command: list
-#   6. Command: install (args, download, ensure archive, install by type)
-#   7. Command: migrate (e.g. from Homebrew casks)
-#   8. Command: cleanup (remove cache dir)
-#   9. Main entry (dispatch by subcommand)
+#   Initialization (paths)
+#   Public API: orchard_fetch_* (callable from app .fish resolve callbacks)
+#   Usage and app loading (load app .fish, validate vars, installed/version helpers)
+#   DMG helpers (detach, mount, unmount, install from mount, cache validation)
+#   Command: list
+#   Command: install (args, download, ensure archive, install by type)
+#   Command: migrate (e.g. from Homebrew casks)
+#   Command: cleanup (remove cache dir)
+#   Main entry (dispatch by subcommand)
 
 # -----------------------------------------------------------------------------
-# 1. Initialization
+# Initialization
 # -----------------------------------------------------------------------------
 set -q XDG_CONFIG_HOME; or set XDG_CONFIG_HOME "$HOME/.config"
 set -q XDG_CACHE_HOME; or set XDG_CACHE_HOME "$HOME/.cache"
@@ -23,7 +23,7 @@ set -g _orchard_apps_dir "$_orchard_dir/apps"
 set -g _orchard_cache_dir "$XDG_CACHE_HOME/orchard"
 
 # -----------------------------------------------------------------------------
-# 2. Public API: orchard_fetch_* (callable from app .fish resolve callbacks)
+# Public API: orchard_fetch_* (callable from app .fish resolve callbacks)
 # -----------------------------------------------------------------------------
 # These functions are part of the public API. App packages in apps/*.fish may
 # call them inside orchard_resolve_download_url_callback to get download URLs.
@@ -107,7 +107,7 @@ function _orchard_ensure_local_bin
 end
 
 # -----------------------------------------------------------------------------
-# 3. Usage and app loading
+# Usage and app loading
 # -----------------------------------------------------------------------------
 function _orchard_usage
     echo "Usage:"
@@ -151,7 +151,7 @@ function _orchard_version
 end
 
 # -----------------------------------------------------------------------------
-# 4. DMG: detach / mount / unmount / install .app
+# DMG: detach / mount / unmount / install .app
 # -----------------------------------------------------------------------------
 function _orchard_dmg_detach_if_mounted -a archive
     set -l mounts (hdiutil info 2>/dev/null | awk -v arch="$archive" '
@@ -227,7 +227,7 @@ function _orchard_dmg_cache_valid -a archive
 end
 
 # -----------------------------------------------------------------------------
-# 5. Command: list
+# Command: list
 # -----------------------------------------------------------------------------
 function _orchard_cmd_list
     if not test -d "$_orchard_apps_dir"
@@ -247,7 +247,7 @@ function _orchard_cmd_list
 end
 
 # -----------------------------------------------------------------------------
-# 6. Command: install
+# Command: install
 # -----------------------------------------------------------------------------
 function _orchard_parse_install_args
     set -g _orchard_force false
@@ -420,7 +420,7 @@ function _orchard_cmd_install
 end
 
 # -----------------------------------------------------------------------------
-# 7. Command: migrate
+# Command: migrate
 # -----------------------------------------------------------------------------
 function _orchard_cmd_migrate_brew
     set -l outdated (brew outdated --cask --greedy --quiet 2>/dev/null)
@@ -473,7 +473,7 @@ function _orchard_cmd_migrate -a source
 end
 
 # -----------------------------------------------------------------------------
-# 8. Command: cleanup
+# Command: cleanup
 # -----------------------------------------------------------------------------
 function _orchard_cmd_cleanup
     if test -d "$_orchard_cache_dir"
@@ -485,7 +485,7 @@ function _orchard_cmd_cleanup
 end
 
 # -----------------------------------------------------------------------------
-# 9. Main entry
+# Main entry
 # -----------------------------------------------------------------------------
 set -l cmd "$argv[1]"
 switch "$cmd"

@@ -1,0 +1,60 @@
+---
+description: Markdown style and structure guidelines for this repo
+globs: **/*.md,**/*.mdc
+alwaysApply: false
+---
+
+# Markdown
+
+This rule defines how to structure and maintain Markdown (and Markdown-like comments) in this repo so that docs are easy to evolve without tedious renumbering.
+
+## Structure and headings
+
+- **Use descriptive headings, not numbered headings**
+  - Avoid: `# 1. Initialization`
+  - Prefer: `# Initialization`
+  - The heading text should describe _what this section is about_, not _which number it is_.
+
+- **Avoid hard‑coded section numbers in “Structure”/overview blocks**
+  - Avoid:
+    - `1. Initialization`
+    - `2. Public API`
+  - Prefer a simple unordered list:
+    - `Initialization`
+    - `Public API`
+
+- **If you need order, use Markdown ordered lists, not numbered headings**
+  - Prefer:
+
+    ```markdown
+    ## Install flow
+
+    1. Download archive
+    1. Verify checksum
+    1. Install
+    ```
+
+  - It is OK (and encouraged) to write every item as `1.` and let the renderer or editor auto‑number.
+
+## Referencing sections
+
+- **Prefer naming sections instead of “Section N”**
+  - Avoid: “See section 3.”
+  - Prefer: “See the ‘Usage and app loading’ section.”
+
+- **Only use numeric references if the structure is very stable**
+  - If you must say “Section N”, confirm that the document’s structure is unlikely to change.
+
+## In code comments and scripts
+
+- **Mirror this style in long code comments**
+  - For file overviews and big comment blocks, avoid `1./2./3.` labels that must be manually synchronized.
+  - Prefer descriptive bullet lists or short headings without numbers.
+
+- **Keep comments and strings in English**
+  - Follow the workspace rule that comments, messages, and other strings in scripts and code are written in English.
+
+## Linting
+
+- **Run markdownlint-cli2 (via npx) after editing Markdown**
+  - After creating or updating Markdown files, from the project root run `npx markdownlint-cli2 "**/*.md" "**/*.mdc"` (or use the configured editor integration) and fix reported issues before committing.

@@ -90,7 +90,7 @@ _Script structure and section list: [development.md § 2. Architecture](developm
 
 ## 6. Checklists
 
-**Before committing app package changes**
+### Before committing app package changes
 
 - [ ] Path is `home/dot_config/orchard/apps/<app_id>.fish` and `orchard_app_id` matches filename.
 - [ ] Required variables set; if using resolve callback, URL may be empty.
@@ -98,7 +98,7 @@ _Script structure and section list: [development.md § 2. Architecture](developm
 - [ ] Resolve callback: on success set URL and return 0; on failure stderr and return 1.
 - [ ] Run `chezmoi apply` and `orchard install <app_id>` (or `--force`) to verify.
 
-**Before committing changes to `executable_orchard`**
+### Before committing changes to `executable_orchard`
 
 - [ ] Section order and top-of-file comment are up to date.
 - [ ] Public vs internal naming; errors to stderr; English only.
