@@ -43,7 +43,7 @@ When this command is invoked, the agent should:
    4. If a package does **not** exist:
       - Switch into Orchard package authoring mode:
         - Ask the user for missing details if needed (e.g. homepage, download URL, special install behavior).
-        - Use the GitHub API to fetch the Homebrew cask definition from the `Homebrew/homebrew-cask` repository (instead of calling `brew info --cask` locally), and extract homepage, download URL, and install details from that cask file.
+        - Use the GitHub API to fetch the Homebrew cask definition from the `Homebrew/homebrew-cask` repository (instead of calling `brew info --cask` locally), and extract homepage, download URL, and install details from that cask file. This describes the agent’s behavior in a sandbox or remote environment, so it uses the GitHub API rather than local `brew` commands.
         - Follow the Orchard skill’s guidelines and `app-package-format.md` to draft a new `apps/<cask>.fish` file.
       - Write the Orchard app package directly to `home/dot_config/orchard/apps/<cask>.fish` without asking for additional confirmation.
    5. After authoring or modifying any Orchard packages:

@@ -144,6 +144,7 @@ end
 ## Reference: Homebrew Cask
 
 When creating a new orchard package, use **`brew info --cask <cask_name>`** as a reference. It shows homepage, version, and (when the cask is installed or cached) the artifact URL and .app name, which you can map to `orchard_app_display_name`, `orchard_app_download_url`, `orchard_app_download_type`, and `orchard_app_bundle_name` as needed.
+This section is intended for humans authoring packages on their local machines and assumes you can run `brew` locally.
 
 ---
 

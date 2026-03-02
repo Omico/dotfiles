@@ -11,7 +11,7 @@ This guide is for:
 
 ---
 
-## 1. Overview
+## Overview
 
 - **Entrypoint**: `orchard` (Fish script at `~/.local/bin/orchard`, from chezmoi `home/dot_local/bin/executable_orchard`).
 - **Config**: `$XDG_CONFIG_HOME/orchard` (default `~/.config/orchard`). App definitions live in `apps/*.fish`.
@@ -29,7 +29,7 @@ This guide is for:
 
 ---
 
-## 2. Architecture
+## Architecture
 
 ### Script structure (`executable_orchard`)
 
@@ -70,7 +70,7 @@ The script is organized in sections (see the header comment):
 
 ---
 
-## 3. App package format (`apps/<app_id>.fish`)
+## App package format (`apps/<app_id>.fish`)
 
 Each app is a Fish script that sets global variables and optionally defines callbacks. The file name must be `<app_id>.fish`; `app_id` is lowercase, may contain hyphens.
 
@@ -106,7 +106,7 @@ Variables set by Orchard (do not set in the app file unless overriding):
 
 ---
 
-## 4. Public API for app packages
+## Public API for app packages
 
 These functions are part of the contract for app `.fish` files. They are defined in section 2 of `executable_orchard` so they exist when app files are sourced.
 
@@ -173,7 +173,7 @@ end
 
 ---
 
-## 5. Dependencies
+## Dependencies
 
 - **Shell**: Fish.
 - **External**: `curl`, `jq` (for GitHub API and many resolve callbacks), `hdiutil`, `ditto`, `installer`, `unzip`, `defaults` (for Info.plist). `sudo` is used for writing to `/Applications` and `/usr/local/bin`.
@@ -181,7 +181,7 @@ end
 
 ---
 
-## 6. Adding a new app
+## Adding a new app
 
 See the **orchard** skill **Quick workflow** (in `.cursor/skills/orchard/SKILL.md`) for a concise checklist.
 
@@ -195,7 +195,7 @@ See the **orchard** skill **Quick workflow** (in `.cursor/skills/orchard/SKILL.m
 
 ---
 
-## 7. Internal conventions (maintainers of `executable_orchard`)
+## Internal conventions (maintainers of `executable_orchard`)
 
 - **Naming**: Public API for app packages has **no** leading `_` (e.g. `orchard_fetch_github_api`, `orchard_cli_wrapper`). Internal helpers use a leading `_` (e.g. `_orchard_ensure_local_bin`, `_orchard_load_app`).
 - **Order**: In each section, define all public (no `_`) functions first, then internal (`_`) helpers that they use. Fish allows calling functions defined later in the file.
@@ -204,7 +204,7 @@ See the **orchard** skill **Quick workflow** (in `.cursor/skills/orchard/SKILL.m
 
 ---
 
-## 8. Related files
+## Related files
 
 - **Cursor rule**: `.cursor/rules/orchard.mdc` — applies to `apps/*.fish`, `executable_orchard`, and completions; links to [development-guidelines.md](development-guidelines.md) and [app-package-format.md](app-package-format.md).
 - **Orchard config**: `home/dot_config/orchard/` (chezmoi); contains `apps/`.

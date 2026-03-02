@@ -14,7 +14,7 @@ Development standards for orchard (macOS app manager in this chezmoi repo). Use 
 
 ---
 
-## 1. Scope and roles
+## Scope and roles
 
 | Role                   | Scope                                       | Key files                                       |
 | ---------------------- | ------------------------------------------- | ----------------------------------------------- |
@@ -24,7 +24,7 @@ Development standards for orchard (macOS app manager in this chezmoi repo). Use 
 
 ---
 
-## 2. App package standards
+## App package standards
 
 _Full variable and callback reference: [app-package-format.md](app-package-format.md)._
 
@@ -53,7 +53,7 @@ _Full variable and callback reference: [app-package-format.md](app-package-forma
 
 ---
 
-## 3. Main script standards
+## Main script standards
 
 _Script structure and section list: [development.md § 2. Architecture](development.md#2-architecture)._
 
@@ -76,20 +76,20 @@ _Script structure and section list: [development.md § 2. Architecture](developm
 
 ---
 
-## 4. Completions
+## Completions
 
 - Keep `home/dot_config/fish/completions/orchard.fish` in sync with subcommands and options: `list`, `install [--force] <app_id>`, `migrate brew`, `cleanup`.
 
 ---
 
-## 5. Converting from Homebrew Cask
+## Converting from Homebrew Cask
 
 - Prefer casks with **`auto_updates true`**. Steps and `comm` command: [app-package-format.md § Finding casks to convert](app-package-format.md#finding-casks-to-convert).
 - Use `brew info --cask <cask_name>` and map to orchard variables as in that reference.
 
 ---
 
-## 6. Checklists
+## Checklists
 
 ### Before committing app package changes
 
