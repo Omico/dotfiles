@@ -3,9 +3,9 @@ description: All script and code content must be in English only
 alwaysApply: true
 ---
 
-# English only in scripts
+# English only in scripts and docs
 
-All script and code files **must contain only English**.
+All script, code, and documentation files in this repo **must contain only English** (see exceptions below).
 
 - Comments, echo/print strings, error messages, and any other text in scripts must be in English.
 - Do not use Chinese or other languages in the codebase.
@@ -37,3 +37,8 @@ echo "下载失败。"
 # 安装 pkg 到系统卷
 echo "挂载失败。"
 ```
+
+## Agents and conversations
+
+- Even if the user talks to the agent in Chinese (or any non-English language), all changes the agent makes to files in this repo must use English only.
+- Use non-English languages only in the chat/conversation, not in scripts, code, or docs stored in the repository.
