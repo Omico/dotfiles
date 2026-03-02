@@ -1,4 +1,4 @@
-# orchard / executable_orchard: subcommand and app_id completion
+# Orchard completions for Fish shell
 
 function __orchard_app_ids
     set -q XDG_CONFIG_HOME; or set XDG_CONFIG_HOME $HOME/.config
@@ -10,15 +10,36 @@ function __orchard_app_ids
     end
 end
 
-# First arg: list / install / migrate / cleanup
-complete -c orchard -c executable_orchard -f -n 'not __fish_seen_subcommand_from list install migrate cleanup' -a 'list' -d 'List all app definitions and install status'
-complete -c orchard -c executable_orchard -f -n 'not __fish_seen_subcommand_from list install migrate cleanup' -a 'install' -d 'Download and install the given app'
-complete -c orchard -c executable_orchard -f -n 'not __fish_seen_subcommand_from list install migrate cleanup' -a 'migrate' -d 'Migrate from other sources (e.g. Homebrew casks)'
-complete -c orchard -c executable_orchard -f -n 'not __fish_seen_subcommand_from list install migrate cleanup' -a 'cleanup' -d 'Remove orchard cache directory'
+function __orchard_subcommands
+    echo list
+    echo install
+    echo migrate
+    echo cleanup
+end
 
-# After install: --force or app_id
+function __orchard_needs_subcommand
+    not __fish_seen_subcommand_from (__orchard_subcommands)
+end
+
+# First arg subcommands:
+# - list
+# - install
+# - migrate
+# - cleanup
+complete -c orchard -c executable_orchard -f -n __orchard_needs_subcommand -a list -d 'List all app definitions and install status'
+complete -c orchard -c executable_orchard -f -n __orchard_needs_subcommand -a install -d 'Download and install the given app'
+complete -c orchard -c executable_orchard -f -n __orchard_needs_subcommand -a migrate -d 'Migrate from other sources (e.g. Homebrew casks)'
+complete -c orchard -c executable_orchard -f -n __orchard_needs_subcommand -a cleanup -d 'Remove orchard cache directory'
+
+# After install:
+# - argument:
+#   - <app_id>
+# - options:
+#   - --force
 complete -c orchard -c executable_orchard -n '__fish_seen_subcommand_from install' -l force -d 'Force re-download'
 complete -c orchard -c executable_orchard -n '__fish_seen_subcommand_from install' -xa '(__orchard_app_ids)'
 
-# After migrate: source (currently brew)
-complete -c orchard -c executable_orchard -n '__fish_seen_subcommand_from migrate' -a 'brew' -d 'Migrate outdated Homebrew casks to orchard'
+# After migrate:
+# - argument:
+#   - <source> (currently brew)
+complete -c orchard -c executable_orchard -n '__fish_seen_subcommand_from migrate' -a brew -d 'Migrate outdated Homebrew casks to orchard'
