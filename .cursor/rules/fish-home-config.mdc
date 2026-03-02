@@ -1,0 +1,36 @@
+---
+description: Ensure fish scripts under home/dot_config/fish start with the standard shebang
+globs: home/dot_config/fish/**/*.fish
+alwaysApply: false
+---
+
+# Fish scripts under home/dot_config/fish
+
+- **Shebang requirement**: Every fish script in `home/dot_config/fish` **must start** with the shebang:
+
+  ```fish
+  #!/usr/bin/env fish
+  ```
+
+- **Position**:
+  - The shebang **must be the very first line** of the file.
+  - You may add a blank line after the shebang for readability, then the rest of the script.
+
+- **New scripts**:
+  - When creating a new fish script under `home/dot_config/fish`, always begin the file with `#!/usr/bin/env fish` before adding any other content.
+
+## Linting
+
+- **Syntax check required**: After editing any script under `home/dot_config/fish`, run a fish syntax check before committing.
+- **Recommended command** (from the project root or any directory):
+
+  ```bash
+  fish --no-execute home/dot_config/fish/relative/path/to/script.fish
+  ```
+
+- **Batch checking**:
+  - Optionally run syntax checks over multiple scripts, for example:
+
+    ```bash
+    find home/dot_config/fish -name '*.fish' -print0 | xargs -0 -n1 fish --no-execute
+    ```

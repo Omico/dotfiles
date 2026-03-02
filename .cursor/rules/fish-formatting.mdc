@@ -1,0 +1,31 @@
+---
+description: Formatting conventions for all fish scripts in this repo
+globs: **/*.fish
+alwaysApply: false
+---
+
+# Fish script formatting
+
+- **Formatter**: Use `fish_indent` to keep all fish scripts consistently formatted.
+
+- **When to format**:
+  - After making any changes to a `.fish` file, run `fish_indent` before committing.
+
+- **Single-file formatting**:
+
+  ```bash
+  fish_indent -w path/to/script.fish
+  ```
+
+- **Bulk formatting**:
+  - To format all fish scripts in the repo:
+
+    ```bash
+    find . -name '*.fish' -print0 | xargs -0 fish_indent -w
+    ```
+
+  - Or restrict to a specific directory (for example, the Fish config directory):
+
+    ```bash
+    find home/dot_config/fish -name '*.fish' -print0 | xargs -0 fish_indent -w
+    ```

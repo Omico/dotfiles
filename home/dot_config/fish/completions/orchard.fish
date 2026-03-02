@@ -1,3 +1,5 @@
+#!/usr/bin/env fish
+
 # Orchard completions for Fish shell
 
 function __orchard_app_ids

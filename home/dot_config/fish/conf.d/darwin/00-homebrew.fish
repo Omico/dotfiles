@@ -1,4 +1,4 @@
-#/usr/bin/env fish
+#!/usr/bin/env fish
 
 if test -x /opt/homebrew/bin/brew
     export HOMEBREW_NO_ANALYTICS=1
