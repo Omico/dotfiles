@@ -42,4 +42,7 @@ complete -c orchard -c executable_orchard -n '__fish_seen_subcommand_from instal
 # After migrate:
 # - argument:
 #   - <source> (currently brew)
+# - options:
+#   - --plan
 complete -c orchard -c executable_orchard -n '__fish_seen_subcommand_from migrate' -a brew -d 'Migrate outdated Homebrew casks to orchard'
+complete -c orchard -c executable_orchard -n '__fish_seen_subcommand_from migrate' -l plan -d 'Show what would be migrated without changes'

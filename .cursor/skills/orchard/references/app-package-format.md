@@ -169,6 +169,7 @@ For each candidate, run **`brew info --cask <cask_name>`** to confirm it uses a 
 
 - **URL**: Must be a direct dmg/zip/pkg link (or a page that 302-redirects to the file).
 - **Resolve from HTML (no API)**: Use `curl -sL <page_url>` then parse with Fish `string match -r` to extract the download link, e.g. `set -l url (echo "$html" | string match -r 'href="(https://[^"]+\.dmg)"')[2]`; set `orchard_app_download_url` and `return 0` on success.
+- **Resolve callbacks implementation**: Implement `orchard_resolve_download_url_callback` (and other resolve callbacks) purely in Fish, calling external CLI tools like `curl`, `jq`, or `string` as needed. Do not embed or invoke additional scripting languages (e.g. Python, Ruby, Node) from app packages.
 - **Set by Orchard (do not set in the app file unless overriding):**
   - When loading an app: `orchard_app_bundle_path` defaults to `/Applications/$orchard_app_bundle_name` if unset.
   - During `orchard install` only: `_orchard_app_download_url_hash` and `_orchard_app_archive_cache_path` (after `orchard_resolve_download_url_callback` if defined).

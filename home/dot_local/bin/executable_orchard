@@ -423,20 +423,74 @@ end
 # Command: migrate
 # -----------------------------------------------------------------------------
 function _orchard_cmd_migrate_brew
+    set -l plan false
+    for arg in $argv
+        switch "$arg"
+            case --plan
+                set plan true
+            case '*'
+                echo "Unknown migrate brew option: $arg" >&2
+                return 1
+        end
+    end
+
+    echo "Checking for outdated Homebrew casks (this may take a while)..." >&2
     set -l outdated (brew outdated --cask --greedy --quiet 2>/dev/null)
     if test (count $outdated) -eq 0
         echo "No outdated Homebrew casks to migrate."
         return 0
     end
 
+    set -l candidates
     set -l missing
     for cask_id in $outdated
         set -l app_file "$_orchard_apps_dir/$cask_id.fish"
-        if not test -f "$app_file"
+        if test -f "$app_file"
+            set candidates $candidates "$cask_id"
+        else
             set missing $missing "$cask_id"
-            continue
         end
+    end
 
+    if test (count $candidates) -eq 0
+        if test (count $missing) -eq 0
+            echo "No outdated Homebrew casks to migrate."
+        else
+            set_color yellow
+            if test "$plan" = true
+                echo "Found outdated Homebrew casks that could be migrated, but no Orchard packages exist for them:"
+            else
+                echo "No Orchard package found for these outdated Homebrew casks:"
+            end
+            for cask_id in $missing
+                echo "  $cask_id"
+            end
+            set_color normal
+        end
+        return 0
+    end
+
+    if test "$plan" = true
+        echo "These Homebrew casks can be migrated to Orchard apps:"
+        for cask_id in $candidates
+            echo "  $cask_id"
+        end
+    else
+        _orchard_migrate_brew_apply $candidates
+    end
+
+    if test (count $missing) -gt 0
+        set_color yellow
+        echo "No Orchard package found for these Homebrew casks:"
+        for cask_id in $missing
+            echo "  $cask_id"
+        end
+        set_color normal
+    end
+end
+
+function _orchard_migrate_brew_apply
+    for cask_id in $argv
         echo "Migrating Homebrew cask '$cask_id' to Orchard app '$cask_id'..."
         brew uninstall --cask "$cask_id"
         if test $status -ne 0
@@ -450,21 +504,15 @@ function _orchard_cmd_migrate_brew
             echo "Orchard install failed for app '$cask_id'." >&2
         end
     end
-
-    if test (count $missing) -gt 0
-        set_color yellow
-        echo "No Orchard package found for these Homebrew casks:"
-        for cask_id in $missing
-            echo "  $cask_id"
-        end
-        set_color normal
-    end
 end
 
-function _orchard_cmd_migrate -a source
+function _orchard_cmd_migrate
+    set -l source "$argv[1]"
+    set -l migrate_args $argv[2..-1]
+
     switch "$source"
         case brew
-            _orchard_cmd_migrate_brew
+            _orchard_cmd_migrate_brew $migrate_args
         case '' '*'
             echo "Unknown migrate source: $source" >&2
             echo "Supported sources: brew" >&2
@@ -494,7 +542,7 @@ switch "$cmd"
     case install
         _orchard_cmd_install $argv
     case migrate
-        _orchard_cmd_migrate $argv[2]
+        _orchard_cmd_migrate $argv[2..-1]
     case cleanup
         _orchard_cmd_cleanup
     case '' '*'

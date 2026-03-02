@@ -43,6 +43,7 @@ _Full variable and callback reference: [app-package-format.md](app-package-forma
 - **Success**: Set `orchard_app_download_url`; return 0. (Helpers may print URL to stdout.)
 - **Failure**: Write error to stderr; return 1. Do not set a partial or invalid URL.
 - Prefer `orchard_fetch_github_release_asset_url` for GitHub; use `orchard_fetch_github_api` + jq or curl + parse for custom APIs/HTML.
+- Implement resolve callbacks (including `orchard_resolve_download_url_callback`) purely in Fish, using CLI tools like `curl`, `jq`, or `string`. Do not embed or invoke other scripting languages (e.g. Python, Ruby, Node) from app packages.
 
 ### 2.4 Optional variables and callbacks
 
