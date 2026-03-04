@@ -8,7 +8,7 @@ alwaysApply: false
 
 This rule defines how to structure and maintain Markdown (and Markdown-like comments) in this repo so that docs are easy to evolve without tedious renumbering.
 
-## Structure and headings
+## Structure, headings, and section references
 
 - **Use descriptive headings, not numbered headings**
   - Avoid: `# 1. Initialization`
@@ -23,27 +23,24 @@ This rule defines how to structure and maintain Markdown (and Markdown-like comm
     - `Initialization`
     - `Public API`
 
-- **If you need order, use Markdown ordered lists, not numbered headings**
-  - Prefer:
+- **Avoid Markdown ordered lists (1./2./3./4.) in prose**
+  - Prefer unordered lists with bolded labels instead of numbered items.
+  - Example (preferred):
 
     ```markdown
     ## Install flow
 
-    1. Download archive
-    1. Verify checksum
-    1. Install
+    - **Download archive**
+    - **Verify checksum**
+    - **Install**
     ```
 
-  - It is OK (and encouraged) to write every item as `1.` and let the renderer or editor auto‑number.
+  - Do not use `1.`, `2.`, `3.` etc. for list items in docs, skills, or comments.
 
-## Referencing sections
-
-- **Prefer naming sections instead of “Section N”**
+- **Refer to sections by name, not number**
   - Avoid: “See section 3.”
   - Prefer: “See the ‘Usage and app loading’ section.”
-
-- **Only use numeric references if the structure is very stable**
-  - If you must say “Section N”, confirm that the document’s structure is unlikely to change.
+  - Only use numeric references if the structure is very stable and unlikely to change.
 
 ## In code comments and scripts
 
@@ -58,3 +55,9 @@ This rule defines how to structure and maintain Markdown (and Markdown-like comm
 
 - **Run markdownlint-cli2 (via npx) after editing Markdown**
   - After creating or updating Markdown files, from the project root run `npx markdownlint-cli2 "**/*.md" "**/*.mdc"` (or use the configured editor integration) and fix reported issues before committing.
+
+- **Agents must enforce markdownlint for generated docs**
+  - When an agent creates or edits any Markdown file in this repo, it must:
+    - Run `npx markdownlint-cli2` on the changed file(s)
+    - Fix all reported issues until the summary shows **0 error(s)**
+    - Only consider the Markdown change complete after lint passes cleanly
