@@ -117,6 +117,14 @@ function _orchard_usage
 end
 
 function _orchard_load_app -a app_id
+    # Clear per-app globals so they do not leak between apps
+    set -e orchard_app_id
+    set -e orchard_app_display_name
+    set -e orchard_app_download_url
+    set -e orchard_app_download_type
+    set -e orchard_app_bundle_name
+    set -e orchard_app_bundle_path
+
     set -l file "$_orchard_apps_dir/$app_id.fish"
     if not test -f "$file"
         echo "Unknown app: $app_id"
@@ -130,8 +138,14 @@ function _orchard_load_app -a app_id
     test -z "$orchard_app_download_url"; and not functions -q orchard_resolve_download_url_callback; and set missing $missing orchard_app_download_url
     test -z "$orchard_app_download_type"; and set missing $missing orchard_app_download_type
     test (count $missing) -gt 0; and echo "$app_id missing: "(string join ", " $missing); and exit 1
-    not set -q orchard_app_bundle_name; and set -q orchard_app_display_name; and set -g orchard_app_bundle_name "$orchard_app_display_name.app"
-    not set -q orchard_app_bundle_path; and set -q orchard_app_bundle_name; and set -g orchard_app_bundle_path "/Applications/$orchard_app_bundle_name"
+    if not set -q orchard_app_bundle_name
+        if set -q orchard_app_display_name
+            set -g orchard_app_bundle_name "$orchard_app_display_name.app"
+        end
+    end
+    if set -q orchard_app_bundle_name
+        set -g orchard_app_bundle_path "/Applications/$orchard_app_bundle_name"
+    end
 end
 
 # Whether current app is installed (used by list and install)
@@ -145,9 +159,9 @@ function _orchard_version
         orchard_resolve_installed_version_callback
         return
     end
-    set -l version ""
-    set -q orchard_app_bundle_path; and set version (/usr/bin/defaults read "$orchard_app_bundle_path/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null)
-    test -n "$version"; and echo "$version"; or echo unknown
+    set -l app_version ""
+    set -q orchard_app_bundle_path; and set app_version (/usr/bin/defaults read "$orchard_app_bundle_path/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null)
+    test -n "$app_version"; and echo "$app_version"; or echo unknown
 end
 
 # -----------------------------------------------------------------------------
@@ -234,14 +248,28 @@ function _orchard_cmd_list
         echo "No app definitions found; add *.fish files under $_orchard_apps_dir."
         return 0
     end
-    for file in $_orchard_apps_dir/*.fish
+    set -l files $_orchard_apps_dir/*.fish
+    if test (count $files) -eq 0
+        echo "No app definitions found; add *.fish files under $_orchard_apps_dir."
+        return 0
+    end
+
+    set -l max_width 0
+    for file in $files
+        set -l id (string replace -r '.*/([^/]+)\.fish$' '$1' -- "$file")
+        set -l id_len (string length -- "$id")
+        test $id_len -gt $max_width; and set max_width $id_len
+    end
+
+    for file in $files
         set -l id (string replace -r '.*/([^/]+)\.fish$' '$1' -- "$file")
         _orchard_load_app $id
+        set -l padded_id (string pad -w $max_width -r "$id")
         if _orchard_installed
             set -l ver (_orchard_version)
-            echo "$orchard_app_id  (installed: $ver)"
+            echo "$padded_id  (installed: $ver)"
         else
-            echo "$orchard_app_id  (not installed)"
+            echo "$padded_id  (not installed)"
         end
     end
 end
