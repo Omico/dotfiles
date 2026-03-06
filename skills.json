@@ -9,30 +9,27 @@
     },
     "install": [
         {
-            "source": "https://github.com/vercel-labs/skills",
-            "skills": [
-                "find-skills"
-            ]
-        },
-        {
-            "source": "https://github.com/anthropics/skills",
-            "skills": [
-                "skill-creator",
-                "pdf",
-                "pptx",
-                "docx",
-                "xlsx",
-                "mcp-builder",
-                "canvas-design",
-                "doc-coauthoring",
-                "algorithmic-art",
-                "internal-comms"
-            ]
+            "source": "https://github.com/OmicoDev/skills"
         },
         {
             "source": "https://github.com/antfu/skills",
             "skills": [
                 "slidev"
+            ]
+        },
+        {
+            "source": "https://github.com/anthropics/skills",
+            "skills": [
+                "algorithmic-art",
+                "canvas-design",
+                "doc-coauthoring",
+                "docx",
+                "internal-comms",
+                "mcp-builder",
+                "pdf",
+                "pptx",
+                "skill-creator",
+                "xlsx"
             ]
         },
         {
@@ -42,6 +39,12 @@
                 "first-ask",
                 "gh-cli",
                 "git-commit"
+            ]
+        },
+        {
+            "source": "https://github.com/vercel-labs/skills",
+            "skills": [
+                "find-skills"
             ]
         }
     ]

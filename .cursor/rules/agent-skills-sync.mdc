@@ -1,27 +1,48 @@
 ---
-description: When adding or installing new agent skills, persist them in skills.json
+description: Keep skills.json in sync with installed agent skills
 globs: skills.json
 ---
 
-# Sync new agent skills to skills.json
+# Sync skills.json
 
-Whenever a new skill is installed (e.g. via `npx skills add` or when the user asks to add a skill), **update the repo’s `skills.json`** so the skill list is versioned and can be restored with `upgrade-agent-skills`.
+Whenever a new skill is installed, **update `skills.json` in the same change set** so the configuration stays versioned and can be restored with `upgrade-agent-skills`.
 
-## What to do
+## Add or update entries
 
-1. **After installing a skill** from a source (GitHub repo URL or `owner/repo@skill`), open `skills.json` and:
-   - If that **source already has an entry** in `install[]`, add the new skill name to its `skills` array (avoid duplicates, keep names sorted if you like).
-   - If that **source has no entry**, add a new object: `{ "source": "<url or repo>", "skills": ["<skill-name>"] }`. Use the same URL style as existing entries (e.g. `https://github.com/owner/repo`).
+- After installing a skill from a GitHub URL or `owner/repo@skill`, open `skills.json` and update `install[]`.
+- If the source already has an entry, add the new skill name to its `skills` array.
+- If the source does not exist yet, add a new object such as `{ "source": "<url or repo>", "skills": ["<skill-name>"] }`.
+- If the source is configured to install the whole repo, omit the `skills` field.
+- Use the same source style as existing entries, for example `https://github.com/owner/repo`.
 
-2. **Use the same structure** as existing entries: `source` plus `skills` array. Per-entry options (e.g. `agents`, `global`, `yes`) are optional; top-level `defaults` apply when not overridden.
+## Preserve structure
 
-3. **Do not remove** existing skills or sources unless the user explicitly asks to uninstall or clean up.
+- Follow the existing structure: `source` plus `skills` when needed.
+- Per-entry options such as `agents`, `global`, or `yes` are optional.
+- Top-level `defaults` apply unless an entry overrides them.
 
-## skills.json location and format
+## Sort after every edit
+
+- After any edit to `skills.json`, run `jq`.
+- Keep JSON indentation at **4 spaces**.
+- Sort `install[]` by `.source`.
+- If an entry has `skills`, sort that array too.
+
+```sh
+jq --indent 4 '.install |= (sort_by(.source) | map(if has("skills") then .skills |= sort else . end))' skills.json
+```
+
+## Do not remove entries
+
+- Do not remove existing skills or sources unless the user explicitly asks to uninstall or clean up.
+
+## File and format
 
 - File: **`skills.json`** at the repo root (e.g. `~/.local/share/chezmoi/skills.json`).
-- Format: `install` is an array of `{ "source": "...", "skills": ["a", "b"] }`. See the current file for examples.
+- Format: `install` is an array of `{ "source": "...", "skills": ["a", "b"] }` objects.
+- Some entries may contain only `source` when the whole repo should be installed.
 
 ## Reminder
 
-If the user says “add this skill” or “install …” and you run `npx skills add`, **also update `skills.json`** in the same change set so the install is recorded.
+- If the user asks to add or install a skill and you run `npx skills add`, also update `skills.json`.
+- Finish by running the `jq` sort step before considering the task complete.
