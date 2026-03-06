@@ -4,6 +4,8 @@ title: Omico's dotfiles
 
 # Omico's dotfiles
 
+This repository contains my personal dotfiles and automation setup, managed with [chezmoi](https://chezmoi.io).
+
 ## Installation
 
 ### macOS
@@ -51,8 +53,3 @@ cd "$HOME/Git/Mark24Code/rime-auto-deploy"
 ```shell
 dotfiles-upgrade
 ```
-
-## Docs on this site
-
-- The **Cursor Rules** section is generated from files under [`.cursor/rules`](https://github.com/Omico/dotfiles/tree/HEAD/.cursor/rules).
-- The **Agent Skills** section is generated from files under [`.cursor/skills`](https://github.com/Omico/dotfiles/tree/HEAD/.cursor/skills).
