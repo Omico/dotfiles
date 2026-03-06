@@ -38,8 +38,10 @@
         {
             "source": "https://github.com/github/awesome-copilot",
             "skills": [
-                "git-commit",
-                "editorconfig"
+                "editorconfig",
+                "first-ask",
+                "gh-cli",
+                "git-commit"
             ]
         }
     ]
