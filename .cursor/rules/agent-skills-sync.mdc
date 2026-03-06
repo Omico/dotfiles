@@ -1,0 +1,27 @@
+---
+description: When adding or installing new agent skills, persist them in skills.json
+globs: skills.json
+---
+
+# Sync new agent skills to skills.json
+
+Whenever a new skill is installed (e.g. via `npx skills add` or when the user asks to add a skill), **update the repo’s `skills.json`** so the skill list is versioned and can be restored with `upgrade-agent-skills`.
+
+## What to do
+
+1. **After installing a skill** from a source (GitHub repo URL or `owner/repo@skill`), open `skills.json` and:
+   - If that **source already has an entry** in `install[]`, add the new skill name to its `skills` array (avoid duplicates, keep names sorted if you like).
+   - If that **source has no entry**, add a new object: `{ "source": "<url or repo>", "skills": ["<skill-name>"] }`. Use the same URL style as existing entries (e.g. `https://github.com/owner/repo`).
+
+2. **Use the same structure** as existing entries: `source` plus `skills` array. Per-entry options (e.g. `agents`, `global`, `yes`) are optional; top-level `defaults` apply when not overridden.
+
+3. **Do not remove** existing skills or sources unless the user explicitly asks to uninstall or clean up.
+
+## skills.json location and format
+
+- File: **`skills.json`** at the repo root (e.g. `~/.local/share/chezmoi/skills.json`).
+- Format: `install` is an array of `{ "source": "...", "skills": ["a", "b"] }`. See the current file for examples.
+
+## Reminder
+
+If the user says “add this skill” or “install …” and you run `npx skills add`, **also update `skills.json`** in the same change set so the install is recorded.
