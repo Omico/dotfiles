@@ -1,0 +1,25 @@
+{
+  "name": "dotfiles-docs",
+  "version": "1.0.0",
+  "description": "Documentation site for my dotfiles.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs:prepare": "node scripts/generate-docs.mjs",
+    "docs:dev": "npm run docs:prepare && vitepress dev",
+    "docs:build": "npm run docs:prepare && vitepress build",
+    "docs:preview": "npm run docs:build && vitepress preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Omico/dotfiles.git"
+  },
+  "author": "Omico",
+  "bugs": {
+    "url": "https://github.com/Omico/dotfiles/issues"
+  },
+  "homepage": "https://github.com/Omico/dotfiles",
+  "devDependencies": {
+    "vitepress": "2.0.0-alpha.16"
+  }
+}

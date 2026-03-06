@@ -1,0 +1,27 @@
+---
+description: Docs under docs/src are generated from .cursor; do not edit generated files by hand
+---
+
+# Docs generated from Cursor (rules, skills, commands)
+
+The documentation site in **`docs/`** is built with VitePress. The following output directories are **generated** by **`docs/scripts/generate-docs.mjs`** and must not be edited by hand:
+
+- **`docs/src/cursor-rules/`** — from `.cursor/rules/*.mdc`
+- **`docs/src/cursor-commands/`** — from `.cursor/commands/*.md`
+- **`docs/src/agent-skills/`** — from `.cursor/skills/**` (SKILL.md and references)
+
+## Editing content
+
+- To change what appears in the docs, edit the **source** files under `.cursor/rules`, `.cursor/commands`, or `.cursor/skills`.
+- After editing, regenerate with **`npm run docs:prepare`** from the repo root (or from `docs/`). The same command runs automatically before `docs:dev` and `docs:build`.
+- Do not edit files under `docs/src/cursor-rules`, `docs/src/cursor-commands`, or `docs/src/agent-skills` directly; changes will be overwritten on the next run of the generator.
+
+## Changing nav or sidebar
+
+- **Nav** (top bar) is defined in **`docs/.vitepress/config.mts`** (`themeConfig.nav`). Edit that file to add or reorder nav links.
+- **Sidebar** is produced by the generator and written to **`docs/.vitepress/sidebar.generated.mts`**. Do not edit `sidebar.generated.mts` by hand. To change sidebar structure, update **`docs/scripts/generate-docs.mjs`** (e.g. `FLAT_SECTIONS` or the agent-skills sidebar logic), then run `npm run docs:prepare`.
+
+## CI and deployment
+
+- The **Deploy docs** workflow (`.github/workflows/docs.yml`) runs on push to `main` when paths under `.cursor/commands/*.md`, `.cursor/rules/**/*.mdc`, `.cursor/skills/**/*.md`, `docs/**`, or the workflow file change.
+- New rules, commands, or skills under those paths will trigger a redeploy. If you add a new source directory that the generator should include, ensure it is wired in `generate-docs.mjs` and, if needed, add the path to the workflow `paths` filter so the site redeploys when those files change.
