@@ -1,0 +1,46 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "defaults": {
+        "agents": [
+            "universal"
+        ],
+        "global": true,
+        "yes": true
+    },
+    "install": [
+        {
+            "source": "https://github.com/vercel-labs/skills",
+            "skills": [
+                "find-skills"
+            ]
+        },
+        {
+            "source": "https://github.com/anthropics/skills",
+            "skills": [
+                "skill-creator",
+                "pdf",
+                "pptx",
+                "docx",
+                "xlsx",
+                "mcp-builder",
+                "canvas-design",
+                "doc-coauthoring",
+                "algorithmic-art",
+                "internal-comms"
+            ]
+        },
+        {
+            "source": "https://github.com/antfu/skills",
+            "skills": [
+                "slidev"
+            ]
+        },
+        {
+            "source": "https://github.com/github/awesome-copilot",
+            "skills": [
+                "git-commit",
+                "editorconfig"
+            ]
+        }
+    ]
+}
