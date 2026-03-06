@@ -1,7 +1,3 @@
----
-title: Omico's dotfiles
----
-
 # Omico's dotfiles
 
 This repository contains my personal dotfiles and automation setup, managed with [chezmoi](https://chezmoi.io).
