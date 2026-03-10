@@ -10,7 +10,7 @@ This document describes workspace-wide conventions for fish scripts in this chez
   - All comments, messages, and user-facing strings in fish scripts must be in English (see workspace rule `english-only.mdc`).
 - **Shebang and execution**:
   - For standalone executables in `home/dot_local/bin/`, start with `#!/usr/bin/env fish`.
-  - For config snippets under `home/dot_config/fish/conf.d/`, do not include a shebang; they are sourced by fish on startup.
+  - For config snippets under `home/dot_config/fish/conf.d/`, include the same `#!/usr/bin/env fish` shebang as other fish scripts in this repo (see `fish-home-config.mdc`), even though fish does not require it when sourcing.
 - **Interactive vs non-interactive**:
   - Use guards such as `if status is-interactive` or `if status is-login` for logic that should only run in interactive or login shells.
   - Avoid running slow or noisy code on every non-interactive invocation of fish.

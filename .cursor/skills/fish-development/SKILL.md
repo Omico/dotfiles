@@ -23,6 +23,12 @@ This skill explains how to work with fish shell scripts in this chezmoi repo, in
 - **Follow workspace rules**:
   - Keep all comments, messages, and user-facing strings in English.
   - Use the appropriate shebang and location based on whether the file is config, completion, or an executable.
+- **Use `fish_platform` for OS detection**:
+  - The global variable `fish_platform` is initialized in `home/dot_config/fish/conf.d/00-platform.fish` based on `uname`.
+  - Expected values include `darwin`, `linux`, `wsl`, `msys`, and `other`.
+  - Scripts that need OS-specific behavior should prefer `fish_platform` over calling `uname` directly.
+  - Do not overwrite `fish_platform` in other config files; treat it as a read-only indicator of the current platform.
+  - For functions that may run before fish configs are fully loaded, check `set -q fish_platform` and fail fast with a clear error if it is missing.
 - **Place functions correctly**:
   - Put reusable functions in `home/dot_config/fish/functions/` with one primary public function per file.
   - Name the file to match the main function where practical (for example `upgrade-agent-skills.fish` defines `upgrade-agent-skills`).
