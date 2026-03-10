@@ -42,3 +42,6 @@ This skill explains how to work with fish shell scripts in this chezmoi repo, in
   - For layout and file placement, see [conventions-and-layout.md](references/conventions-and-layout.md).
   - For function structure and style, see [function-guidelines.md](references/function-guidelines.md).
   - For a full workflow and pre-commit checks, see [workflow-and-checklist.md](references/workflow-and-checklist.md).
+- **Avoid reserved/special variable names**:
+  - Fish 4.x treats `version` as a special read-only variable; do not assign to `version` in any scope.
+  - Prefer descriptive local names like `app_version` instead of plain `version`.
