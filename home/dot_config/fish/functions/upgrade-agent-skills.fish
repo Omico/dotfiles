@@ -23,9 +23,13 @@ function upgrade-agent-skills --description "Upgrade agent skills from skills.js
 
     set -l entries (jq -c '(.defaults // {}) as $d | .install[]? | ($d * .)' "$skills_file" 2>/dev/null)
     if test -z "$entries"
-        printf "skills-install: no install entries or invalid JSON in %s\n" "$skills_file" >&2
+        printf "upgrade-agent-skills: no install entries or invalid JSON in %s\n" "$skills_file" >&2
         return 1
     end
+
+    set -l total (count $entries)
+    set -l label (test $total -eq 1; and echo "entry"; or echo "entries")
+    echo "Upgrading agent skills ($total $label)..."
 
     set -l n 0
     for entry in $entries
@@ -33,7 +37,7 @@ function upgrade-agent-skills --description "Upgrade agent skills from skills.js
 
         set -l source (echo "$entry" | jq -r '.source // empty')
         if test -z "$source"
-            printf "skills-install: entry %d has no source, skipping.\n" $n >&2
+            printf "[%d/%d] skip (no source)\n" $n $total >&2
             continue
         end
 
@@ -59,12 +63,12 @@ function upgrade-agent-skills --description "Upgrade agent skills from skills.js
             set cmd $cmd --yes
         end
 
-        printf "skills-install: running: %s\n" (string join -- " " $cmd) >&2
+        printf "[%d/%d] %s\n" $n $total "$source"
         if not $cmd
-            printf "skills-install: command failed for entry %d.\n" $n >&2
+            printf "upgrade-agent-skills: failed at entry %d (%s)\n" $n "$source" >&2
             return 1
         end
     end
 
-    echo "Done installing skills from $skills_file."
+    echo "Done. Upgraded $total $label."
 end
