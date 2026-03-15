@@ -47,5 +47,5 @@ cd "$HOME/Git/Mark24Code/rime-auto-deploy"
 ## Upgrade local dotfiles
 
 ```shell
-dotfiles-upgrade
+chezmoi update
 ```
