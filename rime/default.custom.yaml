@@ -16,9 +16,9 @@ patch:
 
   key_binder:
     bindings:
-      - accept: Control+Shift+space
-        toggle: full_shape
-        when: always
+      - { when: always, accept: Control+Shift+space, toggle: full_shape }
+      - { when: has_menu, accept: equal, send: Page_Down }
+      - { when: has_menu, accept: minus, send: Page_Up }
 
   switcher:
     save_options:
