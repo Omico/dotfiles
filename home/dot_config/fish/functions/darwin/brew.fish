@@ -17,6 +17,7 @@ function brew-restore --description "Restore Homebrew packages from Brewfile"
 end
 
 function brew-update --description "Update Homebrew packages"
+    echo "🍺 Updating Homebrew packages..."
     brew update
     brew upgrade
     brew cleanup

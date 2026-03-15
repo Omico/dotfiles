@@ -9,7 +9,6 @@ function dotfiles-upgrade --description "Upgrade dotfiles"
     fish-reload
 
     if test "$fish_platform" = darwin
-        echo "🍺 Updating Homebrew packages..."
         brew-update
 
         if test -d "$HOME/Library/Rime"
