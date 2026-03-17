@@ -1,9 +1,9 @@
 ---
 description: Keep skills.json in sync with installed agent skills
-globs: skills.json
+globs: skills.json, .cursor/rules/agent-skills-sync.mdc
+alwaysApply: false
 ---
-
-# Sync skills.json
+# Sync skills configuration
 
 Whenever a new skill is installed, **update `skills.json` in the same change set** so the configuration stays versioned and can be restored with `upgrade-agent-skills`.
 
@@ -46,3 +46,28 @@ jq --indent 4 '.install |= (sort_by(.source) | map(if has("skills") then .skills
 
 - If the user asks to add or install a skill and you run `npx skills add`, also update `skills.json`.
 - Finish by running the `jq` sort step before considering the task complete.
+
+For example, when running:
+
+```sh
+npx skills add https://github.com/vercel-labs/agent-skills --skill web-design-guidelines
+```
+
+also make sure that `skills.json` contains an entry for `https://github.com/vercel-labs/skills` with `"web-design-guidelines"` listed in its `skills` array, and keep both the `install` list and `skills` arrays sorted.
+
+## Commit message guidelines
+
+When a change involves `skills.json`, the commit message should make this explicit so that it is easy to track skill configuration changes in history.
+
+Recommended patterns:
+
+- `chore(skills): Add <skill-name> skill`
+- `chore(skills): Add <skill-name-1> and <skill-name-2> skills`
+- `chore(skills): Add skills and update sync rule`
+- `docs(skills): Clarify agent-skills sync workflow`
+
+Rules of thumb:
+
+- Use the `skills` scope for commits that touch `skills.json` and/or `.cursor/rules/agent-skills-sync.mdc`.
+- When adding multiple skills in one commit, prefer a plural description such as `Add multiple skills` or mention the most important ones.
+- When you change both the rule file and `skills.json`, prefer a message that reflects both, for example `chore(skills): Add skills and update sync rule`.
