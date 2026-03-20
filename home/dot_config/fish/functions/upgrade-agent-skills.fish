@@ -11,17 +11,17 @@ function upgrade-agent-skills --description "Upgrade agent skills from skills.js
         return 1
     end
 
-    if not type -q jq
-        echo "Error: jq command not found. It is required to parse JSON." >&2
-        return 1
-    end
-
     if not type -q npx
         echo "Error: npx command not found. It is required to install skills." >&2
         return 1
     end
 
-    set -l entries (jq -c '(.defaults // {}) as $d | .install[]? | ($d * .)' "$skills_file" 2>/dev/null)
+    if not type -q jq
+        echo "Error: jq command not found. It is required to parse JSON." >&2
+        return 1
+    end
+
+    set -l entries (jq -c '(.defaults // {}) as $d | .install[]? | ($d * .)' "$skills_file")
     if test -z "$entries"
         printf "upgrade-agent-skills: no install entries or invalid JSON in %s\n" "$skills_file" >&2
         return 1
@@ -32,42 +32,49 @@ function upgrade-agent-skills --description "Upgrade agent skills from skills.js
     echo "Upgrading agent skills ($total $label)..."
 
     set -l n 0
+    set -l failures
     for entry in $entries
         set n (math "$n + 1")
 
-        set -l source (echo "$entry" | jq -r '.source // empty')
+        set -l source (printf '%s\n' "$entry" | jq -r '.source // empty')
         if test -z "$source"
             printf "[%d/%d] skip (no source)\n" $n $total >&2
             continue
         end
 
-        set -l cmd npx skills add "$source"
+        set -l cmd_base npx skills add "$source"
+        set -l common_flags
 
-        set -l skills (echo "$entry" | jq -r '.skills[]? // empty')
-        for s in $skills
-            set cmd $cmd --skill "$s"
+        for s in (printf '%s\n' "$entry" | jq -r '.skills[]? // empty')
+            set common_flags $common_flags --skill "$s"
         end
 
-        set -l agents (echo "$entry" | jq -r '.agents[]? // empty')
-        for a in $agents
-            set cmd $cmd --agent "$a"
+        for a in (printf '%s\n' "$entry" | jq -r '.agents[]? // empty')
+            set common_flags $common_flags --agent "$a"
         end
 
-        set -l use_global (echo "$entry" | jq -r '.global // false')
-        set -l use_yes (echo "$entry" | jq -r '.yes // false')
-
-        if test "$use_global" = true
-            set cmd $cmd --global
-        end
-        if test "$use_yes" = true
-            set cmd $cmd --yes
+        if test (printf '%s\n' "$entry" | jq -r '.global // false') = true
+            set common_flags $common_flags --global
         end
 
-        printf "[%d/%d] %s\n" $n $total "$source"
+        if test (printf '%s\n' "$entry" | jq -r '.yes // false') = true
+            set common_flags $common_flags --yes
+        end
+
+        set -l cmd $cmd_base $common_flags
+        printf "[%d/%d] %s\n" $n $total (string join ' ' -- $cmd)
         if not $cmd
-            printf "upgrade-agent-skills: failed at entry %d (%s)\n" $n "$source" >&2
-            return 1
+            set failures $failures $source
+            printf "upgrade-agent-skills: failed to install from %s\n" "$source" >&2
         end
+    end
+
+    set -l failure_count (count $failures)
+    if test $failure_count -gt 0
+        echo "Done. Failed to install $failure_count skill(s)."
+        echo "Failed sources:"
+        printf "%s\n" $failures >&2
+        return 1
     end
 
     echo "Done. Upgraded $total $label."

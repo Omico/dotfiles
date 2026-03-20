@@ -32,6 +32,15 @@ Whenever a new skill is installed, **update `skills.json` in the same change set
 jq --indent 4 '.install |= (sort_by(.source) | map(if has("skills") then .skills |= sort else . end))' skills.json
 ```
 
+## Validate new skills exist
+
+- After editing `skills.json`, run `upgrade-agent-skills` **outside the sandbox / in a non-restricted environment** (otherwise cloning can fail with permission errors or timeouts).
+- If the command reports any failures (e.g. "with failures"), treat the skill names you added as invalid and fix `skills.json` before finishing.
+- For each skill name you added/updated in `skills.json` (i.e. entries under `install[].skills` in this change set), build the expected URL from the corresponding `install[].source`:
+  - Derive `<owner>/<repo>` from `install[].source` by stripping `https://github.com/` (and any trailing `.git`).
+  - Construct `https://skills.sh/<owner>/<repo>/<skill-name>`.
+- Confirm the URL is correct by verifying it responds successfully (e.g. `curl -sSfL "<expected-url>" >/dev/null`).
+
 ## Do not remove entries
 
 - Do not remove existing skills or sources unless the user explicitly asks to uninstall or clean up.

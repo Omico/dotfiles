@@ -68,10 +68,15 @@
             ]
         },
         {
+            "source": "https://github.com/vercel-labs/agent-skills",
+            "skills": [
+                "web-design-guidelines"
+            ]
+        },
+        {
             "source": "https://github.com/vercel-labs/skills",
             "skills": [
-                "find-skills",
-                "web-design-guidelines"
+                "find-skills"
             ]
         }
     ]
