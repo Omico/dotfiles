@@ -35,38 +35,38 @@ This guide is for:
 
 The script is organized in sections (see the header comment):
 
-| Section                  | Purpose                                                                                                                                                                           |
-| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1. Initialization        | Set `_orchard_dir`, `_orchard_apps_dir`, `_orchard_cache_dir` from `XDG_*`.                                                                                                       |
-| 2. Public API            | `orchard_fetch_*`, `orchard_cli_*` — no leading `_`; callable from app `.fish` files. Internal helpers (e.g. `_orchard_ensure_local_bin`) are defined **below** public functions. |
-| 3. Usage and app loading | `_orchard_usage`, `_orchard_load_app`, `_orchard_installed`, `_orchard_version`.                                                                                                  |
-| 4. DMG helpers           | Mount, unmount, install from mount, cache validation.                                                                                                                             |
-| 5. Command: list         | Iterate `apps/*.fish`, load each app, print installed status and version.                                                                                                         |
-| 6. Command: install      | Parse args, load app, resolve URL (if callback), ensure archive, install by type (dmg/zip/pkg), run after-install callback.                                                       |
-| 7. Command: migrate      | Implement migration flows (currently: from Homebrew casks).                                                                                                                       |
-| 8. Command: cleanup      | Delete cache dir.                                                                                                                                                                 |
-| 9. Main entry            | Dispatch by subcommand.                                                                                                                                                           |
+| Section                | Purpose                                                                                                                                                                           |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Initialization         | Set `_orchard_dir`, `_orchard_apps_dir`, `_orchard_cache_dir` from `XDG_*`.                                                                                                       |
+| Public API             | `orchard_fetch_*`, `orchard_cli_*` — no leading `_`; callable from app `.fish` files. Internal helpers (e.g. `_orchard_ensure_local_bin`) are defined **below** public functions. |
+| Usage and app loading  | `_orchard_usage`, `_orchard_load_app`, `_orchard_installed`, `_orchard_version`.                                                                                                  |
+| DMG helpers            | Mount, unmount, install from mount, cache validation.                                                                                                                             |
+| Command: list          | Iterate `apps/*.fish`, load each app, print installed status and version.                                                                                                         |
+| Command: install       | Parse args, load app, resolve URL (if callback), ensure archive, install by type (dmg/zip/pkg), run after-install callback.                                                       |
+| Command: migrate       | Implement migration flows (currently: from Homebrew casks).                                                                                                                       |
+| Command: cleanup       | Delete cache dir.                                                                                                                                                                 |
+| Main entry             | Dispatch by subcommand.                                                                                                                                                           |
 
 **Convention**: Functions whose names start with `_` are internal. They must **not** be defined above any non-`_` (public) function in the same logical section, so that "public first, internal below" is clear.
 
 ### App loading flow
 
-1. `orchard list` or `orchard install <app_id>` loads the app via `_orchard_load_app <app_id>`.
-2. `_orchard_load_app` sources `$_orchard_apps_dir/$app_id.fish` and validates required variables.
-3. It sets defaults: `orchard_app_bundle_name` → `$orchard_app_display_name.app` if unset; `orchard_app_bundle_path` → `/Applications/$orchard_app_bundle_name` if unset.
-4. During `orchard install`, if `orchard_resolve_download_url_callback` exists, it is run once to set `orchard_app_download_url` before download. Cache path is derived from URL hash and `orchard_app_download_type`.
+- **Dispatch**: `orchard list` or `orchard install <app_id>` loads the app via `_orchard_load_app <app_id>`.
+- **Source and validate**: `_orchard_load_app` sources `$_orchard_apps_dir/$app_id.fish` and validates required variables.
+- **Defaults**: It sets `orchard_app_bundle_name` → `$orchard_app_display_name.app` if unset; `orchard_app_bundle_path` → `/Applications/$orchard_app_bundle_name` if unset.
+- **Resolve URL (install only)**: During `orchard install`, if `orchard_resolve_download_url_callback` exists, it is run once to set `orchard_app_download_url` before download. Cache path is derived from URL hash and `orchard_app_download_type`.
 
 ### Install flow (high level)
 
-1. Parse `install [--force] <app_id>`.
-2. Load app; exit if required vars missing.
-3. If already installed and not `--force`, exit.
-4. If `orchard_resolve_download_url_callback` is defined, run it to set `orchard_app_download_url`.
-5. Compute cache path; ensure archive (validate existing or download).
-6. If app is running, try to quit it via `osascript`.
-7. Run `orchard_before_install_callback` if defined.
-8. Install by type: **dmg** (mount → copy .app → unmount), **zip** (extract → copy .app), **pkg** (run `installer -pkg ... -target /`).
-9. Run `orchard_after_install_callback` if defined.
+- **Parse**: `install [--force] <app_id>`.
+- **Load app**: Exit if required vars missing.
+- **Skip if installed**: If already installed and not `--force`, exit.
+- **Resolve URL**: If `orchard_resolve_download_url_callback` is defined, run it to set `orchard_app_download_url`.
+- **Archive**: Compute cache path; ensure archive (validate existing or download).
+- **Quit running app**: If the app is running, try to quit it via `osascript`.
+- **Before-install callback**: Run `orchard_before_install_callback` if defined.
+- **Install by type**: **dmg** (mount → copy .app → unmount), **zip** (extract → copy .app), **pkg** (run `installer -pkg ... -target /`).
+- **After-install callback**: Run `orchard_after_install_callback` if defined.
 
 ---
 
@@ -108,7 +108,7 @@ Variables set by Orchard (do not set in the app file unless overriding):
 
 ## Public API for app packages
 
-These functions are part of the contract for app `.fish` files. They are defined in section 2 of `executable_orchard` so they exist when app files are sourced.
+These functions are part of the contract for app `.fish` files. They are defined in the Public API block of `executable_orchard` so they exist when app files are sourced.
 
 ### Fetching URLs
 
@@ -185,11 +185,11 @@ end
 
 See the **orchard** skill **Quick workflow** (in `.cursor/skills/orchard/SKILL.md`) for a concise checklist.
 
-1. Create `apps/<app_id>.fish` under the orchard config directory (e.g. `home/dot_config/orchard/apps/` in chezmoi).
-2. Set the four required variables. If the download URL is not fixed, define `orchard_resolve_download_url_callback` and set `orchard_app_download_url` inside it (you can leave the initial URL empty).
-3. Set `orchard_app_bundle_name` if the `.app` name inside the DMG/ZIP differs from `"<display name>.app"`.
-4. Optionally define `orchard_after_install_callback` (e.g. `orchard_cli_wrapper` or `orchard_cli_symlink`) and/or `orchard_before_install_callback`, `orchard_resolve_installed_version_callback`.
-5. Apply chezmoi so the file is present; run `orchard list` to confirm, then `orchard install <app_id>` to test.
+- **Create package file**: Add `apps/<app_id>.fish` under the orchard config directory (e.g. `home/dot_config/orchard/apps/` in chezmoi).
+- **Required variables**: Set the four required variables. If the download URL is not fixed, define `orchard_resolve_download_url_callback` and set `orchard_app_download_url` inside it (you can leave the initial URL empty).
+- **Bundle name**: Set `orchard_app_bundle_name` if the `.app` name inside the DMG/ZIP differs from `"<display name>.app"`.
+- **Optional callbacks**: Define `orchard_after_install_callback` (e.g. `orchard_cli_wrapper` or `orchard_cli_symlink`) and/or `orchard_before_install_callback`, `orchard_resolve_installed_version_callback` as needed.
+- **Verify**: Apply chezmoi so the file is present; run `orchard list` to confirm, then `orchard install <app_id>` to test.
 
 **Reference**: `brew info --cask <cask_name>` often gives homepage, version, and artifact URL or structure, which helps when mapping to orchard variables.
 
