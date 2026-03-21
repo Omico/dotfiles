@@ -1,43 +1,16 @@
 ---
-description: Generated docs under docs/src come from Cursor sources; edit source files and regenerate instead of hand-editing output
+description: This repo syncs Cursor sources into VitePress via generate-docs.mjs; follow the vitepress-cursor-docs skill for procedures
+globs: .cursor/commands/**/*.md,.cursor/rules/**/*.mdc,.cursor/skills/**/*.md,.github/workflows/docs.yml,docs/**
+alwaysApply: false
 ---
 
-# Docs generated from Cursor (rules, skills, commands)
+# Docs generated from Cursor (chezmoi)
 
-This repository builds its VitePress site from Cursor sources by using **`docs/scripts/generate-docs.mjs`**. The generated content lives under **`docs/src/`**, and the generated sidebar lives in **`docs/.vitepress/sidebar.generated.mts`**.
+Applies when **frontmatter `globs`** match files in context. This repo builds VitePress from **`.cursor/rules`**, **`.cursor/commands`**, and **`.cursor/skills`** via **`docs/scripts/generate-docs.mjs`**. For workflows, what not to edit, nav/sidebar, gitignore, and CI patterns, use the **`vitepress-cursor-docs`** skill.
 
-When working on this docs system, install and use the **`vitepress-cursor-docs`** skill if it is available in your skill environment. If needed, install it with **`npx skills add OmicoDev/skills --skill vitepress-cursor-docs`**.
+**Install if needed:** **`npx skills add OmicoDev/skills --skill vitepress-cursor-docs`**
 
-## What not to edit
+## Repository-specific
 
-Do not hand-edit these generated output directories:
-
-- **`docs/src/cursor-rules/`** — from `.cursor/rules/*.mdc`
-- **`docs/src/cursor-commands/`** — from `.cursor/commands/*.md`
-- **`docs/src/agent-skills/`** — from `.cursor/skills/**` (SKILL.md and references)
-
-Also avoid editing these generated outputs by hand:
-
-- **`docs/.vitepress/sidebar.generated.mts`** — generated sidebar data
-- Generated section index pages such as **`docs/src/cursor-rules/index.md`**
-
-The site homepage, such as **`docs/src/index.md`**, may still be hand-maintained unless another rule or local convention says otherwise.
-
-## Editing content
-
-- To change generated docs content, edit the **source** files under `.cursor/rules`, `.cursor/commands`, or `.cursor/skills`.
-- After editing source files, run **`npm run docs:prepare`** from the repo root or from `docs/`.
-- The same prepare step runs automatically before `docs:dev` and `docs:build`.
-- Generated section index pages use a Markdown `#` heading only and do not include a `title` frontmatter block.
-
-## Changing nav or sidebar
-
-- **Nav** is defined in **`docs/.vitepress/config.mts`** under `themeConfig.nav`. Edit that file to add or reorder top-level nav links.
-- **Sidebar** is generated into **`docs/.vitepress/sidebar.generated.mts`**. To change sidebar structure, update **`docs/scripts/generate-docs.mjs`** instead of editing the generated file.
-- Typical sidebar changes happen in `FLAT_SECTIONS` or in the agent-skills sidebar generation logic, followed by **`npm run docs:prepare`**.
-
-## CI and deployment
-
-- The **Deploy docs** workflow in **`.github/workflows/docs.yml`** runs on pushes to `main` when matching docs-related paths change.
-- Source changes under `.cursor/commands/*.md`, `.cursor/rules/**/*.mdc`, `.cursor/skills/**/*.md`, and changes under `docs/**` already trigger a docs rebuild and deploy.
-- If you add a new source directory that the generator should include, wire it into **`generate-docs.mjs`** and update the workflow `paths` filter if the new directory is outside the existing watched paths.
+- **CI**: **`Deploy docs`** — **`.github/workflows/docs.yml`**. Runs on push to **`main`** when the same path patterns as **`globs`** change (see **`paths`** in that file).
+- **Build**: **`npm run docs:build`** in **`docs/`** → **`docs/.vitepress/dist`**.
