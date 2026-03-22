@@ -1,8 +1,6 @@
 #!/usr/bin/env fish
 
-fish_config theme choose "ayu Mirage"
 set -g fish_greeting ""
-set fish_color_command green
 
 set -gx LC_ALL en_US.UTF-8
 
