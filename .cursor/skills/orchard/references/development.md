@@ -62,7 +62,7 @@ The script is organized in sections (see the header comment):
 - **Load app**: Exit if required vars missing.
 - **Skip if installed**: If already installed and not `--force`, exit.
 - **Resolve URL**: If `orchard_resolve_download_url_callback` is defined, run it to set `orchard_app_download_url`.
-- **Archive**: Compute cache path; ensure archive (validate existing or download).
+- **Archive**: Compute cache path; ensure archive (validate existing or download with `aria2c`).
 - **Quit running app**: If the app is running, try to quit it via `osascript`.
 - **Before-install callback**: Run `orchard_before_install_callback` if defined.
 - **Install by type**: **dmg** (mount → copy `.app` or install `.pkg` from the mounted volume → unmount), **zip** (extract → copy .app), **pkg** (run `installer -pkg ... -target /`).
@@ -177,7 +177,7 @@ end
 ## Dependencies
 
 - **Shell**: Fish.
-- **External**: `curl`, `jq` (for GitHub API and many resolve callbacks), `hdiutil`, `ditto`, `installer`, `unzip`, `defaults` (for Info.plist). `sudo` is used for writing to `/Applications` and `/usr/local/bin`.
+- **External**: `aria2c` (for archive downloads), `curl`, `jq` (for GitHub API and many resolve callbacks), `hdiutil`, `ditto`, `installer`, `unzip`, `defaults` (for Info.plist). `sudo` is used for writing to `/Applications` and `/usr/local/bin`.
 - **macOS**: DMG/ZIP/PKG handling and `.app` layout are macOS-specific.
 
 ---

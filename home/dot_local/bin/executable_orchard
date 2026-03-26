@@ -223,7 +223,7 @@ function _orchard_dmg_mount -a archive
     if test $status -ne 0
         set -l e (string join " " $err)
         if string match -q "*image not recognized*" "$e"; or string match -q "*no mountable file systems*" "$e"
-            rm -f "$archive"
+            _orchard_remove_archive_cache "$archive"
             return 2
         end
         echo "Mount failed: $archive" >&2
@@ -332,16 +332,51 @@ function _orchard_parse_install_args
     end
 end
 
-# Download to current app cache path; return curl status (_orchard_app_archive_cache_path set in _orchard_load_app)
+# Remove cached archive plus aria2 metadata sidecar.
+function _orchard_remove_archive_cache -a archive_path
+    rm -f "$archive_path" "$archive_path.aria2"
+end
+
+# Download to current app cache path via aria2c; return aria2c status
+# (_orchard_app_archive_cache_path set in _orchard_load_app)
 function _orchard_download_archive
-    curl -L --progress-bar -C - "$orchard_app_download_url" -o "$_orchard_app_archive_cache_path"
+    if not command -sq aria2c
+        echo "aria2c is required to download archives." >&2
+        return 1
+    end
+
+    set -l archive_dir (dirname "$_orchard_app_archive_cache_path")
+    set -l archive_name (basename "$_orchard_app_archive_cache_path")
+
+    aria2c \
+        --continue=true \
+        --allow-overwrite=true \
+        --auto-file-renaming=false \
+        --file-allocation=none \
+        --show-console-readout=true \
+        --summary-interval=0 \
+        --download-result=hide \
+        --console-log-level=warn \
+        --dir="$archive_dir" \
+        --out="$archive_name" \
+        "$orchard_app_download_url"
+    echo
     return $status
 end
 
-# Ensure valid cache; delete and re-download if invalid; return archive path
+# Ensure cached archive is complete; resume partial downloads, re-download if invalid.
 function _orchard_ensure_archive
     mkdir -p "$_orchard_cache_dir"
     if test -f "$_orchard_app_archive_cache_path"
+        if test -f "$_orchard_app_archive_cache_path.aria2"
+            echo "Resuming partial download for $orchard_app_display_name..." >&2
+            if not _orchard_download_archive
+                echo "Download failed." >&2
+                return 1
+            end
+            return 0
+        end
+
         set -l valid false
         switch $orchard_app_download_type
             case dmg
@@ -353,7 +388,9 @@ function _orchard_ensure_archive
             case '*'
                 set valid true
         end
-        test "$valid" = false; and rm -f "$_orchard_app_archive_cache_path"
+        test "$valid" = false; and _orchard_remove_archive_cache "$_orchard_app_archive_cache_path"
+    else if test -f "$_orchard_app_archive_cache_path.aria2"
+        _orchard_remove_archive_cache "$_orchard_app_archive_cache_path"
     end
     if not test -f "$_orchard_app_archive_cache_path"
         echo "Downloading $orchard_app_display_name..." >&2
