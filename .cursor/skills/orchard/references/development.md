@@ -65,7 +65,7 @@ The script is organized in sections (see the header comment):
 - **Archive**: Compute cache path; ensure archive (validate existing or download).
 - **Quit running app**: If the app is running, try to quit it via `osascript`.
 - **Before-install callback**: Run `orchard_before_install_callback` if defined.
-- **Install by type**: **dmg** (mount → copy .app → unmount), **zip** (extract → copy .app), **pkg** (run `installer -pkg ... -target /`).
+- **Install by type**: **dmg** (mount → copy `.app` or install `.pkg` from the mounted volume → unmount), **zip** (extract → copy .app), **pkg** (run `installer -pkg ... -target /`).
 - **After-install callback**: Run `orchard_after_install_callback` if defined.
 
 ---
@@ -89,6 +89,7 @@ Each app is a Fish script that sets global variables and optionally defines call
 | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | `orchard_app_bundle_name` | Name of the `.app` inside the DMG/ZIP (default: `$orchard_app_display_name.app`). Set when the volume or zip uses a different name. |
 | `orchard_app_bundle_path` | Full path where the app is installed (default: `/Applications/$orchard_app_bundle_name`). Override to install elsewhere.            |
+| `orchard_app_pkg_name`    | Name of the `.pkg` inside a DMG when the mounted volume ships an installer package instead of a directly copyable app.              |
 
 ### Optional callbacks (no arguments)
 

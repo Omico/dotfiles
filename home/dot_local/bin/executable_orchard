@@ -80,14 +80,43 @@ end
 
 # Create /usr/local/bin/<cli> wrapper that execs .app/Contents/MacOS/<binary>.
 # For use by orchard app packages (e.g. in orchard_after_install_callback).
-# Usage: orchard_cli_wrapper <cli_name> [binary_name]
+# Usage: orchard_cli_wrapper <cli_name> [binary_name] [fixed_arg ...]
 #   cli_name: command name (e.g. firefox, tailscale)
 #   binary_name: executable inside .app (default: cli_name)
-function orchard_cli_wrapper -a cli_name binary_name
-    _orchard_ensure_local_bin
-    set -q binary_name[1]; or set binary_name "$cli_name"
-    printf '%s\n' '#!/bin/bash' "exec '$orchard_app_bundle_path/Contents/MacOS/$binary_name' \"\$@\"" | sudo tee /usr/local/bin/$cli_name >/dev/null
-    sudo chmod +x /usr/local/bin/$cli_name
+#   fixed_arg: optional argument(s) inserted before user-provided "$@"
+#              if the first optional arg starts with "-", binary_name defaults
+#              to cli_name and all remaining args are treated as fixed_arg.
+function orchard_cli_wrapper
+    set -q argv[1]
+    or begin
+        echo "orchard_cli_wrapper requires cli_name." >&2
+        return 1
+    end
+
+    set -l cli_name "$argv[1]"
+    set -l binary_name
+    set -l fixed_args
+
+    if not set -q argv[2]
+        set binary_name "$cli_name"
+    else if string match -qr '^-' -- "$argv[2]"
+        set binary_name "$cli_name"
+        set fixed_args $argv[2..-1]
+    else
+        set binary_name "$argv[2]"
+        set fixed_args $argv[3..-1]
+    end
+
+    _orchard_ensure_local_bin; or return 1
+
+    set -l exec_line "exec '"(string replace -a "'" "'\"'\"'" -- "$orchard_app_bundle_path/Contents/MacOS/$binary_name")"'"
+    for fixed_arg in $fixed_args
+        set exec_line "$exec_line '"(string replace -a "'" "'\"'\"'" -- "$fixed_arg")"'"
+    end
+    set exec_line "$exec_line \"\$@\""
+
+    printf '%s\n' '#!/bin/bash' "$exec_line" | sudo tee "/usr/local/bin/$cli_name" >/dev/null; or return 1
+    sudo chmod +x "/usr/local/bin/$cli_name"
 end
 
 # Symlink .app binary to /usr/local/bin/<cli>.
@@ -102,7 +131,7 @@ end
 # Ensure /usr/local/bin exists (used by orchard_cli_wrapper and orchard_cli_symlink).
 function _orchard_ensure_local_bin
     if not test -d /usr/local/bin
-        mkdir -p /usr/local/bin
+        sudo mkdir -p /usr/local/bin; or return 1
     end
 end
 
@@ -124,6 +153,7 @@ function _orchard_load_app -a app_id
     set -e orchard_app_download_type
     set -e orchard_app_bundle_name
     set -e orchard_app_bundle_path
+    set -e orchard_app_pkg_name
 
     set -l file "$_orchard_apps_dir/$app_id.fish"
     if not test -f "$file"
@@ -222,6 +252,19 @@ function _orchard_dmg_install_app -a mount_point
     echo "Copying $orchard_app_display_name to $orchard_app_bundle_path..."
     sudo rm -rf "$orchard_app_bundle_path"
     sudo ditto "$src" "$orchard_app_bundle_path"
+end
+
+function _orchard_dmg_install_pkg -a mount_point
+    set -l name "$orchard_app_pkg_name"
+    set -l src "$mount_point/$name"
+    if not test -f "$src"
+        set src (find "$mount_point" -maxdepth 3 -name "$name" -type f 2>/dev/null | head -1)
+    end
+    if test -z "$src"; or not test -f "$src"
+        echo "Not found in mounted volume: $name"
+        return 1
+    end
+    _orchard_install_pkg_path "$src"
 end
 
 # Whether dmg cache is valid (mountable)
@@ -342,11 +385,14 @@ function _orchard_install_dmg
         return 1
     end
     set -l ok 0
-    if set -q orchard_app_bundle_name
+    if set -q orchard_app_pkg_name
+        _orchard_dmg_install_pkg "$mount_point"
+        set ok $status
+    else if set -q orchard_app_bundle_name
         _orchard_dmg_install_app "$mount_point"
         set ok $status
     else
-        echo "$orchard_app_id: define orchard_app_bundle_name."
+        echo "$orchard_app_id: define orchard_app_bundle_name or orchard_app_pkg_name."
         _orchard_dmg_unmount "$mount_point"
         return 1
     end
@@ -381,9 +427,14 @@ function _orchard_install_zip
     return $ok
 end
 
-function _orchard_install_pkg
+function _orchard_install_pkg_path -a pkg_path
     echo "Installing pkg (admin required)..."
-    sudo installer -pkg "$_orchard_app_archive_cache_path" -target /
+    sudo installer -pkg "$pkg_path" -target /
+    return $status
+end
+
+function _orchard_install_pkg
+    _orchard_install_pkg_path "$_orchard_app_archive_cache_path"
     return $status
 end
 

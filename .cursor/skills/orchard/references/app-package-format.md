@@ -28,10 +28,11 @@ Apply this format when creating or editing app `.fish` files.
 
 ## Optional variables (Fish set -g)
 
-| Variable                  | Description                                                                                                        |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `orchard_app_bundle_name` | .app name inside the dmg/zip (default: `orchard_app_display_name.app`). Set when the volume uses a different name. |
-| `orchard_app_bundle_path` | Install path of the .app (default: `/Applications/$orchard_app_bundle_name`). Set to install to a different path.  |
+| Variable                  | Description                                                                                                             |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `orchard_app_bundle_name` | `.app` name inside the dmg/zip (default: `orchard_app_display_name.app`). Set when the volume uses a different name.    |
+| `orchard_app_bundle_path` | Install path of the `.app` (default: `/Applications/$orchard_app_bundle_name`). Set to install to a different path.     |
+| `orchard_app_pkg_name`    | `.pkg` name inside a downloaded DMG. Set when the DMG contains an installer package instead of a directly copyable app. |
 
 ---
 
@@ -123,6 +124,17 @@ set -g orchard_app_download_url "https://example.com/MyApp.dmg"
 set -g orchard_app_download_type dmg
 ```
 
+**When a DMG contains a PKG installer:**
+
+```fish
+set -g orchard_app_id example-suite
+set -g orchard_app_display_name "Example Suite"
+set -g orchard_app_bundle_name "Example.app"
+set -g orchard_app_pkg_name "Example Installer.pkg"
+set -g orchard_app_download_url "https://example.com/ExampleSuite.dmg"
+set -g orchard_app_download_type dmg
+```
+
 **Resolve URL from custom API (e.g. Antigravity uses zip + API):**
 
 ```fish
@@ -169,6 +181,7 @@ For each candidate, run **`brew info --cask <cask_name>`** to confirm it uses a 
 ## Notes
 
 - **URL**: Must be a direct dmg/zip/pkg link (or a page that 302-redirects to the file).
+- **DMG with PKG**: Set `orchard_app_pkg_name` to the installer name when the mounted DMG contains a `.pkg` instead of a directly copyable `.app`.
 - **Resolve from HTML (no API)**: Use `curl -sL <page_url>` then parse with Fish `string match -r` to extract the download link, e.g. `set -l url (echo "$html" | string match -r 'href="(https://[^"]+\.dmg)"')[2]`; set `orchard_app_download_url` and `return 0` on success.
 - **Resolve callbacks implementation**: Implement `orchard_resolve_download_url_callback` (and other resolve callbacks) purely in Fish, calling external CLI tools like `curl`, `jq`, or `string` as needed. Do not embed or invoke additional scripting languages (e.g. Python, Ruby, Node) from app packages.
 - **Set by Orchard (do not set in the app file unless overriding):**

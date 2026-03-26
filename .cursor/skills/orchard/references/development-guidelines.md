@@ -48,6 +48,7 @@ _Full variable and callback reference: [app-package-format.md](app-package-forma
 ### Optional variables and callbacks
 
 - Set `orchard_app_bundle_name` only when the `.app` inside the archive differs from `"<display name>.app"`.
+- Set `orchard_app_pkg_name` when a downloaded DMG contains a `.pkg` installer instead of a directly copyable `.app`.
 - CLI symlinks: `orchard_cli_wrapper` for `Contents/MacOS/<binary>`; `orchard_cli_symlink` for paths under `Contents/Resources/` or nested bins.
 - Do **not** set variables orchard sets (e.g. `orchard_app_bundle_path` unless overriding; never set `_orchard_*`).
 
