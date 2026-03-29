@@ -32,6 +32,7 @@ _Full variable and callback reference: [app-package-format.md](app-package-forma
 
 - Path: `home/dot_config/orchard/apps/<app_id>.fish`. `app_id`: lowercase, hyphens allowed; must match filename.
 - All comments and user-facing strings in the `.fish` file must be in **English** (workspace rule).
+- **`set -l` locals**: Use a **leading underscore** and **snake_case** (e.g. `_url`, `_version`). Avoid camelCase; prefer a clear compound name (`_website_links_base` rather than `_base`).
 
 ### Required variables
 
@@ -97,6 +98,7 @@ _Script structure and section list: [development.md — Architecture](developmen
 - [ ] Path is `home/dot_config/orchard/apps/<app_id>.fish` and `orchard_app_id` matches filename.
 - [ ] Required variables set; if using resolve callback, URL may be empty.
 - [ ] All comments and strings in the file are in English.
+- [ ] `set -l` locals use a leading underscore and snake_case (e.g. `_url`).
 - [ ] Resolve callback: on success set URL and return 0; on failure stderr and return 1.
 - [ ] Run `chezmoi apply` and `orchard install <app_id>` (or `--force`) to verify.
 
