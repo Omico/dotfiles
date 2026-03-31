@@ -1,0 +1,4 @@
+#!/usr/bin/env fish
+
+set -gx DISABLE_TELEMETRY 1
+set -gx CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC 1
