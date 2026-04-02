@@ -2806,6 +2806,8 @@
 	<real>0.40000000000000002</real>
 	<key>VisualIndicatorForEsc</key>
 	<false/>
+	<key>findMode_iTerm</key>
+	<integer>0</integer>
 	<key>kCPFavoritesUserDefaultsKey</key>
 	<array>
 		<data>
