@@ -32,6 +32,7 @@ This skill explains how to work with fish shell scripts in this chezmoi repo, in
 - **Place functions correctly**:
   - Put reusable functions in `home/dot_config/fish/functions/` with one primary public function per file.
   - Name the file to match the main function where practical (for example `upgrade-agent-skills.fish` defines `upgrade-agent-skills`).
+  - For wrappers that **install a CLI via an upstream shell one-liner** when the binary is missing, use `__ensure_binary_and_forward` from `home/dot_config/fish/conf.d/00-core-functions.fish` — see [function-guidelines.md — Install-if-missing CLI wrappers](references/function-guidelines.md#install-if-missing-cli-wrappers); do not duplicate the helper under `functions/`.
 - **Keep functions small and robust**:
   - Use `set -l` for local variables and validate inputs early.
   - Handle errors with clear messages to stderr and non-zero exit codes.
@@ -40,7 +41,7 @@ This skill explains how to work with fish shell scripts in this chezmoi repo, in
   - Edit in the chezmoi source tree and run `chezmoi apply` when changes are ready.
 - **Refer to the reference docs**:
   - For layout and file placement, see [conventions-and-layout.md](references/conventions-and-layout.md).
-  - For function structure and style, see [function-guidelines.md](references/function-guidelines.md).
+  - For function structure, style, and install-if-missing wrappers, see [function-guidelines.md](references/function-guidelines.md).
   - For a full workflow and pre-commit checks, see [workflow-and-checklist.md](references/workflow-and-checklist.md).
 - **Avoid reserved/special variable names**:
   - Fish 4.x treats `version` as a special read-only variable; do not assign to `version` in any scope.

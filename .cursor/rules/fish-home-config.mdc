@@ -19,6 +19,10 @@ alwaysApply: false
 - **New scripts**:
   - When creating a new fish script under `home/dot_config/fish`, always begin the file with `#!/usr/bin/env fish` before adding any other content.
 
+## Install-if-missing CLI wrappers
+
+Reuse the shared helper and layout documented in the fish-development reference [function-guidelines.md — Install-if-missing CLI wrappers](.cursor/skills/fish-development/references/function-guidelines.md#install-if-missing-cli-wrappers). Do **not** duplicate `__ensure_binary_and_forward` under `functions/`.
+
 ## Linting
 
 - **Syntax check required**: After editing any script under `home/dot_config/fish`, run a fish syntax check before committing.

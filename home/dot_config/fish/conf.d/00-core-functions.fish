@@ -28,3 +28,21 @@ function __fish_load_config_dir
         end
     end
 end
+
+function __ensure_binary_and_forward --description 'internal: run installer if binary missing, then forward argv'
+    set -l bin $argv[1]
+    set -l name $argv[2]
+    set -l shell $argv[3]
+    set -l install $argv[4]
+
+    if not test -x "$bin"
+        printf "%s not found; installing...\n" $name >&2
+        command $shell -c $install
+        or begin
+            printf "%s installation failed.\n" $name >&2
+            return 1
+        end
+    end
+
+    command $bin $argv[5..-1]
+end

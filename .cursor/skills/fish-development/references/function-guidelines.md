@@ -26,6 +26,17 @@ This document explains how to structure fish functions in this repo, and how to 
 
 ---
 
+## Install-if-missing CLI wrappers
+
+For commands that should **install via an upstream shell one-liner** when the binary is missing, reuse **`__ensure_binary_and_forward`** from `home/dot_config/fish/conf.d/00-core-functions.fish`. Do **not** define a second copy under `functions/`.
+
+- **Signature (conceptual)**: `__ensure_binary_and_forward <bin_path> <short_name> <shell> <install_one_liner> $argv`
+- **`shell`**: `sh` or `bash` — passed to `command $shell -c $install_one_liner` (same idea as `curl … | sh` / `curl … | bash` in a login shell).
+- **Public function**: keep one primary function per file under `home/dot_config/fish/functions/` (for example `functions/unix/rustup.fish`), calling the helper and forwarding the user’s `$argv`.
+- **Examples in this repo**: `home/dot_config/fish/functions/unix/rustup.fish` and `home/dot_config/fish/functions/unix/bun.fish`.
+
+---
+
 ## Example function template
 
 ```fish
