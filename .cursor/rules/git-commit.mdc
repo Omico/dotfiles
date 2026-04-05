@@ -11,6 +11,15 @@ alwaysApply: true
 - **Types** (`feat`, `fix`, `chore`, …) and **scopes** stay **lowercase**, per spec.
 - Subject, body, and footers are **English** (same as the repo English-only rule for stored text).
 
+### Cursor commands
+
+When the change set is **files under `.cursor/commands/`**, prefer **`chore(cursor)`** and put each command’s **file stem** (the name without `.md`) in the summary.
+
+- **One new command:** `chore(cursor): Add git-commit command`
+- **Two new commands in one commit:** `chore(cursor): Add git-commit and orchard-add-package commands`
+- **More than two new commands in one commit:** use a **short subject** (e.g. `chore(cursor): Add Cursor commands`). **List each command file stem** in the **commit body** (bullets or a short paragraph).
+- **Edits:** use **`Update`** instead of **`Add`** when that matches the change (e.g. `chore(cursor): Update git-commit command`). If you change **more than two** command files, use a short subject and describe **each** updated stem in the **commit body**.
+
 ## Capitalization
 
 ### Subject line
