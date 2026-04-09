@@ -4,11 +4,6 @@ if status --is-interactive
     # Aliases
     alias fish_edit_config='$EDITOR ~/.config/fish/config.fish'
 
-    # Fast Node Manager (fnm)
-    if type -q fnm
-        fnm env --use-on-cd --shell fish | source
-    end
-
     # GitHub CLI
     if type -q gh
         gh completion -s fish | source
