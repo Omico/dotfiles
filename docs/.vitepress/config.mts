@@ -1,5 +1,6 @@
 import { defineConfig } from "vitepress";
 import generatedSidebar from "./sidebar.generated.mts";
+import generatedNav from "./nav.generated.mts";
 
 export default defineConfig({
   base: "/",
@@ -10,12 +11,7 @@ export default defineConfig({
     socialLinks: [
       { icon: "github", link: "https://github.com/Omico/dotfiles" },
     ],
-    nav: [
-      { text: "Home", link: "/" },
-      { text: "Agent skills", link: "/agent-skills/" },
-      { text: "Cursor commands", link: "/cursor-commands/" },
-      { text: "Cursor rules", link: "/cursor-rules/" },
-    ],
+    nav: generatedNav,
     sidebar: generatedSidebar,
   },
 });

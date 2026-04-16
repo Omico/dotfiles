@@ -1,6 +1,6 @@
 ---
-name: Orchard: add package
-description: Add a new Orchard app package; follow the Orchard skill end-to-end.
+name: orchard-add-package
+description: Use when adding a new Orchard app package so orchard list and orchard install can manage a macOS app.
 ---
 
 # Orchard: add package
