@@ -31,7 +31,7 @@ This skill explains how to work with fish shell scripts in this chezmoi repo, in
   - For functions that may run before fish configs are fully loaded, check `set -q fish_platform` and fail fast with a clear error if it is missing.
 - **Place functions correctly**:
   - Put reusable functions in `home/dot_config/fish/functions/` with one primary public function per file.
-  - Name the file to match the main function where practical (for example `upgrade-agent-skills.fish` defines `upgrade-agent-skills`).
+  - Name the file to match the main function where practical.
   - For wrappers that **install a CLI via an upstream shell one-liner** when the binary is missing, use `__ensure_binary_and_forward` from `home/dot_config/fish/conf.d/00-core-functions.fish` — see [function-guidelines.md — Install-if-missing CLI wrappers](references/function-guidelines.md#install-if-missing-cli-wrappers); do not duplicate the helper under `functions/`.
 - **Keep functions small and robust**:
   - Use `set -l` for local variables and validate inputs early.

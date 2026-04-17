@@ -1,0 +1,42 @@
+name: dotfiles
+version: 1.0.0
+description: APM project for dotfiles
+author: Omico
+target: codex
+dependencies:
+  apm:
+    - apollographql/skills/skills/rust-best-practices
+    - OmicoDev/skills
+    - antfu/skills/skills/nuxt
+    - antfu/skills/skills/pnpm
+    - antfu/skills/skills/slidev
+    - antfu/skills/skills/vite
+    - antfu/skills/skills/vitepress
+    - antfu/skills/skills/vitest
+    - antfu/skills/skills/vue
+    - antfu/skills/skills/vue-best-practices
+    - anthropics/skills/skills/algorithmic-art
+    - anthropics/skills/skills/canvas-design
+    - anthropics/skills/skills/doc-coauthoring
+    - anthropics/skills/skills/docx
+    - anthropics/skills/skills/frontend-design
+    - anthropics/skills/skills/internal-comms
+    - anthropics/skills/skills/mcp-builder
+    - anthropics/skills/skills/pdf
+    - anthropics/skills/skills/pptx
+    - anthropics/skills/skills/xlsx
+    - figma/mcp-server-guide
+    - github/awesome-copilot/skills/editorconfig
+    - github/awesome-copilot/skills/excalidraw-diagram-generator
+    - github/awesome-copilot/skills/first-ask
+    - github/awesome-copilot/skills/gh-cli
+    - github/awesome-copilot/skills/git-commit
+    - github/awesome-copilot/skills/github-issues
+    - hashicorp/agent-skills/terraform/code-generation/skills/terraform-search-import
+    - hashicorp/agent-skills/terraform/code-generation/skills/terraform-style-guide
+    - hashicorp/agent-skills/terraform/code-generation/skills/terraform-test
+    - hashicorp/agent-skills/terraform/module-generation
+    - hashicorp/agent-skills/terraform/provider-development
+    - nuxt/ui/skills/nuxt-ui
+    - vercel-labs/agent-skills/skills/web-design-guidelines
+    - vercel-labs/skills/skills/find-skills

@@ -8,7 +8,7 @@ This document explains how to structure fish functions in this repo, and how to 
 
 - **Where to put functions**:
   - Utility or CLI-like functions that you want available in interactive shells should live under `home/dot_config/fish/functions/` as separate `*.fish` files.
-  - Keep one primary public function per file, with the file name matching the function name where practical (for example `upgrade-agent-skills.fish` defines `upgrade-agent-skills`).
+  - Keep one primary public function per file, with the file name matching the function name where practical.
 - **Function shape**:
   - Start with `function name --description 'Short description'` and close with `end` on its own line.
   - Use `set -l` for local variables, and treat the function body as a small, readable pipeline: validate inputs, do the work, print a summary.
