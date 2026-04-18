@@ -4,7 +4,7 @@ globs: .agents/commands/**/*.md,.agents/rules/**/*.mdc,.agents/skills/**/*.md,.g
 alwaysApply: false
 ---
 
-# Agents / agent docs
+# VitePress docs for `.agents`
 
 Applies when **frontmatter `globs`** match files in context. **Where `.agents` rules, commands, and skills live** — see root **[`AGENTS.md` → Agent rules and skills](https://github.com/Omico/dotfiles/blob/HEAD/AGENTS.md#agent-rules-and-skills)**. This repo builds VitePress from those trees via **`docs/scripts/generate-docs.mjs`**. For workflows, what not to edit, nav/sidebar, gitignore, and CI patterns, use the **`vitepress-cursor-docs`** skill.
 

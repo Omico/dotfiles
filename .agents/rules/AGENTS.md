@@ -15,7 +15,7 @@ Read this file first. It centralizes lightweight rule metadata so an agent can d
 
 | Rule | Description | Globs | Always Apply | Read When |
 | --- | --- | --- | --- | --- |
-| `agents-agent-docs.mdc` | `This repo syncs .agents rules and skills into VitePress via generate-docs.mjs; follow the vitepress-cursor-docs skill for procedures` | `.agents/commands/**/*.md,.agents/rules/**/*.mdc,.agents/skills/**/*.md,.github/workflows/docs.yml,docs/**` | `false` | Changing `.agents` commands, rules, or skills trees; `docs/`; `generate-docs.mjs`; or the docs GitHub Actions workflow. |
+| `vitepress-agents-docs.mdc` | `This repo syncs .agents rules and skills into VitePress via generate-docs.mjs; follow the vitepress-cursor-docs skill for procedures` | `.agents/commands/**/*.md,.agents/rules/**/*.mdc,.agents/skills/**/*.md,.github/workflows/docs.yml,docs/**` | `false` | Changing `.agents` commands, rules, or skills trees; `docs/`; `generate-docs.mjs`; or the docs GitHub Actions workflow. |
 | `english-only.mdc` | `All script and code content must be in English only` | `\` | `true` | Always applied; use when unsure whether non-English text is allowed in scripts, code comments, or docs. |
 | `fish-formatting.mdc` | `Formatting conventions for all fish scripts in this repo` | `**/*.fish` | `false` | Editing any Fish shell script (`.fish`). |
 | `fish-home-config.mdc` | `Ensure fish scripts under home/dot_config/fish start with the standard shebang` | `home/dot_config/fish/**/*.fish` | `false` | Editing Fish config or functions under `home/dot_config/fish/`. |
