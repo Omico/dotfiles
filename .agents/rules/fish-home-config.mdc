@@ -21,7 +21,7 @@ alwaysApply: false
 
 ## Install-if-missing CLI wrappers
 
-Reuse the shared helper and layout documented in the fish-development reference [function-guidelines.md — Install-if-missing CLI wrappers](.cursor/skills/fish-development/references/function-guidelines.md#install-if-missing-cli-wrappers). Do **not** duplicate `__ensure_binary_and_forward` under `functions/`.
+Reuse the shared helper and layout documented in the fish-development reference [function-guidelines.md — Install-if-missing CLI wrappers](.agents/skills/fish-development/references/function-guidelines.md#install-if-missing-cli-wrappers). Do **not** duplicate `__ensure_binary_and_forward` under `functions/`.
 
 ## Linting
 

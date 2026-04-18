@@ -11,5 +11,5 @@ Create a new **`home/dot_config/orchard/apps/<app_id>.fish`** package so `orchar
 
 ## Behavior
 
-- **Read and follow** the **Orchard** agent skill (`.cursor/skills/orchard/SKILL.md` and its references) for workflow, format, checklists, and conventions.
+- **Read and follow** the **Orchard** agent skill (`.agents/skills/orchard/SKILL.md` and its references) for workflow, format, checklists, and conventions.
 - Use the user’s message (app name, `app_id`, URL, cask, GitHub repo, etc.) as input.

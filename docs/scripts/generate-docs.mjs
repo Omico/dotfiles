@@ -1,47 +1,84 @@
 import { promises as fs } from "fs";
 import path from "path";
 
-// --- Paths ---
+// =============================================================================
+// Repo / docs roots
+// =============================================================================
+
 const cwd = process.cwd();
 const inDocs = path.basename(cwd) === "docs";
 const repoRoot = inDocs ? path.resolve(cwd, "..") : cwd;
 const docsRoot = inDocs ? cwd : path.join(repoRoot, "docs");
 const contentRoot = path.join(docsRoot, "src");
-
-const PATHS = {
-  cursorRules: {
-    in: path.join(repoRoot, ".cursor", "rules"),
-    out: path.join(contentRoot, "cursor-rules"),
-  },
-  agentSkills: {
-    in: path.join(repoRoot, ".cursor", "skills"),
-    out: path.join(contentRoot, "agent-skills"),
-  },
-  cursorCommands: {
-    in: path.join(repoRoot, ".cursor", "commands"),
-    out: path.join(contentRoot, "cursor-commands"),
-  },
-};
-
-/** Flat sections: one output dir per source dir, one doc per file (rules + commands). */
-const FLAT_SECTIONS = [
-  {
-    pathKey: "cursorRules",
-    ext: ".mdc",
-    sectionTitle: "Cursor rules",
-    sidebarBase: "/cursor-rules/",
-  },
-  {
-    pathKey: "cursorCommands",
-    ext: ".md",
-    sectionTitle: "Cursor commands",
-    sidebarBase: "/cursor-commands/",
-  },
-];
+const agentsRoot = path.join(repoRoot, ".agents");
 
 const GITHUB_BASE = "https://github.com/Omico/dotfiles/blob/HEAD/";
 
-// --- FS ---
+// =============================================================================
+// Section config (single source: `.agents/<source>` → `docs/src/agent-<source>`)
+// =============================================================================
+
+/** Decl order = nav order (after Home): skills → commands → rules. */
+const SECTION_SPEC = [
+  { source: "skills" },
+  { source: "commands", ext: ".md" },
+  { source: "rules", ext: ".mdc" },
+];
+
+function agentSectionKey(source) {
+  return `agent${source[0].toUpperCase()}${source.slice(1)}`;
+}
+
+function capitalizeFirst(source) {
+  return source.length === 0
+    ? source
+    : `${source[0].toUpperCase()}${source.slice(1)}`;
+}
+
+function expandSectionSpecRow(r) {
+  return {
+    key: agentSectionKey(r.source),
+    source: r.source,
+    out: `agent-${r.source}`,
+    sectionTitle: `Agent ${capitalizeFirst(r.source)}`,
+    ...(r.ext != null ? { ext: r.ext } : {}),
+  };
+}
+
+/** Paths + metadata for one section (tree or flat). */
+function resolveSectionPaths(row) {
+  const sidebarBase = `/${row.out}/`;
+  return {
+    in: path.join(agentsRoot, row.source),
+    out: path.join(contentRoot, row.out),
+    sidebarBase,
+    sectionTitle: row.sectionTitle,
+    ...(row.ext != null ? { ext: row.ext } : {}),
+  };
+}
+
+function buildSectionRegistry(spec) {
+  const rows = spec.map(expandSectionSpecRow);
+  const sections = Object.fromEntries(
+    rows.map((row) => [row.key, resolveSectionPaths(row)]),
+  );
+  const flatSections = rows
+    .filter((r) => r.ext != null)
+    .map((r) => sections[r.key]);
+  const navSectionKeys = rows.map((r) => r.key);
+  return { sections, flatSections, navSectionKeys };
+}
+
+const {
+  sections: SECTIONS,
+  flatSections: FLAT_SECTIONS,
+  navSectionKeys,
+} = buildSectionRegistry(SECTION_SPEC);
+
+// =============================================================================
+// FS helpers
+// =============================================================================
+
 async function ensureDir(dir) {
   await fs.mkdir(dir, { recursive: true });
 }
@@ -57,16 +94,16 @@ async function pathExists(p) {
 
 async function cleanGeneratedContent() {
   await Promise.all(
-    Object.values(PATHS).map(({ out: dir }) =>
-      fs.rm(dir, {
-        recursive: true,
-        force: true,
-      }),
+    Object.values(SECTIONS).map(({ out: dir }) =>
+      fs.rm(dir, { recursive: true, force: true }),
     ),
   );
 }
 
-// --- Content (Markdown) ---
+// =============================================================================
+// Markdown
+// =============================================================================
+
 function stripFrontmatter(content) {
   if (!content.startsWith("---")) return content;
   const lines = content.split("\n");
@@ -83,21 +120,19 @@ function getFirstHeading(content) {
   return m ? m[1].trim() : null;
 }
 
-/** Rewrite repo paths .cursor/skills/... to VitePress routes /agent-skills/... (extensionless). */
-function rewriteRepoLinksToDocs(content) {
-  // Links that already point at .cursor/skills/...
+/** Rewrite `.agents/skills/...` and sibling skill links to VitePress routes. */
+function rewriteRepoLinksToDocs(content, skillsSidebarBase) {
   let out = content.replace(
-    /\]\((\.\/)?\.cursor\/skills\/([^)]+)\)/gu,
+    /\]\((\.\/)?\.agents\/skills\/([^)]+)\)/gu,
     (_, _lead, segment) => {
       const pathNoExt = segment.replace(/\.md$/iu, "");
-      return `](/agent-skills/${pathNoExt})`;
+      return `](${skillsSidebarBase}${pathNoExt})`;
     },
   );
 
-  // Links between skills using ../<skill>/SKILL.md (e.g. ../orchard/SKILL.md).
   out = out.replace(
     /\]\(\.\.\/([^/]+)\/SKILL\.md\)/gu,
-    (_, skillName) => `](/agent-skills/${skillName}/)`,
+    (_, skillName) => `](${skillsSidebarBase}${skillName}/)`,
   );
 
   return out;
@@ -109,15 +144,18 @@ function withAutoGeneratedHeader(content, relSource) {
   const cleaned = stripFrontmatter(content);
   const lines = cleaned.split("\n");
   const i = lines.findIndex((l) => /^#+\s/u.test(l));
-  if (i === -1) return rewriteRepoLinksToDocs(`${block}\n\n${cleaned}`);
+  const skillsBase = SECTIONS.agentSkills.sidebarBase;
+
+  if (i === -1)
+    return rewriteRepoLinksToDocs(`${block}\n\n${cleaned}`, skillsBase);
   let j = i + 1;
   while (j < lines.length && lines[j].trim() === "") j += 1;
   const titleBlock = lines.slice(0, j).join("\n");
   const rest = lines.slice(j).join("\n");
-  const out = rest
+  const body = rest
     ? `${titleBlock}\n${block}\n\n${rest}`
     : `${titleBlock}\n${block}`;
-  return rewriteRepoLinksToDocs(out);
+  return rewriteRepoLinksToDocs(body, skillsBase);
 }
 
 async function writeDocFile(destPath, rawContent, relSource) {
@@ -129,7 +167,6 @@ async function writeDocFile(destPath, rawContent, relSource) {
   );
 }
 
-// --- Index page ---
 function buildIndexPage(title, items) {
   const header = [`# ${title}`, ""];
   const tableHeader = "| Title | Source |";
@@ -154,28 +191,31 @@ async function writeSectionIndex(outDir, title, items) {
   );
 }
 
-// --- Sidebar ---
-function buildSectionSidebar(base, sectionTitle, items) {
+// =============================================================================
+// VitePress sidebar / nav
+// =============================================================================
+
+function buildSectionSidebar(sidebarBase, sectionTitle, items) {
   return {
-    [base]: [
-      { text: sectionTitle, link: base },
+    [sidebarBase]: [
+      { text: sectionTitle, link: sidebarBase },
       ...items.map((i) => ({
         text: i.title ?? i.name,
-        link: `${base}${i.name}`,
+        link: `${sidebarBase}${i.name}`,
       })),
     ],
   };
 }
 
-async function buildAgentSkillsSidebar(outDir, indexItems) {
-  const base = "/agent-skills/";
-  const items = [{ text: "Agent skills", link: base }];
+async function buildSkillsTreeSidebar(outDir, indexItems, section) {
+  const { sidebarBase, sectionTitle } = section;
+  const items = [{ text: sectionTitle, link: sidebarBase }];
 
   for (const skill of indexItems) {
     const refDir = path.join(outDir, skill.name, "references");
     const entry = {
       text: skill.title ?? skill.name,
-      link: `${base}${skill.name}/`,
+      link: `${sidebarBase}${skill.name}/`,
     };
 
     if (await pathExists(refDir)) {
@@ -194,7 +234,7 @@ async function buildAgentSkillsSidebar(outDir, indexItems) {
               e.name.replace(/\.md$/u, "");
             return {
               text: title,
-              link: `${base}${skill.name}/references/${e.name.replace(/\.md$/u, "")}`,
+              link: `${sidebarBase}${skill.name}/references/${e.name.replace(/\.md$/u, "")}`,
             };
           }),
         );
@@ -208,12 +248,49 @@ async function buildAgentSkillsSidebar(outDir, indexItems) {
     items.push(entry);
   }
 
-  return { [base]: items };
+  return { [sidebarBase]: items };
 }
 
-// --- Generators ---
-async function generateFlatSection({ pathKey, ext, sectionTitle }) {
-  const { in: srcDir, out: outDir } = PATHS[pathKey];
+function mergeSidebars(skillsSidebar, flatSectionResults) {
+  const fromFlat = Object.assign(
+    {},
+    ...FLAT_SECTIONS.map((section, i) => {
+      const items = flatSectionResults[i] ?? [];
+      return items.length > 0
+        ? buildSectionSidebar(section.sidebarBase, section.sectionTitle, items)
+        : {};
+    }),
+  );
+  return { ...(skillsSidebar ?? {}), ...fromFlat };
+}
+
+function buildNav(sidebar) {
+  return [
+    { text: "Home", link: "/" },
+    ...navSectionKeys.flatMap((key) => {
+      const s = SECTIONS[key];
+      return sidebar[s.sidebarBase]
+        ? [{ text: s.sectionTitle, link: s.sidebarBase }]
+        : [];
+    }),
+  ];
+}
+
+async function writeVitePressExport(vitepressDir, basename, data) {
+  const body = `// Auto-generated by scripts/generate-docs.mjs\nexport default ${JSON.stringify(data, null, 2)};\n`;
+  await fs.writeFile(path.join(vitepressDir, basename), body, "utf8");
+}
+
+// =============================================================================
+// Generators
+// =============================================================================
+
+async function generateFlatSection({
+  in: srcDir,
+  out: outDir,
+  ext,
+  sectionTitle,
+}) {
   if (!(await pathExists(srcDir))) return [];
 
   await ensureDir(outDir);
@@ -243,7 +320,7 @@ async function generateFlatSection({ pathKey, ext, sectionTitle }) {
 }
 
 async function generateAgentSkills() {
-  const { in: srcDir, out: outDir } = PATHS.agentSkills;
+  const { in: srcDir, out: outDir } = SECTIONS.agentSkills;
   if (!(await pathExists(srcDir))) return null;
 
   await ensureDir(outDir);
@@ -282,14 +359,17 @@ async function generateAgentSkills() {
     }
   }
 
-  await writeSectionIndex(outDir, "Agent skills", indexItems);
-  return buildAgentSkillsSidebar(outDir, indexItems);
+  const sk = SECTIONS.agentSkills;
+  await writeSectionIndex(outDir, sk.sectionTitle, indexItems);
+  return buildSkillsTreeSidebar(outDir, indexItems, sk);
 }
 
-// --- Main ---
+// =============================================================================
+// Main
+// =============================================================================
+
 async function main() {
   await ensureDir(docsRoot);
-
   await cleanGeneratedContent();
   await ensureDir(contentRoot);
 
@@ -298,45 +378,13 @@ async function main() {
     ...FLAT_SECTIONS.map((s) => generateFlatSection(s)),
   ]);
 
-  const sidebar = {
-    ...(agentSkillsSidebar ?? {}),
-    ...Object.assign(
-      {},
-      ...FLAT_SECTIONS.map((s, i) => {
-        const items = flatSectionItems[i] ?? [];
-        return items.length > 0
-          ? buildSectionSidebar(s.sidebarBase, s.sectionTitle, items)
-          : {};
-      }),
-    ),
-  };
+  const sidebar = mergeSidebars(agentSkillsSidebar, flatSectionItems);
+  const nav = buildNav(sidebar);
 
   const vitepressDir = path.join(docsRoot, ".vitepress");
   await ensureDir(vitepressDir);
-  await fs.writeFile(
-    path.join(vitepressDir, "sidebar.generated.mts"),
-    `// Auto-generated by scripts/generate-docs.mjs\nexport default ${JSON.stringify(sidebar, null, 2)};\n`,
-    "utf8",
-  );
-
-  const nav = [
-    { text: "Home", link: "/" },
-    ...(sidebar["/agent-skills/"]
-      ? [{ text: "Agent skills", link: "/agent-skills/" }]
-      : []),
-    ...(sidebar["/cursor-commands/"]
-      ? [{ text: "Cursor commands", link: "/cursor-commands/" }]
-      : []),
-    ...(sidebar["/cursor-rules/"]
-      ? [{ text: "Cursor rules", link: "/cursor-rules/" }]
-      : []),
-  ];
-
-  await fs.writeFile(
-    path.join(vitepressDir, "nav.generated.mts"),
-    `// Auto-generated by scripts/generate-docs.mjs\nexport default ${JSON.stringify(nav, null, 2)};\n`,
-    "utf8",
-  );
+  await writeVitePressExport(vitepressDir, "sidebar.generated.mts", sidebar);
+  await writeVitePressExport(vitepressDir, "nav.generated.mts", nav);
 }
 
 main().catch((err) => {

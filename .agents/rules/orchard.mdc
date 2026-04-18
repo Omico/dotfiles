@@ -10,10 +10,10 @@ This rule is for **developing and maintaining orchard** in this chezmoi repo. Or
 
 **Orchard-related files:**
 
-- **App packages**: `home/dot_config/orchard/apps/<app_id>.fish` — use [app-package-format](.cursor/skills/orchard/references/app-package-format.md) for variables, callbacks, and examples.
+- **App packages**: `home/dot_config/orchard/apps/<app_id>.fish` — use [app-package-format](.agents/skills/orchard/references/app-package-format.md) for variables, callbacks, and examples.
 - **Main script**: `home/dot_local/bin/executable_orchard` — entrypoint `orchard list` / `orchard install` / `orchard cleanup`.
 - **Completions**: `home/dot_config/fish/completions/orchard.fish`.
 
-**Development guidelines:** [development-guidelines.md](.cursor/skills/orchard/references/development-guidelines.md) — standards for app packages and for editing `executable_orchard` (naming, resolve callback contract, public vs internal API, quality checks).
+**Development guidelines:** [development-guidelines.md](.agents/skills/orchard/references/development-guidelines.md) — standards for app packages and for editing `executable_orchard` (naming, resolve callback contract, public vs internal API, quality checks).
 
-**References:** [development.md](.cursor/skills/orchard/references/development.md) for architecture, install flow, and maintainer conventions. Apply the **orchard** skill when adding/editing packages or changing the script; the skill defines when to use it and the workflow.
+**References:** [development.md](.agents/skills/orchard/references/development.md) for architecture, install flow, and maintainer conventions. Apply the **orchard** skill when adding/editing packages or changing the script; the skill defines when to use it and the workflow.

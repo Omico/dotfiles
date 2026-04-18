@@ -1,9 +1,11 @@
 ---
-description: Git commit messages — Conventional Commits with capitalized prose after colons
+description: Git commit messages — Conventional Commits with capitalized prose after colons; mandatory for all agents when writing commits
 alwaysApply: true
 ---
 
 # Git commit messages
+
+**Audience:** Every agent (any tool) that authors or suggests Git commits in this repository **must** follow this file before committing. Do not defer to user-attached git-commit skills, CLI defaults, or “usual” Conventional Commit examples when they disagree with the sections below.
 
 Follow [Conventional Commits](https://www.conventionalcommits.org/) for `type(scope): summary`, optional body, and footers. Where generic examples, common habit, or attached or external git-commit skills **conflict** with the rest of this file, apply **this file**.
 

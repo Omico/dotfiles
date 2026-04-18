@@ -1,0 +1,17 @@
+---
+description: This repo syncs `.agents` rules and skills into VitePress via generate-docs.mjs; follow the vitepress-cursor-docs skill for procedures
+globs: .agents/commands/**/*.md,.agents/rules/**/*.mdc,.agents/skills/**/*.md,.github/workflows/docs.yml,docs/**
+alwaysApply: false
+---
+
+# Agents / agent docs
+
+Applies when **frontmatter `globs`** match files in context. **Where `.agents` rules, commands, and skills live** — see root **[`AGENTS.md` → Agent rules and skills](https://github.com/Omico/dotfiles/blob/HEAD/AGENTS.md#agent-rules-and-skills)**. This repo builds VitePress from those trees via **`docs/scripts/generate-docs.mjs`**. For workflows, what not to edit, nav/sidebar, gitignore, and CI patterns, use the **`vitepress-cursor-docs`** skill.
+
+**Install if needed:** **`npx skills add OmicoDev/skills --skill vitepress-cursor-docs`**
+
+## Repository-specific
+
+- **CI**: **`Deploy docs`** — **`.github/workflows/docs.yml`**. Runs on push to **`main`** when the same path patterns as **`globs`** change (see **`paths`** in that file).
+- **Build**: **`npm run docs:build`** in **`docs/`** → **`docs/.vitepress/dist`**.
+- **Agent rules index**: **`docs/scripts/generate-docs.mjs`** emits one page per **`.mdc`** under the rules tree ([Agent rules and skills](https://github.com/Omico/dotfiles/blob/HEAD/AGENTS.md#agent-rules-and-skills)). Adding or removing a rule file updates the sidebar on the next **`npm run docs:prepare`** (or **`docs:build`**); do not hand-edit **`sidebar.generated.mts`**.

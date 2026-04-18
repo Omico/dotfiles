@@ -184,7 +184,7 @@ end
 
 ## Adding a new app
 
-See the **orchard** skill **Quick workflow** (in `.cursor/skills/orchard/SKILL.md`) for a concise checklist.
+See the **orchard** skill **Quick workflow** (in `.agents/skills/orchard/SKILL.md`) for a concise checklist.
 
 - **Create package file**: Add `apps/<app_id>.fish` under the orchard config directory (e.g. `home/dot_config/orchard/apps/` in chezmoi).
 - **Required variables**: Set the four required variables. If the download URL is not fixed, define `orchard_resolve_download_url_callback` and set `orchard_app_download_url` inside it (you can leave the initial URL empty).
@@ -207,7 +207,7 @@ See the **orchard** skill **Quick workflow** (in `.cursor/skills/orchard/SKILL.m
 
 ## Related files
 
-- **Cursor rule**: `.cursor/rules/orchard.mdc` — applies to `apps/*.fish`, `executable_orchard`, and completions; links to [development-guidelines.md](development-guidelines.md) and [app-package-format.md](app-package-format.md).
+- **Cursor rule**: `.agents/rules/orchard.mdc` — applies to `apps/*.fish`, `executable_orchard`, and completions; links to [development-guidelines.md](development-guidelines.md) and [app-package-format.md](app-package-format.md).
 - **Orchard config**: `home/dot_config/orchard/` (chezmoi); contains `apps/`.
 - **Executable**: `home/dot_local/bin/executable_orchard` (installed as `orchard` under `~/.local/bin`).
-- **References**: `.cursor/skills/orchard/references/` — this guide, development-guidelines.md, app-package-format.md.
+- **References**: `.agents/skills/orchard/references/` — this guide, development-guidelines.md, app-package-format.md.
