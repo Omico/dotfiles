@@ -1,6 +1,7 @@
 #!/usr/bin/env fish
 
 function chezmoi_add_configs
+    # Fish Shell
     set -l __fish_config_dir $HOME/.config/fish
 
     fish_indent -w $__fish_config_dir/**/*.fish
@@ -19,6 +20,12 @@ function chezmoi_add_configs
         chezmoi add $__fish_config_dir/functions/$fish_platform/*.fish
     end
 
+    # Ghostty
+    chezmoi forget --force $HOME/.config/ghostty
+    chezmoi add $HOME/.config/ghostty/config.ghostty
+    chezmoi add $HOME/.config/ghostty/include/*.ghostty
+
+    # Starship
     chezmoi forget --force $HOME/.config/starship.toml
     chezmoi add $HOME/.config/starship.toml
 end

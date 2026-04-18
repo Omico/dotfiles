@@ -1,0 +1,8 @@
+theme = Catppuccin Mocha
+
+foreground = #f2f2f2
+palette = 4=#49e4ff
+
+background = #1a1a1a
+background-opacity = 0.85
+background-blur = true
