@@ -5,7 +5,7 @@ Read this file first. It centralizes lightweight rule metadata so an agent can d
 ## How to use this index
 
 - Start here when you need repository-specific agent guidance.
-- Before `git commit` or when generating a commit message for this repository, open `git-commit.mdc` first. It overrides generic Conventional Commit tooling defaults (including lowercase-only descriptions).
+- Before `git commit` or when generating a commit message for this repository, open `git-commit.mdc` first; it overrides generic Conventional Commit tooling defaults.
 - Open only the matching canonical `.mdc` file after checking the metadata below.
 - Treat this file as metadata-only. Keep the normative instructions in the referenced `.mdc` files.
 - The canonical rule content lives under `.agents/rules/`, including subdirectories, and is stored in `.mdc` files.
