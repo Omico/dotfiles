@@ -5,30 +5,29 @@ alwaysApply: true
 
 # Git commit messages
 
-## Format
+Follow [Conventional Commits](https://www.conventionalcommits.org/) for `type(scope): summary`, optional body, and footers. Where generic examples, common habit, or attached or external git-commit skills **conflict** with the rest of this file, apply **this file**.
 
-- Follow [Conventional Commits](https://www.conventionalcommits.org/): `type(scope): summary`, with optional body and footers. Omit `scope` when it does not help.
-- **Types** (`feat`, `fix`, `chore`, …) and **scopes** stay **lowercase**, per spec.
+## Message shape
+
+- Omit `scope` when it does not help.
+- **Types** (`feat`, `fix`, `chore`, …) and **scopes** stay **lowercase**.
 - Subject, body, and footers are **English** (same as the repo English-only rule for stored text).
 
 ## Capitalization
 
 ### Subject line
 
-The summary is one imperative phrase. **Start it with an uppercase letter** (first word after the colon), including when using `!` for breaking changes:
+The summary is one imperative phrase. **Capitalize the first word after the colon** (including with `!` for breaking changes).
 
 - `type: Summary…`
 - `type(scope): Summary…`
 - `type!: Summary…`, `type(scope)!: Summary…`
 
-Example:
-
-- Prefer: `feat(fish): Add bun PATH and install bootstrap`
-- Avoid: `feat(fish): add bun PATH and install bootstrap`
+Prefer `feat(fish): Add bun PATH and install bootstrap`. Avoid `feat(fish): add bun PATH and install bootstrap`.
 
 ### Footers
 
-Keep **default** Conventional Commits footer **tokens and layout**. After each footer’s colon, any **sentence** starts with an **uppercase letter**. Values that are **not** a sentence (e.g. a bare `#123`) stay as written.
+Keep default Conventional Commits footer **tokens** and **layout**. After each footer’s colon, any **sentence** starts with an **uppercase letter**. Values that are **not** a sentence (e.g. a bare `#123`) stay as written.
 
 ### Body
 
