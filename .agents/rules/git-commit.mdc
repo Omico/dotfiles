@@ -1,36 +1,13 @@
 ---
-description: Git commit messages — Conventional Commits with capitalized prose after colons; mandatory for all agents when writing commits
-alwaysApply: true
+description: Git commit message conventions for this repo
+alwaysApply: false
 ---
+# Git
 
-# Git commit messages
+Every commit in this repository must follow the rules below. If another guide (including tools that default to an all-lowercase subject) disagrees with them, **this file takes precedence**.
 
-**Audience:** Every agent (any tool) that authors or suggests Git commits in this repository **must** follow this file before committing. Do not defer to user-attached git-commit skills, CLI defaults, or “usual” Conventional Commit examples when they disagree with the sections below.
-
-Follow [Conventional Commits](https://www.conventionalcommits.org/) for `type(scope): summary`, optional body, and footers. Where generic examples, common habit, or attached or external git-commit skills **conflict** with the rest of this file, apply **this file** (including subject-line capitalization in **Capitalization** below).
-
-## Message shape
-
-- Omit `scope` when it does not help.
-- **Types** (`feat`, `fix`, `chore`, …) and **scopes** stay **lowercase**.
-- Subject, body, and footers are **English** (same as the repo English-only rule for stored text).
-
-## Capitalization
-
-### Subject line
-
-The summary is one imperative phrase. **Capitalize the first word after the colon** (including with `!` for breaking changes).
-
-- `type: Summary…`
-- `type(scope): Summary…`
-- `type!: Summary…`, `type(scope)!: Summary…`
-
-Prefer `feat(fish): Add bun PATH and install bootstrap`. Avoid `feat(fish): add bun PATH and install bootstrap`.
-
-### Footers
-
-Keep default Conventional Commits footer **tokens** and **layout**. After each footer’s colon, any **sentence** starts with an **uppercase letter**. Values that are **not** a sentence (e.g. a bare `#123`) stay as written.
-
-### Body
-
-Start each paragraph and each bullet with an uppercase letter, consistent with the subject line.
+- Shape: Conventional Commits — `<type>[optional scope]: <Description>`.
+- Subject line: after the colon, capitalize the first word of the description. Write it as a short sentence, not a forced-lowercase keyword list.
+- Examples:
+  - Good: `docs(specs): Add canonical status metadata`, `feat(kernel): Introduce session event envelope`
+  - Avoid: `docs(specs): add canonical status metadata`
