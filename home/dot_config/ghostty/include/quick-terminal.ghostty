@@ -1,3 +1,4 @@
 keybind = global:shift+backquote=toggle_quick_terminal
+quick-terminal-autohide = true
 quick-terminal-position = bottom
 quick-terminal-size = 40%,900px
