@@ -1,6 +1,6 @@
 # Agent Rules
 
-Read this file first. It centralizes lightweight rule metadata so an agent can decide which canonical rule file to open next instead of loading every rule up front.
+Read this file first. It centralizes lightweight metadata so an agent can use progressive disclosure to open only the relevant canonical rule files.
 
 ## How to use this index
 
