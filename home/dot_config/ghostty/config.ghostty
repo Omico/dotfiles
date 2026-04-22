@@ -1,3 +1,4 @@
 config-file = include/quick-terminal.ghostty
 config-file = include/theme.ghostty
 config-file = include/font.ghostty
+config-file = include/shell-integration.ghostty
