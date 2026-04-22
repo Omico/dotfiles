@@ -1,0 +1,10 @@
+#!/usr/bin/env fish
+
+set -l cleanup_targets \
+    ~/.config/fish/{conf.d,functions}/ \
+    ~/.config/ghostty/ \
+    ~/.config/orchard/
+
+for path in (chezmoi unmanaged $cleanup_targets; or true)
+    rm -rf -- "$HOME/$path"
+end
