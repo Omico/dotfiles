@@ -5,7 +5,6 @@ author: Omico
 target: codex
 dependencies:
   apm:
-    - apollographql/skills/skills/rust-best-practices
     - OmicoDev/skills
     - antfu/skills/skills/nuxt
     - antfu/skills/skills/pnpm
@@ -25,6 +24,7 @@ dependencies:
     - anthropics/skills/skills/pdf
     - anthropics/skills/skills/pptx
     - anthropics/skills/skills/xlsx
+    - apollographql/skills/skills/rust-best-practices
     - figma/mcp-server-guide
     - github/awesome-copilot/skills/editorconfig
     - github/awesome-copilot/skills/excalidraw-diagram-generator
@@ -37,6 +37,7 @@ dependencies:
     - hashicorp/agent-skills/terraform/code-generation/skills/terraform-test
     - hashicorp/agent-skills/terraform/module-generation
     - hashicorp/agent-skills/terraform/provider-development
+    - mattpocock/skills/grill-me
     - nuxt/ui/skills/nuxt-ui
     - vercel-labs/agent-skills/skills/web-design-guidelines
     - vercel-labs/skills/skills/find-skills
