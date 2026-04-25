@@ -16,6 +16,7 @@ Read this file first. It centralizes lightweight metadata so an agent can use pr
 | Rule | Description | Globs | Always Apply | Read When |
 | --- | --- | --- | --- | --- |
 | `vitepress-agents-docs.mdc` | `This repo syncs .agents rules and skills into VitePress via generate-docs.mjs; follow the vitepress-cursor-docs skill for procedures` | `.agents/commands/**/*.md,.agents/rules/**/*.mdc,.agents/skills/**/*.md,.github/workflows/docs.yml,docs/**` | `false` | Changing `.agents` commands, rules, or skills trees; `docs/`; `generate-docs.mjs`; or the docs GitHub Actions workflow. |
+| `apm-dependencies.mdc` | `Keep APM dependency entries sorted in home/dot_apm/apm.yml` | `home/dot_apm/apm.yml` | `false` | Editing `home/dot_apm/apm.yml`, especially the `dependencies.apm` list. |
 | `english-only.mdc` | `All script and code content must be in English only` | `\` | `true` | Always applied; use when unsure whether non-English text is allowed in scripts, code comments, or docs. |
 | `fish-formatting.mdc` | `Formatting conventions for all fish scripts in this repo` | `**/*.fish` | `false` | Editing any Fish shell script (`.fish`). |
 | `fish-home-config.mdc` | `Ensure fish scripts under home/dot_config/fish start with the standard shebang` | `home/dot_config/fish/**/*.fish` | `false` | Editing Fish config or functions under `home/dot_config/fish/`. |

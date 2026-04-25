@@ -1,0 +1,13 @@
+---
+description: Keep APM dependency entries sorted in home/dot_apm/apm.yml
+globs: home/dot_apm/apm.yml
+alwaysApply: false
+---
+
+# APM dependencies
+
+When editing `home/dot_apm/apm.yml`, keep the `dependencies.apm` entries sorted.
+
+- Sort every entry under `dependencies: apm:` after changing that list.
+- Compare entries by the full dependency string exactly as written.
+- Preserve the existing YAML structure and quoting style.
