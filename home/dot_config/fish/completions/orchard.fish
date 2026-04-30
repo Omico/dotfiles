@@ -14,6 +14,7 @@ end
 
 function __orchard_subcommands
     echo list
+    echo validate
     echo install
     echo migrate
     echo cleanup
@@ -25,13 +26,20 @@ end
 
 # First arg subcommands:
 # - list
+# - validate
 # - install
 # - migrate
 # - cleanup
 complete -c orchard -c executable_orchard -f -n __orchard_needs_subcommand -a list -d 'List all app definitions and install status'
+complete -c orchard -c executable_orchard -f -n __orchard_needs_subcommand -a validate -d 'Validate orchard app definitions'
 complete -c orchard -c executable_orchard -f -n __orchard_needs_subcommand -a install -d 'Download and install the given app'
 complete -c orchard -c executable_orchard -f -n __orchard_needs_subcommand -a migrate -d 'Migrate from other sources (e.g. Homebrew casks)'
 complete -c orchard -c executable_orchard -f -n __orchard_needs_subcommand -a cleanup -d 'Remove orchard cache directory'
+
+# After validate:
+# - optional arguments:
+#   - <app_id>...
+complete -c orchard -c executable_orchard -n '__fish_seen_subcommand_from validate' -xa '(__orchard_app_ids)'
 
 # After install:
 # - argument:

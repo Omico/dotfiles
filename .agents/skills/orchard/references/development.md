@@ -23,6 +23,7 @@ This guide is for:
 | Command                              | Description                                                                                                    |
 | ------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
 | `orchard list`                       | List all apps defined in `apps/*.fish` and whether each is installed (and version if available).               |
+| `orchard validate [app_id ...]`      | Validate all app definitions, or selected app IDs, without resolving download URLs or installing anything.     |
 | `orchard install <app_id> [--force]` | Download (if needed), then install the app. With `--force`, reinstall even if already installed.               |
 | `orchard migrate brew`               | Migrate outdated Homebrew casks to orchard apps where a matching app package exists; report casks without one. |
 | `orchard cleanup`                    | Remove the cache directory (downloaded archives).                                                              |
@@ -42,6 +43,7 @@ The script is organized in sections (see the header comment):
 | Usage and app loading  | `_orchard_usage`, `_orchard_load_app`, `_orchard_installed`, `_orchard_version`.                                                                                                  |
 | DMG helpers            | Mount, unmount, install from mount, cache validation.                                                                                                                             |
 | Command: list          | Iterate `apps/*.fish`, load each app, print installed status and version.                                                                                                         |
+| Command: validate      | Validate app package metadata and callback presence without downloading or installing apps.                                                                                       |
 | Command: install       | Parse args, load app, resolve URL (if callback), ensure archive, install by type (dmg/zip/pkg), run after-install callback.                                                       |
 | Command: migrate       | Implement migration flows (currently: from Homebrew casks).                                                                                                                       |
 | Command: cleanup       | Delete cache dir.                                                                                                                                                                 |
@@ -52,9 +54,16 @@ The script is organized in sections (see the header comment):
 ### App loading flow
 
 - **Dispatch**: `orchard list` or `orchard install <app_id>` loads the app via `_orchard_load_app <app_id>`.
-- **Source and validate**: `_orchard_load_app` sources `$_orchard_apps_dir/$app_id.fish` and validates required variables.
+- **Source and validate**: `_orchard_load_app` sources `$_orchard_apps_dir/$app_id.fish` and validates required variables, ID format, ID-to-filename match, supported download type, and URL/resolver presence.
 - **Defaults**: It sets `orchard_app_bundle_name` → `$orchard_app_display_name.app` if unset; `orchard_app_bundle_path` → `/Applications/$orchard_app_bundle_name` if unset.
 - **Resolve URL (install only)**: During `orchard install`, if `orchard_resolve_download_url_callback` exists, it is run once to set `orchard_app_download_url` before download. Cache path is derived from URL hash and `orchard_app_download_type`.
+
+### Validate flow
+
+- **Select apps**: `orchard validate` checks every `apps/*.fish`; passing app IDs checks only those packages.
+- **Source package**: Each app is sourced in a cleared per-app state so callbacks and variables do not leak between packages.
+- **Check metadata**: Validation checks required variables, `orchard_app_id` naming and filename match, supported download type, `orchard_app_download_url` or `orchard_resolve_download_url_callback`, and `orchard_app_pkg_name` usage.
+- **No network or install**: Resolve callbacks are not executed; validation only confirms that a resolver exists when the URL is dynamic.
 
 ### Install flow (high level)
 

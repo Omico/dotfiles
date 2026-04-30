@@ -8,6 +8,7 @@
 #   Usage and app loading (load app .fish, validate vars, installed/version helpers)
 #   DMG helpers (detach, mount, unmount, install from mount, cache validation)
 #   Command: list
+#   Command: validate
 #   Command: install (args, download, ensure archive, install by type)
 #   Command: migrate (e.g. from Homebrew casks)
 #   Command: cleanup (remove cache dir)
@@ -141,12 +142,12 @@ end
 function _orchard_usage
     echo "Usage:"
     echo "  orchard list"
+    echo "  orchard validate [app_id ...]"
     echo "  orchard install <app_id> [--force]"
     echo "  orchard cleanup"
 end
 
-function _orchard_load_app -a app_id
-    # Clear per-app globals so they do not leak between apps
+function _orchard_clear_app_state
     set -e orchard_app_id
     set -e orchard_app_display_name
     set -e orchard_app_download_url
@@ -154,20 +155,13 @@ function _orchard_load_app -a app_id
     set -e orchard_app_bundle_name
     set -e orchard_app_bundle_path
     set -e orchard_app_pkg_name
+    functions -e orchard_before_install_callback
+    functions -e orchard_after_install_callback
+    functions -e orchard_resolve_download_url_callback
+    functions -e orchard_resolve_installed_version_callback
+end
 
-    set -l file "$_orchard_apps_dir/$app_id.fish"
-    if not test -f "$file"
-        echo "Unknown app: $app_id"
-        exit 1
-    end
-    source "$file"
-
-    set -l missing
-    test -z "$orchard_app_id"; and set missing $missing orchard_app_id
-    test -z "$orchard_app_display_name"; and set missing $missing orchard_app_display_name
-    test -z "$orchard_app_download_url"; and not functions -q orchard_resolve_download_url_callback; and set missing $missing orchard_app_download_url
-    test -z "$orchard_app_download_type"; and set missing $missing orchard_app_download_type
-    test (count $missing) -gt 0; and echo "$app_id missing: "(string join ", " $missing); and exit 1
+function _orchard_apply_app_defaults
     if not set -q orchard_app_bundle_name
         if set -q orchard_app_display_name
             set -g orchard_app_bundle_name "$orchard_app_display_name.app"
@@ -176,6 +170,72 @@ function _orchard_load_app -a app_id
     if set -q orchard_app_bundle_name
         set -g orchard_app_bundle_path "/Applications/$orchard_app_bundle_name"
     end
+end
+
+function _orchard_validate_loaded_app -a expected_id
+    set -l ok true
+
+    if test -z "$orchard_app_id"
+        echo "$expected_id: missing orchard_app_id" >&2
+        set ok false
+    else
+        if test "$orchard_app_id" != "$expected_id"
+            echo "$expected_id: orchard_app_id must match filename (got '$orchard_app_id')" >&2
+            set ok false
+        end
+        if not string match -qr '^[a-z0-9]+(-[a-z0-9]+)*$' -- "$orchard_app_id"
+            echo "$expected_id: orchard_app_id must use lowercase letters, digits, and hyphens" >&2
+            set ok false
+        end
+    end
+
+    if test -z "$orchard_app_display_name"
+        echo "$expected_id: missing orchard_app_display_name" >&2
+        set ok false
+    end
+
+    if test -z "$orchard_app_download_type"
+        echo "$expected_id: missing orchard_app_download_type" >&2
+        set ok false
+    else
+        switch "$orchard_app_download_type"
+            case dmg zip pkg
+            case '*'
+                echo "$expected_id: orchard_app_download_type must be one of: dmg, zip, pkg" >&2
+                set ok false
+        end
+    end
+
+    if test -z "$orchard_app_download_url"; and not functions -q orchard_resolve_download_url_callback
+        echo "$expected_id: orchard_app_download_url is required unless orchard_resolve_download_url_callback is defined" >&2
+        set ok false
+    end
+
+    if set -q orchard_app_pkg_name; and test "$orchard_app_download_type" != dmg
+        echo "$expected_id: orchard_app_pkg_name is only supported for dmg packages" >&2
+        set ok false
+    end
+
+    test "$ok" = true
+end
+
+function _orchard_load_app -a app_id
+    _orchard_clear_app_state
+
+    set -l file "$_orchard_apps_dir/$app_id.fish"
+    if not test -f "$file"
+        echo "Unknown app: $app_id" >&2
+        exit 1
+    end
+    if not source "$file"
+        echo "$app_id: failed to load app definition." >&2
+        exit 1
+    end
+
+    if not _orchard_validate_loaded_app "$app_id"
+        exit 1
+    end
+    _orchard_apply_app_defaults
 end
 
 # Whether current app is installed (used by list and install)
@@ -315,6 +375,81 @@ function _orchard_cmd_list
             echo "$padded_id  (not installed)"
         end
     end
+end
+
+# -----------------------------------------------------------------------------
+# Command: validate
+# -----------------------------------------------------------------------------
+function _orchard_app_ids
+    if not test -d "$_orchard_apps_dir"
+        return 0
+    end
+    for file in $_orchard_apps_dir/*.fish
+        test -f "$file"; and string replace -r '.*/([^/]+)\.fish$' '$1' -- "$file"
+    end
+end
+
+function _orchard_validate_app -a app_id
+    _orchard_clear_app_state
+
+    set -l file "$_orchard_apps_dir/$app_id.fish"
+    if not test -f "$file"
+        echo "Unknown app: $app_id" >&2
+        return 1
+    end
+
+    if not source "$file"
+        echo "$app_id: failed to load app definition." >&2
+        return 1
+    end
+
+    _orchard_validate_loaded_app "$app_id"
+    set -l ok $status
+    _orchard_clear_app_state
+    return $ok
+end
+
+function _orchard_print_success -a message
+    set_color green
+    printf '✓ %s\n' "$message"
+    set_color normal
+end
+
+function _orchard_print_error -a message
+    set_color red >&2
+    printf '✗ %s\n' "$message" >&2
+    set_color normal >&2
+end
+
+function _orchard_cmd_validate
+    set -l app_ids $argv
+    if test (count $app_ids) -eq 0
+        set app_ids (_orchard_app_ids)
+    end
+
+    if test (count $app_ids) -eq 0
+        echo "No app definitions found; add *.fish files under $_orchard_apps_dir."
+        return 0
+    end
+
+    set -l failed 0
+    set -l checked 0
+    for app_id in $app_ids
+        set checked (math $checked + 1)
+        if _orchard_validate_app "$app_id"
+            _orchard_print_success "$app_id"
+        else
+            _orchard_print_error "$app_id"
+            set failed (math $failed + 1)
+        end
+    end
+
+    if test $failed -gt 0
+        _orchard_print_error "$failed of $checked orchard app package(s) failed validation."
+        return 1
+    end
+
+    _orchard_print_success "Validated $checked orchard app package(s)."
 end
 
 # -----------------------------------------------------------------------------
@@ -655,6 +790,8 @@ set -l cmd "$argv[1]"
 switch "$cmd"
     case list
         _orchard_cmd_list
+    case validate
+        _orchard_cmd_validate $argv[2..-1]
     case install
         _orchard_cmd_install $argv
     case migrate
