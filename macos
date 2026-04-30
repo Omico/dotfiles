@@ -116,15 +116,6 @@ tell application "Terminal"
 end tell
 EOD
 
-# Don’t display the annoying prompt when quitting iTerm
-defaults write com.googlecode.iterm2 PromptOnQuit -bool false
-
-# Specify the preferences directory
-defaults write com.googlecode.iterm2.plist PrefsCustomFolder -string "$HOME/.local/share/chezmoi"
-
-# Tell iTerm2 to use the custom preferences in the directory
-defaults write com.googlecode.iterm2.plist LoadPrefsFromCustomFolder -bool true
-
 # Enable Touch ID for sudo
 sudo cp /etc/pam.d/sudo_local.template /etc/pam.d/sudo_local
 sudo sed -i '' 's/^#auth[[:space:]]*sufficient[[:space:]]*pam_tid\.so/auth       sufficient     pam_tid.so/' /etc/pam.d/sudo_local
