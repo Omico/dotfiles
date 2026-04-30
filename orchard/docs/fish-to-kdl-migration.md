@@ -2,13 +2,11 @@
 
 ## Purpose
 
-This document maps the current Fish package set to the KDL schema. All current
-packages are macOS packages and should migrate under `platform "macos"`.
+This document maps the current Fish package set to the KDL schema. All current packages are macOS packages and should migrate under `platform "macos"`.
 
 ## Current Package Coverage
 
-The current Fish package set contains 36 packages. The proposed schema covers
-all of them with declarative platform nodes.
+The current Fish package set contains 36 packages. The proposed schema covers all of them with declarative platform nodes.
 
 | Pattern | Packages | Manifest support |
 | --- | --- | --- |
@@ -39,18 +37,14 @@ all of them with declarative platform nodes.
 
 ## Migration Strategy
 
-- Add Rust Orchard alongside the current Fish implementation during
-  development.
+- Add Rust Orchard alongside the current Fish implementation during development.
 - Create KDL manifests under `home/dot_config/orchard/apps`.
 - Put all current package behavior under `platform "macos"`.
 - Convert static direct packages first.
 - Convert GitHub release packages next.
-- Convert general fetch pipeline packages with fixtures for each upstream
-  metadata response.
-- Remove runtime Fish package loading after all current packages have KDL
-  equivalents.
-- Keep old Fish package files only as source-control history, not as runtime
-  compatibility.
+- Convert general fetch pipeline packages with fixtures for each upstream metadata response.
+- Remove runtime Fish package loading after all current packages have KDL equivalents.
+- Keep old Fish package files only as source-control history, not as runtime compatibility.
 
 ## Migration Rules
 
@@ -66,5 +60,4 @@ all of them with declarative platform nodes.
 - `chflags nohidden` becomes `action "unhide"`.
 - `xattr -d <name>` becomes `action "remove-xattr" name="<name>"`.
 
-Fish callbacks are not migrated as executable code. They must be translated to
-declarative fetch statements, bin declarations, or explicit actions.
+Fish callbacks are not migrated as executable code. They must be translated to declarative fetch statements, bin declarations, or explicit actions.
