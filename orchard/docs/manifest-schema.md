@@ -2,9 +2,7 @@
 
 ## Purpose
 
-Orchard packages are declarative KDL files. They replace executable Fish package
-definitions while keeping package authoring small, readable, and strongly
-validated.
+Orchard packages are declarative KDL files. They replace executable Fish package definitions while keeping package authoring small, readable, and strongly validated.
 
 Each app is described by one file:
 
@@ -14,9 +12,7 @@ home/dot_config/orchard/apps/<app_id>.kdl
 
 ## Model
 
-The top-level `app` node describes cross-platform product identity. Each
-`platform` block describes how that product is fetched, downloaded, installed,
-and wired into one host platform.
+The top-level `app` node describes cross-platform product identity. Each `platform` block describes how that product is fetched, downloaded, installed, and wired into one host platform.
 
 ```kdl
 app "firefox" schema=1 {
@@ -43,9 +39,7 @@ app "firefox" schema=1 {
 - `schema`: manifest schema version.
 - `display-name`: human-facing product name used in output.
 
-Top-level nodes must stay portable. Platform-specific nodes such as `bundle`,
-`fetch`, `download`, `install`, `bin`, and `action` must live inside a
-`platform` block.
+Top-level nodes must stay portable. Platform-specific nodes such as `bundle`, `fetch`, `download`, `install`, `bin`, and `action` must live inside a `platform` block.
 
 ## Platform Blocks
 
@@ -65,13 +59,11 @@ platform "macos" {
 - `platform` argument: platform ID, such as `macos`, `windows`, or `linux`.
 - Schema v1 only executes `platform "macos"`.
 - Non-macOS platform blocks may be parsed and ignored by default.
-- Non-macOS platform blocks should be validated only when an explicit
-  all-platform validation mode is requested.
+- Non-macOS platform blocks should be validated only when an explicit all-platform validation mode is requested.
 
 ## macOS Identity
 
-Inside `platform "macos"`, `bundle` describes the installed `.app` bundle. The
-default path is `/Applications/<bundle>`.
+Inside `platform "macos"`, `bundle` describes the installed `.app` bundle. The default path is `/Applications/<bundle>`.
 
 ```kdl
 bundle "Firefox.app" quit=true
@@ -83,11 +75,9 @@ bundle "Firefox.app" quit=true
 bundle "Microsoft AutoUpdate.app" path="/Library/Application Support/Microsoft/MAU2.0/Microsoft AutoUpdate.app"
 ```
 
-When `quit` is omitted and a bundle exists, Orchard should preserve the current
-behavior: ask the running app to quit before replacing it.
+When `quit` is omitted and a bundle exists, Orchard should preserve the current behavior: ask the running app to quit before replacing it.
 
-For packages that do not install a durable app bundle, use an explicit
-installed-state node:
+For packages that do not install a durable app bundle, use an explicit installed-state node:
 
 ```kdl
 installed "pkg-receipt" id="com.example.pkg"
@@ -95,8 +85,7 @@ installed "pkg-receipt" id="com.example.pkg"
 
 ## Fetch
 
-`fetch` resolves the final download URL for a platform. It may also expose
-variables such as a release version.
+`fetch` resolves the final download URL for a platform. It may also expose variables such as a release version.
 
 Direct or redirecting URL:
 
@@ -129,19 +118,16 @@ fetch {
 }
 ```
 
-The general form exists for packages that need to request metadata, extract a
-value, and use it either as the final URL or inside a URL template.
+The general form exists for packages that need to request metadata, extract a value, and use it either as the final URL or inside a URL template.
 
 ## Fetch Statements
 
-- **`let` with architecture mapping**: maps the host architecture to a manifest
-  variable.
+- **`let` with architecture mapping**: maps the host architecture to a manifest variable.
 - **`request`**: downloads metadata as `json`, `text`, `xml`, or `sparkle`.
 - **`let` from request**: extracts a variable from a named request.
 - **`url` literal**: sets the final URL from a template.
 - **`url from`**: extracts the final URL from a named request.
-- **`version`**: optionally extracts a version string for list output and cache
-  metadata.
+- **`version`**: optionally extracts a version string for list output and cache metadata.
 
 JSON version extraction and URL template:
 
@@ -221,12 +207,10 @@ Selectors are schema features, not an embedded programming language.
 - `json`: a jq-lite path expression over objects and arrays.
 - `json-key`: object-key selection helpers, starting with `max-numeric`.
 - `regex`: a regular expression over text; the first capture group is used.
-- `sparkle-enclosure-contains`: selects the last Sparkle enclosure URL whose
-  URL contains the given substring.
+- `sparkle-enclosure-contains`: selects the last Sparkle enclosure URL whose URL contains the given substring.
 - `xml-text`: a narrow XPath-like selector that returns normalized text.
 
-If extraction yields no value, more than one ambiguous value, or an invalid
-URL, validation should fail with an error pointing to the manifest field.
+If extraction yields no value, more than one ambiguous value, or an invalid URL, validation should fail with an error pointing to the manifest field.
 
 ## Template Variables
 
@@ -252,8 +236,7 @@ Supported macOS formats:
 - `zip`: validate with ZIP archive checks.
 - `pkg`: validate with macOS package signature or package metadata checks.
 
-The cache key should default to a stable hash of the resolved final URL and the
-download format.
+The cache key should default to a stable hash of the resolved final URL and the download format.
 
 ## Install
 
@@ -283,13 +266,10 @@ install "run-pkg" {
 
 Supported macOS install operations:
 
-- `copy-app`: find the configured app bundle inside a mounted DMG or extracted
-  ZIP, then copy it to the configured bundle path.
-- `run-pkg`: run the macOS installer for a downloaded PKG, or for a named PKG
-  found inside a mounted DMG.
+- `copy-app`: find the configured app bundle inside a mounted DMG or extracted ZIP, then copy it to the configured bundle path.
+- `run-pkg`: run the macOS installer for a downloaded PKG, or for a named PKG found inside a mounted DMG.
 
-The names are intentionally action-oriented. `download "pkg"` describes the
-file format, while `install "run-pkg"` describes the operation.
+The names are intentionally action-oriented. `download "pkg"` describes the file format, while `install "run-pkg"` describes the operation.
 
 ## Post-Install Side Effects
 
@@ -410,5 +390,4 @@ app "example" schema=1 {
 }
 ```
 
-The Windows block illustrates the intended shape only. Schema v1 does not
-execute or fully validate Windows install semantics.
+The Windows block illustrates the intended shape only. Schema v1 does not execute or fully validate Windows install semantics.
