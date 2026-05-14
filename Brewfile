@@ -1,8 +1,6 @@
 tap "anomalyco/tap"
 tap "jakewharton/repo"
-tap "microsoft/apm"
 tap "nguyenphutrong/tap"
-tap "omico/tap"
 brew "shellcheck"
 brew "actionlint"
 brew "aria2"
