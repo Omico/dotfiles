@@ -36,6 +36,9 @@ This skill explains how to work with fish shell scripts in this chezmoi repo, in
 - **Keep functions small and robust**:
   - Use `set -l` for local variables and validate inputs early.
   - Handle errors with clear messages to stderr and non-zero exit codes.
+  - Use `echo` for fixed one-line messages and `printf` when formatting values—see [function-guidelines.md — echo vs printf](references/function-guidelines.md#echo-vs-printf).
+  - Prefer built-in `string` over `grep`/`sed`/`awk` for text matching and filtering—see [function-guidelines.md — string vs grep](references/function-guidelines.md#string-vs-grep).
+  - Use `or` / `and` instead of `||` / `&&` for conditional command chaining—see [function-guidelines.md — or vs ||](references/function-guidelines.md#or-vs-).
 - **Use the tooling**:
   - Run `fish -n` for syntax checks and `fish_indent` to keep formatting consistent.
   - Edit in the chezmoi source tree and run `chezmoi apply` when changes are ready.

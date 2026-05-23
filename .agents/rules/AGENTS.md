@@ -19,6 +19,9 @@ Read this file first. It centralizes lightweight metadata so an agent can use pr
 | `apm-dependencies.mdc` | `Keep APM dependency entries sorted in home/dot_apm/apm.yml` | `home/dot_apm/apm.yml` | `false` | Editing `home/dot_apm/apm.yml`, especially the `dependencies.apm` list. |
 | `english-only.mdc` | `All script and code content must be in English only` | `\` | `true` | Always applied; use when unsure whether non-English text is allowed in scripts, code comments, or docs. |
 | `fish-formatting.mdc` | `Formatting conventions for all fish scripts in this repo` | `**/*.fish` | `false` | Editing any Fish shell script (`.fish`). |
+| `fish-messaging.mdc` | `When to use echo vs printf for user-facing output in fish scripts` | `**/*.fish` | `false` | Writing errors, usage text, or other user-facing messages in Fish (`.fish`). |
+| `fish-string.mdc` | `Prefer fish built-in string over grep/sed/awk for text handling in fish scripts` | `**/*.fish` | `false` | Matching, filtering, splitting, or transforming text in Fish (`.fish`). |
+| `fish-control-flow.mdc` | `Use fish or/and instead of bash-style \|\|/&& for conditional command chaining` | `**/*.fish` | `false` | Chaining commands on success/failure, or blocks after `or begin` / `and begin`. |
 | `fish-home-config.mdc` | `Ensure fish scripts under home/dot_config/fish start with the standard shebang` | `home/dot_config/fish/**/*.fish` | `false` | Editing Fish config or functions under `home/dot_config/fish/`. |
 | `git-commit.mdc` | `Git commit messages — Conventional Commits with capitalized prose after colons; mandatory for all agents when writing commits` | `\` | `true` | Creating a git commit or choosing a conventional commit message. |
 | `markdown.mdc` | `Markdown style and structure guidelines for this repo` | `**/*.md,**/*.mdc` | `false` | Editing Markdown docs, specs, or rule files (`.md` / `.mdc`). |

@@ -1,0 +1,33 @@
+---
+description: When to use echo vs printf for user-facing output in fish scripts
+globs: **/*.fish
+alwaysApply: false
+---
+
+# Fish user messages (echo vs printf)
+
+- Send errors, usage text, and warnings to **stderr** (`>&2`).
+- Keep user-facing strings in **English**.
+
+## Which command to use
+
+| Situation | Use |
+| --- | --- |
+| Fixed one-line message | `echo "…" >&2` |
+| Message with `$variables` via format placeholders (`%s`, etc.) | `printf "… %s\n" $var >&2` |
+| Snippets meant to match POSIX shells | `printf` (include `\n` in the format string) |
+
+## Do not
+
+- Do not require `printf` for every literal line when `echo` is enough.
+- Do not use `echo` for formatted multi-value messages—use `printf` instead.
+- Do not omit `>&2` on errors and usage output.
+
+## Examples
+
+```fish
+echo "fnm: command not found" >&2
+printf "fnm: failed to uninstall %s\n" $v >&2
+```
+
+Normative detail and rationale: `.agents/skills/fish-development/references/function-guidelines.md` (section **echo vs printf**).

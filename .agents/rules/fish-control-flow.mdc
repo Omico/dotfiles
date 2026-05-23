@@ -1,0 +1,31 @@
+---
+description: Use fish or/and instead of bash-style ||/&& for conditional command chaining
+globs: **/*.fish
+alwaysApply: false
+---
+
+# Fish control flow (or / and)
+
+- **Default** to `or` and `and`, not `||` and `&&`, when chaining commands on success/failure.
+- Separate the prior command from `or` / `and` with `;`.
+
+## Examples
+
+```fish
+fnm use "$v"; or return 1
+command -q fnm; or begin
+    echo "fnm: command not found" >&2
+    return 1
+end
+
+test -d "$path"; or continue
+```
+
+## Do not
+
+```fish
+fnm use "$v" || return 1
+test -d "$path" || continue
+```
+
+Normative detail: `.agents/skills/fish-development/references/function-guidelines.md` (section **or vs ||**).
