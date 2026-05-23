@@ -1,4 +1,3 @@
 # AGENTS.md
 
-- Before exploring or changing this repository, read `project-primer` and open
-  only the focused reference needed for the task.
+- Before exploring or changing this repository, invoke the `project-primer` skill to read relevant information, then open only the focused references needed for the task.
