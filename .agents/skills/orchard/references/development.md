@@ -216,7 +216,7 @@ See the **orchard** skill **Quick workflow** (in `.agents/skills/orchard/SKILL.m
 
 ## Related files
 
-- **Cursor rule**: `.agents/rules/orchard.mdc` — applies to `apps/*.fish`, `executable_orchard`, and completions; links to [development-guidelines.md](development-guidelines.md) and [app-package-format.md](app-package-format.md).
+- **Agent skill**: `.agents/skills/orchard/SKILL.md` — use when editing `apps/*.fish`, `executable_orchard`, or completions; links to [development-guidelines.md](development-guidelines.md) and [app-package-format.md](app-package-format.md).
 - **Orchard config**: `home/dot_config/orchard/` (chezmoi); contains `apps/`.
 - **Executable**: `home/dot_local/bin/executable_orchard` (installed as `orchard` under `~/.local/bin`).
 - **References**: `.agents/skills/orchard/references/` — this guide, development-guidelines.md, app-package-format.md.

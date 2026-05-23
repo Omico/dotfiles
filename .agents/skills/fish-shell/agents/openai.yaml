@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fish Shell"
+  short_description: "Fish shell style rules and patterns"
+  default_prompt: "Use $fish-shell to update fish code with portable shell style rules."
