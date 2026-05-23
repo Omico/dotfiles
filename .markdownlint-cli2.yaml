@@ -3,6 +3,4 @@ config:
   no-duplicate-heading:
     siblings_only: true
 
-fix: true
-
 gitignore: true

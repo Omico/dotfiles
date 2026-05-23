@@ -7,8 +7,7 @@ description: Use when migrating installed Homebrew casks to Orchard app packages
 
 ## Overview
 
-This skill guides **`orchard migrate brew`** flows for macOS GUI apps that are currently installed via Homebrew casks and should be managed by Orchard instead.
-It covers both **global dry-run plans** and **targeted cask handling**, including authoring new `home/dot_config/orchard/apps/<app_id>.fish` packages when no Orchard package exists yet.
+This skill guides **`orchard migrate brew`** flows for macOS GUI apps that are currently installed via Homebrew casks and should be managed by Orchard instead. It covers both **global dry-run plans** and **targeted cask handling**, including authoring new `home/dot_config/orchard/apps/<app_id>.fish` packages when no Orchard package exists yet.
 
 For app package format, helpers, and quality bar, always use the **`orchard`** skill as the primary reference — [SKILL.md](../orchard/SKILL.md) and [references/app-package-format.md](../orchard/references/app-package-format.md).
 
