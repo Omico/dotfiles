@@ -27,6 +27,7 @@ Use this reference when deciding where Fish code belongs or shaping functions an
 - Start public functions with `function name --description 'Short description'`.
 - Close functions with `end` on its own line.
 - Keep one primary public function per file when using Fish autoloaded functions.
+- Put the primary public function before private helper functions, especially `__`-prefixed helpers, so the entry point appears before implementation details.
 - Treat the body as a readable pipeline: validate inputs, prepare state, do the work, report the result.
 
 ## Arguments and Variables
