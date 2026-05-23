@@ -1,14 +1,12 @@
-# Orchard development guidelines
+# Orchard Development Guidelines
 
-Development standards for orchard (macOS app manager in this chezmoi repo). Use this doc as the **entry point** when adding or editing app packages or the main script.
-
----
+Use this as the Orchard domain entry point when adding or editing app packages, the main executable, or completions. Repository-specific source paths and local sync commands belong in the active project primer.
 
 ## Document index
 
 | Document                                       | Purpose                                                                                 |
 | ---------------------------------------------- | --------------------------------------------------------------------------------------- |
-| **This file**                                  | Standards, rules, and checklists for app packages and `executable_orchard`.             |
+| **This file**                                  | Standards, rules, and checklists for app packages and the Orchard executable.           |
 | [app-package-format.md](app-package-format.md) | Package reference: variables, callbacks, public API, template, examples, Homebrew Cask. |
 | [development.md](development.md)               | Architecture, script structure, install flow, public API details, dependencies.         |
 
@@ -18,9 +16,9 @@ Development standards for orchard (macOS app manager in this chezmoi repo). Use 
 
 | Role                   | Scope                                       | Key files                                       |
 | ---------------------- | ------------------------------------------- | ----------------------------------------------- |
-| **App package author** | Add/edit `apps/<app_id>.fish`               | `home/dot_config/orchard/apps/*.fish`           |
-| **Orchard maintainer** | Change entrypoint, public API, install flow | `home/dot_local/bin/executable_orchard`         |
-| **Completions**        | Subcommand/args                             | `home/dot_config/fish/completions/orchard.fish` |
+| **App package author** | Add/edit `apps/<app_id>.fish`               | Orchard apps directory                          |
+| **Orchard maintainer** | Change entrypoint, public API, install flow | Orchard executable                              |
+| **Completions**        | Subcommand/args                             | Fish completion file                            |
 
 ---
 
@@ -30,8 +28,8 @@ _Full variable and callback reference: [app-package-format.md](app-package-forma
 
 ### File and naming
 
-- Path: `home/dot_config/orchard/apps/<app_id>.fish`. `app_id`: lowercase, hyphens allowed; must match filename.
-- All comments and user-facing strings in the `.fish` file must be in **English** (workspace rule).
+- Path shape: `apps/<app_id>.fish` under the Orchard config directory (`$XDG_CONFIG_HOME/orchard`, default `~/.config/orchard`). `app_id`: lowercase, hyphens allowed; must match filename.
+- Follow repository text-language rules for comments and user-facing strings.
 - **`set -l` locals**: Use a **leading underscore** and **snake_case** (e.g. `_url`, `_version`). Avoid camelCase; prefer a clear compound name (`_website_links_base` rather than `_base`).
 
 ### Required variables
@@ -62,7 +60,7 @@ _Script structure and section list: [development.md — Architecture](developmen
 ### Structure and naming
 
 - Keep the top-of-file structure comment and section order in sync with the code.
-- **Public API** (callable from app packages): no leading `_`; define in the Public API section of `executable_orchard`.
+- **Public API** (callable from app packages): no leading `_`; define in the Public API section of the Orchard executable.
 - **Internal**: leading `_`. In each section: define public functions first, then internal helpers (“public first, internal below”).
 
 ### Public API changes
@@ -73,14 +71,14 @@ _Script structure and section list: [development.md — Architecture](developmen
 ### Errors and platform
 
 - Errors: `echo "message" >&2`; `return 1` for recoverable failure, `exit 1` when the script must stop.
-- Comments and user-visible strings in the script must be in **English**.
+- Follow repository text-language rules for comments and user-visible strings.
 - Document new external commands in [development.md — Dependencies](development.md#dependencies). Orchard is macOS-only.
 
 ---
 
 ## Completions
 
-- Keep `home/dot_config/fish/completions/orchard.fish` in sync with subcommands and options:
+- Keep the project-specific Fish completion source in sync with subcommands and options:
   - `list`
   - `validate [app_id ...]`
   - `install [--force] <app_id>`
@@ -100,15 +98,16 @@ _Script structure and section list: [development.md — Architecture](developmen
 
 ### Before committing app package changes
 
-- [ ] Path is `home/dot_config/orchard/apps/<app_id>.fish` and `orchard_app_id` matches filename.
 - [ ] Required variables set; if using resolve callback, URL may be empty.
-- [ ] All comments and strings in the file are in English.
+- [ ] If editing through repository sources, follow that repository's Orchard app-directory mapping.
+- [ ] `orchard_app_id` matches filename.
+- [ ] Comments and strings follow repository text-language rules.
 - [ ] `set -l` locals use a leading underscore and snake_case (e.g. `_url`).
 - [ ] Resolve callback: on success set URL and return 0; on failure stderr and return 1.
-- [ ] Run `chezmoi apply` and `orchard install <app_id>` (or `--force`) to verify.
+- [ ] Run repository-specific sync and Orchard verification commands.
 
-### Before committing changes to `executable_orchard`
+### Before committing changes to the Orchard executable
 
 - [ ] Section order and top-of-file comment are up to date.
-- [ ] Public vs internal naming; errors to stderr; English only.
+- [ ] Public vs internal naming; errors to stderr; text follows repository rules.
 - [ ] If public API or behavior changed, update [development.md](development.md) and/or [app-package-format.md](app-package-format.md).

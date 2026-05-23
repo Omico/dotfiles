@@ -1,46 +1,39 @@
 ---
 name: orchard
-description: Create and maintain orchard app packages (apps/*.fish) for the macOS app manager in this chezmoi repo. Use when adding a new orchard package, editing an existing one, converting a Homebrew cask to orchard, updating download URLs or resolve callbacks, or when the user asks about orchard apps.
+description: Use when adding or maintaining Orchard app packages, editing the Orchard macOS app manager, converting Homebrew casks to Orchard packages, updating download URLs or resolve callbacks, or answering questions about Orchard apps.
 ---
 
-# Orchard package maintenance
+# Orchard
 
-Orchard is a lightweight manager for macOS apps installed via dmg/zip/pkg (no Homebrew). Packages are defined in **`home/dot_config/orchard/apps/<app_id>.fish`** and used by **`home/dot_local/bin/executable_orchard`** for `orchard list` and `orchard install <app_id>`.
+Orchard is a lightweight manager for macOS apps installed via dmg, zip, or pkg archives without Homebrew. This skill owns the reusable package format, public API, and maintainer workflow.
 
-**App package format** (required/optional variables, callbacks, public API, template, examples, Homebrew Cask reference): [references/app-package-format.md](references/app-package-format.md).
+Project-specific source paths, sync steps, and verification commands belong in the active repository's project primer. Load that primer before changing local files, then use this skill for the Orchard domain rules.
 
-**Development guidelines** (standards for app packages and for editing `executable_orchard`): [references/development-guidelines.md](references/development-guidelines.md).
+## References
 
-**Architecture, install flow, and maintainer conventions** (e.g. editing `executable_orchard`): [references/development.md](references/development.md).
-
----
+- **Package format**: [references/app-package-format.md](references/app-package-format.md) for variables, callbacks, public API, templates, examples, and Homebrew Cask mapping.
+- **Development guidelines**: [references/development-guidelines.md](references/development-guidelines.md) for app package standards, main script standards, completions, and checklists.
+- **Architecture**: [references/development.md](references/development.md) for install flow, command behavior, dependencies, and maintainer conventions.
 
 ## When to use this skill
 
-- User asks to add, update, or maintain an orchard package
-- User wants to convert a Homebrew cask to orchard
-- User asks to fix or change an app in `home/dot_config/orchard/apps/`
-- Editing download URL, resolve callback, or post-install steps for an orchard app
-
----
+- User asks to add, update, or maintain an Orchard package.
+- User wants to convert a Homebrew cask to Orchard.
+- User asks to change an Orchard app definition.
+- Editing download URLs, resolve callbacks, post-install steps, the Orchard executable, or completions.
 
 ## Quick workflow
 
-For **app packages** (`*.fish` under `home/dot_config/orchard/apps/`), treat **[development-guidelines — App package standards](references/development-guidelines.md#app-package-standards)** as the workflow source of truth: path and `app_id`, required/optional variables, resolve callback rules, `set -l` naming, post-install hooks, and English-only strings. Use **[app-package-format.md](references/app-package-format.md)** for templates, public API helpers (e.g. `orchard_fetch_github_release_asset_url`), and copy-paste examples.
-
-After changes: `chezmoi apply`, then `orchard install <app_id>` (see [checklist](references/development-guidelines.md#before-committing-app-package-changes)).
-
-For **editing `executable_orchard`**, follow **[development-guidelines — Main script standards](references/development-guidelines.md#main-script-standards)** and [development.md](references/development.md).
-
----
+- **App packages**: Read [development-guidelines — App package standards](references/development-guidelines.md#app-package-standards), then use [app-package-format.md](references/app-package-format.md) for templates, public API helpers such as `orchard_fetch_github_release_asset_url`, and examples.
+- **Main script or completions**: Follow [development-guidelines — Main script standards](references/development-guidelines.md#main-script-standards) and [development.md](references/development.md).
+- **Homebrew Cask conversions**: Use this skill's package format reference for candidate discovery and cask-to-package mapping.
 
 ## Finding casks to convert to orchard
 
-Only consider casks with **`auto_updates true`** (GUI apps with their own updater). See [app-package-format.md § Finding casks to convert](references/app-package-format.md) for the `comm` command and steps. For each candidate, run `brew info --cask <cask_name>` then add `home/dot_config/orchard/apps/<cask_name>.fish` using the Homebrew Cask mapping in that reference.
-
----
+Only consider casks with **`auto_updates true`** (GUI apps with their own updater). See [app-package-format.md — Finding casks to convert](references/app-package-format.md#finding-casks-to-convert) for the candidate command and steps. For each candidate, run `brew info --cask <cask_name>` and map the cask to an Orchard package using that reference.
 
 ## Checklist before finishing
 
-- [ ] [Before committing app package changes](references/development-guidelines.md#before-committing-app-package-changes) in development-guidelines (path, variables, English, `set -l` naming, resolve callback, verify install)
-- [ ] Remind user to run `chezmoi apply` and optionally `orchard install <app_id>` to test
+- [ ] Use the repository primer for source paths, local sync steps, and required verification commands.
+- [ ] For app packages, complete [Before committing app package changes](references/development-guidelines.md#before-committing-app-package-changes).
+- [ ] For executable or public API changes, complete [Before committing changes to the Orchard executable](references/development-guidelines.md#before-committing-changes-to-the-orchard-executable).

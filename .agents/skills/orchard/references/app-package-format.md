@@ -1,6 +1,6 @@
-# Orchard app package format
+# Orchard App Package Format
 
-Each package is defined in `home/dot_config/orchard/apps/<app_id>.fish`, read by `executable_orchard` for `orchard list` and `orchard install <app_id>`.
+Each package is defined as `apps/<app_id>.fish` under the Orchard config directory (`$XDG_CONFIG_HOME/orchard`, default `~/.config/orchard`). At runtime, Orchard reads those packages for `orchard list`, `orchard validate`, and `orchard install <app_id>`.
 
 **Standards and checklists:** [development-guidelines.md](development-guidelines.md). **Architecture and workflow:** [development.md](development.md).
 
@@ -10,7 +10,7 @@ Apply this format when creating or editing app `.fish` files.
 
 ## File and naming
 
-- **Path**: `home/dot_config/orchard/apps/<app_id>.fish`
+- **Path shape**: `apps/<app_id>.fish` under the Orchard config directory (`$XDG_CONFIG_HOME/orchard`, default `~/.config/orchard`).
 - **app_id**: lowercase, may contain hyphens (e.g. `anythingllm`, `codex-app`, `chatgpt-atlas`); must match the filename prefix.
 
 ---
@@ -162,19 +162,21 @@ This section is intended for humans authoring packages on their local machines a
 
 ## Finding casks to convert to orchard
 
-Only consider casks with **`auto_updates true`** (typical for GUI apps that ship their own updater). Use **`brew outdated --cask --greedy-auto-updates`** to list installed such casks, then exclude those that already have an orchard package. Run from the chezmoi source root.
+Only consider casks with **`auto_updates true`** (typical for GUI apps that ship their own updater). Use **`brew outdated --cask --greedy-auto-updates`** to list installed such casks, then exclude those that already have an Orchard package in the runtime apps directory.
 
-**Bash (run from repo root):**
+**Bash:**
 
 ```bash
 # Installed casks that are outdated with --greedy-auto-updates (i.e. have auto_updates true)
 # and have no corresponding apps/*.fish yet
+ORCHARD_APPS_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/orchard/apps"
+
 comm -23 \
   <(brew outdated --cask -q --greedy-auto-updates 2>/dev/null | sort) \
-  <(for f in home/dot_config/orchard/apps/*.fish; do [ -f "$f" ] && basename "$f" .fish; done | sort)
+  <(for f in "$ORCHARD_APPS_DIR"/*.fish; do [ -f "$f" ] && basename "$f" .fish; done | sort)
 ```
 
-For each candidate, run **`brew info --cask <cask_name>`** to confirm it uses a direct dmg/zip/pkg URL (or a redirect), then add `home/dot_config/orchard/apps/<cask_name>.fish` using the mapping in "Reference: Homebrew Cask" above.
+For each candidate, run **`brew info --cask <cask_name>`** to confirm it uses a direct dmg/zip/pkg URL (or a redirect), then create `apps/<cask_name>.fish` using the mapping in "Reference: Homebrew Cask" above.
 
 ---
 
@@ -188,4 +190,4 @@ For each candidate, run **`brew info --cask <cask_name>`** to confirm it uses a 
   - When loading an app: `orchard_app_bundle_path` defaults to `/Applications/$orchard_app_bundle_name` if unset.
   - During `orchard install` only: `_orchard_app_download_url_hash` and `_orchard_app_archive_cache_path` (after `orchard_resolve_download_url_callback` if defined).
 - **Resolve callback**: Runs only during `orchard install`, not during `orchard list`.
-- After adding or editing, run `chezmoi apply` so `orchard list` sees the app; install with `orchard install <app_id>`.
+- After adding or editing, run the repository-specific sync step so `orchard list` sees the app; validate with `orchard validate <app_id>` and optionally install with `orchard install <app_id>`.

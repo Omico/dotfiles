@@ -1,4 +1,4 @@
-# Orchard development guide
+# Orchard Development Guide
 
 Orchard is a lightweight manager for macOS apps installed via DMG/ZIP/PKG, without Homebrew. The main script is a Fish executable that lists apps, installs them from direct URLs (or resolved at install time), and cleans the cache.
 
@@ -7,13 +7,13 @@ Orchard is a lightweight manager for macOS apps installed via DMG/ZIP/PKG, witho
 This guide is for:
 
 - **App package authors**: adding or editing `apps/<app_id>.fish`
-- **Orchard maintainers**: modifying `home/dot_local/bin/executable_orchard`
+- **Orchard maintainers**: modifying the Orchard Fish executable
 
 ---
 
 ## Overview
 
-- **Entrypoint**: `orchard` (Fish script at `~/.local/bin/orchard`, from chezmoi `home/dot_local/bin/executable_orchard`).
+- **Entrypoint**: `orchard` (Fish script on `PATH`; source path is repository-specific).
 - **Config**: `$XDG_CONFIG_HOME/orchard` (default `~/.config/orchard`). App definitions live in `apps/*.fish`.
 - **Cache**: `$XDG_CACHE_HOME/orchard` (default `~/.cache/orchard`). Downloaded archives and DMG mount points.
 - **Platform**: macOS only (uses `hdiutil`, `ditto`, `installer`, `.app` paths).
@@ -32,7 +32,7 @@ This guide is for:
 
 ## Architecture
 
-### Script structure (`executable_orchard`)
+### Script structure
 
 The script is organized in sections (see the header comment):
 
@@ -118,7 +118,7 @@ Variables set by Orchard (do not set in the app file unless overriding):
 
 ## Public API for app packages
 
-These functions are part of the contract for app `.fish` files. They are defined in the Public API block of `executable_orchard` so they exist when app files are sourced.
+These functions are part of the contract for app `.fish` files. They are defined in the Public API block of the Orchard executable so they exist when app files are sourced.
 
 ### Fetching URLs
 
@@ -191,32 +191,32 @@ end
 
 ---
 
-## Adding a new app
+## Adding a New App
 
-See the **orchard** skill **Quick workflow** (in `.agents/skills/orchard/SKILL.md`) for a concise checklist.
+See the **orchard** skill **Quick workflow** for a concise checklist.
 
-- **Create package file**: Add `apps/<app_id>.fish` under the orchard config directory (e.g. `home/dot_config/orchard/apps/` in chezmoi).
+- **Create package file**: Add `apps/<app_id>.fish` under the Orchard config directory (`$XDG_CONFIG_HOME/orchard`, default `~/.config/orchard`).
 - **Required variables**: Set the four required variables. If the download URL is not fixed, define `orchard_resolve_download_url_callback` and set `orchard_app_download_url` inside it (you can leave the initial URL empty).
 - **Bundle name**: Set `orchard_app_bundle_name` if the `.app` name inside the DMG/ZIP differs from `"<display name>.app"`.
 - **Optional callbacks**: Define `orchard_after_install_callback` (e.g. `orchard_cli_wrapper` or `orchard_cli_symlink`) and/or `orchard_before_install_callback`, `orchard_resolve_installed_version_callback` as needed.
-- **Verify**: Apply chezmoi so the file is present; run `orchard list` to confirm, then `orchard install <app_id>` to test.
+- **Verify**: Run any repository-specific sync step so the runtime config sees the package, then run `orchard validate <app_id>`, `orchard list`, and optionally `orchard install <app_id>` to test.
 
 **Reference**: `brew info --cask <cask_name>` often gives homepage, version, and artifact URL or structure, which helps when mapping to orchard variables.
 
 ---
 
-## Internal conventions (maintainers of `executable_orchard`)
+## Internal Conventions
 
 - **Naming**: Public API for app packages has **no** leading `_` (e.g. `orchard_fetch_github_api`, `orchard_cli_wrapper`). Internal helpers use a leading `_` (e.g. `_orchard_ensure_local_bin`, `_orchard_load_app`).
 - **Order**: In each section, define all public (no `_`) functions first, then internal (`_`) helpers that they use. Fish allows calling functions defined later in the file.
-- **Comments**: Keep the top-of-file structure comment and section headers in sync with the code. Use English for comments and user-facing strings (see workspace rules).
+- **Comments**: Keep the top-of-file structure comment and section headers in sync with the code. Follow repository text-language rules for comments and user-facing strings.
 - **Errors**: Use `echo "..." >&2` for error messages; return 1 for soft failures, `exit 1` when the script should stop (e.g. missing required vars).
 
 ---
 
 ## Related files
 
-- **Agent skill**: `.agents/skills/orchard/SKILL.md` — use when editing `apps/*.fish`, `executable_orchard`, or completions; links to [development-guidelines.md](development-guidelines.md) and [app-package-format.md](app-package-format.md).
-- **Orchard config**: `home/dot_config/orchard/` (chezmoi); contains `apps/`.
-- **Executable**: `home/dot_local/bin/executable_orchard` (installed as `orchard` under `~/.local/bin`).
-- **References**: `.agents/skills/orchard/references/` — this guide, development-guidelines.md, app-package-format.md.
+- **Agent skill**: `orchard` — use when editing `apps/*.fish`, the Orchard executable, or completions.
+- **Orchard config**: `$XDG_CONFIG_HOME/orchard` (default `~/.config/orchard`); contains `apps/`.
+- **Executable**: `orchard` on `PATH`.
+- **References**: this guide, [development-guidelines.md](development-guidelines.md), and [app-package-format.md](app-package-format.md).
