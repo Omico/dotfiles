@@ -30,7 +30,6 @@ dependencies:
     - github/awesome-copilot/skills/editorconfig
     - github/awesome-copilot/skills/excalidraw-diagram-generator
     - github/awesome-copilot/skills/first-ask
-    - github/awesome-copilot/skills/gh-cli
     - github/awesome-copilot/skills/git-commit
     - github/awesome-copilot/skills/github-issues
     - hashicorp/agent-skills/terraform/code-generation/skills/terraform-search-import
