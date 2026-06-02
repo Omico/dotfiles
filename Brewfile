@@ -1,6 +1,7 @@
 tap "anomalyco/tap"
+tap "homebrew/core"
 tap "jakewharton/repo"
-tap "nguyenphutrong/tap"
+tap "steipete/tap"
 brew "shellcheck"
 brew "actionlint"
 brew "aria2"
@@ -27,6 +28,7 @@ brew "gradle-profiler"
 brew "graphviz"
 brew "helm"
 brew "imagemagick"
+brew "iperf3"
 brew "jadx"
 brew "jenkins-lts", restart_service: :changed
 brew "jenv"
@@ -42,7 +44,6 @@ brew "ncurses"
 brew "opentofu"
 brew "p7zip"
 brew "pinentry-mac"
-brew "pnpm"
 brew "powershell"
 brew "promptfoo"
 brew "protobuf"
@@ -75,6 +76,7 @@ cask "anythingllm"
 cask "balenaetcher"
 cask "calibre"
 cask "codex"
+cask "steipete/tap/codexbar"
 cask "dotnet-sdk"
 cask "easydict"
 cask "font-fira-mono-nerd-font"
@@ -86,11 +88,11 @@ cask "kekaexternalhelper"
 cask "localsend"
 cask "microsoft-office"
 cask "qbittorrent"
-cask "nguyenphutrong/tap/quotio"
 cask "sketchup"
 cask "snipaste"
 cask "squirrel-app"
 cask "tencent-meeting"
+cask "ungoogled-chromium"
 cask "windows-app"
 cask "zulu@11"
 cask "zulu@17"
@@ -101,6 +103,7 @@ mas "Compressor", id: 424390742
 mas "Developer", id: 640199958
 mas "Final Cut Pro", id: 424389933
 mas "iMovie", id: 408981434
+mas "Keynote", id: 361285480
 mas "Keynote", id: 409183694
 mas "Logic Pro", id: 634148309
 mas "MainStage", id: 634159523
