@@ -4,7 +4,7 @@ function apm-update --description "Update agent skills via APM (apm deps update 
     echo "Updating agent skills from ~/.apm..."
 
     __apm-run-global-apm self-update; or return $status
-    __apm-run-global-apm deps update --parallel-downloads 32 $argv; or return $status
+    __apm-run-global-apm update --yes --parallel-downloads 32 $argv; or return $status
 
     __link-apm-skills-to-agents
 end
