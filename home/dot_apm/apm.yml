@@ -39,6 +39,7 @@ dependencies:
     - hashicorp/agent-skills/terraform/provider-development
     - mattpocock/skills/skills/productivity/grill-me
     - nuxt/ui/skills/nuxt-ui
+    - op7418/Humanizer-zh
     - vercel-labs/agent-skills/skills/web-design-guidelines
     - vercel-labs/skills/skills/find-skills
   mcp:
