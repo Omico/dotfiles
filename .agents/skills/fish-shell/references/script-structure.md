@@ -37,6 +37,7 @@ Use this reference when deciding where Fish code belongs or shaping functions an
 - Use `set -gx` only when a value must be exported to child processes.
 - Prefer descriptive variable names; avoid single-letter names in non-trivial logic.
 - Provide sensible defaults when arguments are omitted, and make defaults clear in descriptions, usage text, or nearby comments.
+- When a public function reads global variables for configuration, add a brief comment block directly above the public function that names the variable, shows how to configure it, and explains what it changes.
 
 ## Command Lists
 
