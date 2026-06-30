@@ -58,6 +58,7 @@ $cmd
 - Check required commands with `command -q`.
 - Return non-zero status codes for failures so callers can react.
 - For repeated wrapper patterns, centralize shared logic in one private helper.
+- Do not keep pass-through wrappers that only call another helper without adding validation, argument normalization, state changes, user-facing diagnostics, or a real ownership boundary; call the helper directly instead.
 - Keep public wrapper functions thin: validate or ensure prerequisites, then forward `$argv`.
 
 ## Template
