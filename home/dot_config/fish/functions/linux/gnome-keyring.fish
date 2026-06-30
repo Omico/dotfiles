@@ -40,22 +40,14 @@ function gnome-keyring-restart --description 'Restart GNOME keyring Secret Servi
     __gnome_keyring_require_commands timeout gnome-keyring-daemon; or return 1
     __gnome_keyring_delete_problem_default_keyring false; or return 1
     __gnome_keyring_kill_stuck_secret_tool; or return 1
-
-    if command -q systemctl
-        __gnome_keyring_timeout 10s systemctl --user restart gnome-keyring-daemon.service 2>/dev/null
-        or true
-        __gnome_keyring_timeout 10s systemctl --user restart gnome-keyring-daemon.socket 2>/dev/null
-        or true
-    end
-
-    __gnome_keyring_start_secret_service
+    __gnome_keyring_restart_secret_service; or return 1
 end
 
 function gnome-keyring-unlock --description 'Unlock GNOME login keyring for current user session'
     __ensure_user_dbus_env; or return 1
     __gnome_keyring_require_commands timeout gnome-keyring-daemon busctl; or return 1
     __gnome_keyring_delete_problem_default_keyring false; or return 1
-    __gnome_keyring_start_secret_service; or return 1
+    __gnome_keyring_restart_secret_service; or return 1
 
     set -l locked (__gnome_keyring_login_keyring_locked); or return 1
     if test "$locked" = false
@@ -94,14 +86,17 @@ function gnome-keyring-unlock --description 'Unlock GNOME login keyring for curr
         return $unlock_status
     end
 
-    echo
-    set locked (__gnome_keyring_login_keyring_locked); or return 1
-    if test "$locked" = true
-        echo "GNOME login keyring: locked"
-        return 1
-    end
+    __gnome_keyring_restart_secret_service; or return 1
+    gnome-keyring-status
+end
 
-    echo "GNOME login keyring: unlocked"
+function __gnome_keyring_restart_secret_service --description 'internal: restart GNOME keyring Secret Service'
+    if command -q systemctl
+        __gnome_keyring_timeout 10s systemctl --user restart gnome-keyring-daemon.service 2>/dev/null
+        or true
+        __gnome_keyring_timeout 10s systemctl --user restart gnome-keyring-daemon.socket 2>/dev/null
+        or true
+    end
 end
 
 function __gnome_keyring_kill_stuck_secret_tool --description 'internal: kill stuck secret-tool processes for current user'
