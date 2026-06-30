@@ -5,6 +5,10 @@ set -l cleanup_targets \
     ~/.config/ghostty/ \
     ~/.config/orchard/
 
-for path in (chezmoi unmanaged $cleanup_targets; or true)
-    rm -rf -- "$HOME/$path"
+for target in $cleanup_targets
+    test -e "$target"; or test -L "$target"; or continue
+
+    for path in (chezmoi unmanaged "$target"; or true)
+        rm -rf -- "$HOME/$path"
+    end
 end
