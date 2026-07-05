@@ -14,6 +14,7 @@ If the change touches Orchard files, also read [orchard](orchard.md) and use the
 
 - Edit the chezmoi source paths, not the applied files in `$HOME`.
 - Follow [english-only](english-only.md) for comments, descriptions, messages, and user-facing output.
+- When creating any new script or command, choose the target path by platform scope first: platform-exclusive scripts must be Fish functions under `home/dot_config/fish/functions/<platform>/<command>.fish`, not `home/dot_local/bin/executable_*`; use `home/dot_local/bin/executable_*` only for commands that should be installed as standalone executables outside the Fish platform autoload tree.
 - Start Fish files under `home/dot_config/fish/` with `#!/usr/bin/env fish`.
 - Start standalone Fish executables under `home/dot_local/bin/` with `#!/usr/bin/env fish`.
 - Keep the shebang in `conf.d` snippets even though Fish sources those files.
@@ -45,7 +46,7 @@ If the change touches Orchard files, also read [orchard](orchard.md) and use the
 - Expected values are `darwin`, `linux`, `wsl`, `msys`, and `other`.
 - Prefer `fish_platform` over direct `uname` checks in Fish code.
 - Treat `fish_platform` as read-only outside its initializer.
-- Put platform-specific startup or function files under `conf.d/<platform>/` or `functions/<platform>/`.
+- Put platform-specific startup or function files under `conf.d/<platform>/` or `functions/<platform>/`, following the script placement rule in Contract.
 - Put shared Unix Fish files under `conf.d/unix/` or `functions/unix/`; they are loaded for `linux`, `darwin`, and `wsl`.
 - If a function may run before config loading, check `set -q fish_platform` and fail fast with a clear error when it is missing.
 
