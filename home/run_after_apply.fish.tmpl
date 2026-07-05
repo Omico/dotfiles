@@ -25,7 +25,7 @@ end
 {{ if or (eq .chezmoi.os "darwin") (eq .chezmoi.os "linux") -}}
 rustup toolchain install stable >/dev/null 2>&1
 rustup update >/dev/null 2>&1
-command -q rustc; and echo "Using Rust "(string split -f2 ' ' -- (rustc --version))
+command -q rustc; and echo "Using Rust "(set_color cyan)(string split -f2 ' ' -- (rustc --version))(set_color normal)
 {{ end -}}
 
 command -q fnm; and fnm-upgrade-latest-lts
