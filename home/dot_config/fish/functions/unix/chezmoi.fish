@@ -57,7 +57,14 @@ function __chezmoi_add_files_by_extension --argument-names dir extension
     test -d "$dir"; or return 0
     test -n "$extension"; or return 1
 
-    set -l files "$dir"/*.$extension
+    set -l files
+    for file in "$dir"/*.$extension
+        set -l source_path (chezmoi source-path "$file" 2>/dev/null)
+        if test -n "$source_path"; and string match -q '*.tmpl' "$source_path"
+            continue
+        end
+        set -a files "$file"
+    end
     test (count $files) -gt 0; or return 0
 
     chezmoi add $files
