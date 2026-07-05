@@ -18,6 +18,6 @@ Read this before editing Markdown files, skill files, repository docs, or long M
 
 ## Verification
 
-- Run `bash scripts/markdownlint.sh` from the repository root for Markdown checks.
-- Run `bash scripts/markdownlint.sh --fix` from the repository root to apply markdownlint-cli2 built-in fixes.
+- Run `node docs/scripts/markdownlint.mjs` from the repository root for Markdown checks.
+- Run `node docs/scripts/markdownlint.mjs --fix` from the repository root to apply markdownlint-cli2 built-in fixes.
 - Fix every reported issue before considering the Markdown change complete.

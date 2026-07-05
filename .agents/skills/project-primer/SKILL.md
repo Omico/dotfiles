@@ -12,7 +12,7 @@ Use this as the repository rule router. Load it first, then open only the focuse
 - Read the route table, choose the smallest matching reference, and stop there.
 - Combine references only when the task crosses surfaces.
 - Keep human-facing repository documentation under `docs/`.
-- After editing any Markdown file, run `bash scripts/markdownlint.sh` from the repository root; use `bash scripts/markdownlint.sh --fix` to apply markdownlint-cli2 fixes.
+- After editing any Markdown file, run `node docs/scripts/markdownlint.mjs` from the repository root; use `node docs/scripts/markdownlint.mjs --fix` to apply markdownlint-cli2 fixes.
 
 ## Routes
 
