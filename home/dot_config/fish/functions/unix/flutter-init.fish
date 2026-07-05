@@ -31,7 +31,7 @@ function flutter-init -a channel
         end
     end
 
-    # Detect platform via fish_platform (from 00-platform.fish)
+    # Detect platform via fish_platform (chezmoi-rendered 00-fish-platform.fish)
     if not set -q fish_platform
         echo "fish_platform is not set." >&2
         return 1

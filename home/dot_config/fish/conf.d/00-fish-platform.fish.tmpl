@@ -1,0 +1,17 @@
+#!/usr/bin/env fish
+
+if not set -q fish_platform
+{{- if eq .chezmoi.os "darwin" }}
+    set -g fish_platform darwin
+{{- else if eq .chezmoi.os "linux" }}
+{{-   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
+    set -g fish_platform wsl
+{{-   else }}
+    set -g fish_platform linux
+{{-   end }}
+{{- else if eq .chezmoi.os "windows" }}
+    set -g fish_platform msys
+{{- else }}
+    set -g fish_platform other
+{{- end }}
+end

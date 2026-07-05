@@ -42,7 +42,8 @@ If the change touches Orchard files, also read [orchard](orchard.md) and use the
 
 ## Platform routing
 
-- `fish_platform` is initialized in `home/dot_config/fish/conf.d/00-platform.fish`.
+- `fish_platform` is initialized in `home/dot_config/fish/conf.d/00-fish-platform.fish.tmpl` from chezmoi data (`.chezmoi.os`, `.chezmoi.kernel.osrelease`).
+- Re-run `chezmoi apply` after moving Fish config to a different OS or environment (for example WSL vs native Linux); the rendered value is fixed at apply time, not detected at shell startup.
 - Expected values are `darwin`, `linux`, `wsl`, `msys`, and `other`.
 - Prefer `fish_platform` over direct `uname` checks in Fish code.
 - Treat `fish_platform` as read-only outside its initializer.
