@@ -11,7 +11,11 @@ export default defineConfig({
     socialLinks: [
       { icon: "github", link: "https://github.com/Omico/dotfiles" },
     ],
-    nav: generatedNav,
+    nav: [
+      { text: "Home", link: "/" },
+      { text: "Commands", link: "/commands" },
+      ...generatedNav,
+    ],
     sidebar: generatedSidebar,
   },
 });

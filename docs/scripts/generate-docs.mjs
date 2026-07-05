@@ -265,15 +265,12 @@ function mergeSidebars(skillsSidebar, flatSectionResults) {
 }
 
 function buildNav(sidebar) {
-  return [
-    { text: "Home", link: "/" },
-    ...navSectionKeys.flatMap((key) => {
-      const s = SECTIONS[key];
-      return sidebar[s.sidebarBase]
-        ? [{ text: s.sectionTitle, link: s.sidebarBase }]
-        : [];
-    }),
-  ];
+  return navSectionKeys.flatMap((key) => {
+    const s = SECTIONS[key];
+    return sidebar[s.sidebarBase]
+      ? [{ text: s.sectionTitle, link: s.sidebarBase }]
+      : [];
+  });
 }
 
 async function writeVitePressExport(vitepressDir, basename, data) {
