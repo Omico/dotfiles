@@ -21,6 +21,13 @@ if command -q snap
 end
 {{ end -}}
 
+# Unix (darwin, linux, wsl)
+{{ if or (eq .chezmoi.os "darwin") (eq .chezmoi.os "linux") -}}
+rustup toolchain install stable >/dev/null 2>&1
+rustup update >/dev/null 2>&1
+command -q rustc; and echo "Using Rust "(string split -f2 ' ' -- (rustc --version))
+{{ end -}}
+
 command -q fnm; and fnm-upgrade-latest-lts
 
 echo "✅ All upgrades completed!"
