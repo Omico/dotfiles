@@ -1,6 +1,6 @@
 # Fish
 
-Read this before editing Fish files in this repository. Use the `fish-shell` skill for portable Fish idioms, formatting, syntax checks, and script design; this reference only owns local paths and repository contracts.
+Read this before editing Fish files in this repository. Use the Fish shell style skill (`fish-shell`) for portable idioms, formatting, syntax checks, and script design; this reference only owns local paths and repository contracts.
 
 ## Scope
 
@@ -8,7 +8,7 @@ Read this before editing Fish files in this repository. Use the `fish-shell` ski
 - Fish-based executables under `home/dot_local/bin/executable_*`
 - Fish helper scripts that are maintained in this source tree
 
-If the change touches Orchard files, also read [orchard](orchard.md) and use the relevant Orchard skill.
+If the change touches Orchard files, read [orchard](orchard.md) for chezmoi source paths, then load the Orchard app manager skill (`orchard`) for package format and API rules.
 
 ## Contract
 
@@ -66,7 +66,7 @@ __ensure_binary_and_forward <bin_path> <short_name> <shell> <install_one_liner> 
 
 ## Workflow
 
-- Use `fish-shell` guidance for formatting and syntax validation.
+- Use Fish shell style skill (`fish-shell`) guidance for formatting and syntax validation.
 - Run targeted syntax checks for touched Fish files, for example:
 
   ```bash

@@ -16,17 +16,20 @@ These are chezmoi source paths. `chezmoi apply` maps them into `$HOME`:
 
 ## Routing
 
-- Use the `orchard` skill for reusable package format, executable, public API, and completion rules.
-- Use `orchard-migrate-brew` when converting Homebrew casks.
-- Use `orchard-add-package` when adding a new package definition.
+- Load the Orchard app manager skill (`orchard`) for reusable package format, executable, public API, and completion rules.
+- Use the Homebrew cask migration skill (`orchard-migrate-brew`) when converting Homebrew casks.
+- Use the Orchard add-package skill (`orchard-add-package`) when adding a new package definition.
 - Keep Orchard Fish files aligned with [fish](fish.md) and repository text rules in [english-only](english-only.md).
 
 ## Repository Rules
 
-- When the `orchard` skill says `apps/<app_id>.fish`, use `home/dot_config/orchard/apps/<app_id>.fish` in this repo.
-- When the `orchard` skill says the Orchard executable source, use `home/dot_local/bin/executable_orchard` in this repo.
-- When the `orchard` skill says the Fish completion source, use `home/dot_config/fish/completions/orchard.fish` in this repo.
-- For cask-conversion candidate checks, run commands from the repository root and compare against `home/dot_config/orchard/apps/*.fish`.
+Map paths from that skill into this chezmoi source tree:
+
+- `apps/<app_id>.fish` → `home/dot_config/orchard/apps/<app_id>.fish`
+- Orchard executable source → `home/dot_local/bin/executable_orchard`
+- Fish completion source → `home/dot_config/fish/completions/orchard.fish`
+
+For cask-conversion candidate checks, run commands from the repository root and compare against `home/dot_config/orchard/apps/*.fish`.
 
 ## Verification
 
@@ -35,9 +38,3 @@ These are chezmoi source paths. `chezmoi apply` maps them into `$HOME`:
 - For install-surface changes, run `orchard install <app_id>` or `orchard install <app_id> --force` when practical.
 - For executable or completion changes, run the relevant `orchard` subcommand and Fish completion checks when practical.
 - If verification needs network access, sudo, or a local GUI state that was not used, say exactly what was not run.
-
-## References
-
-- Package variables, callbacks, public API, templates, and examples: `orchard` skill reference `references/app-package-format.md`
-- Standards for app packages and the Orchard executable: `orchard` skill reference `references/development-guidelines.md`
-- Architecture, install flow, and maintainer conventions: `orchard` skill reference `references/development.md`

@@ -4,6 +4,7 @@ Read this before editing Markdown files, skill files, repository docs, or long M
 
 ## Structure
 
+- Keep human-facing repository documentation under `docs/`.
 - Use descriptive headings, not numbered headings.
 - Avoid hard-coded section numbers in overviews and cross-references.
 - Prefer unordered bullets with bold labels over ordered lists in prose.
