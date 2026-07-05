@@ -24,10 +24,20 @@ If the change touches Orchard files, also read [orchard](orchard.md) and use the
 - **Core config**: `home/dot_config/fish/config.fish`
 - **Startup snippets**: `home/dot_config/fish/conf.d/*.fish`
 - **Platform startup snippets**: `home/dot_config/fish/conf.d/<platform>/*.fish`
-- **Functions**: `home/dot_config/fish/functions/**/*.fish`
+- **Functions**: `home/dot_config/fish/functions/<command>.fish`
+- **Platform functions**: `home/dot_config/fish/functions/<platform>/<command>.fish`
 - **Completions**: `home/dot_config/fish/completions/<command>.fish`
 - **Executables**: `home/dot_local/bin/executable_*`
 - **Repository scripts**: `scripts/*.fish`
+
+## Function layout
+
+- Keep autoloaded public commands as flat `functions/<command>.fish` files.
+- Do not create feature- or tool-specific subdirectories under `functions/`, such as `functions/apm/`.
+- The only allowed subdirectories under `functions/` are platform routers: `darwin/`, `linux/`, `unix/`, and future platform names loaded by `01-platform-autoload.fish`.
+- Put shared private helpers for a feature in `conf.d/` startup snippets when they must load before autoload, or colocate them with the public command file when autoload order is sufficient.
+- Prefix private helpers with `__` and keep one primary public function per autoload file.
+- Before extracting a private helper, check whether it will have more than one caller. If it would be referenced only once, evaluate whether the split is necessary; prefer inlining when it only wraps a short call chain without reuse, shared setup, or a distinct responsibility boundary.
 
 ## Platform routing
 

@@ -21,5 +21,5 @@ Use this as the repository rule router. Load it first, then open only the focuse
 - **Agent docs**: Read [agent-docs](references/agent-docs.md) before editing `.agents/`, `docs/`, the docs generator, or docs CI.
 - **Fish**: Read [fish](references/fish.md) before editing `.fish` files, Fish completions, or Fish-based local executables.
 - **Orchard**: Read [orchard](references/orchard.md) before editing Orchard app packages, its executable, or its completion.
-- **APM**: Read [apm](references/apm.md) before editing `home/dot_apm/apm.yml`.
+- **APM**: Read [apm](references/apm.md) before editing `home/dot_apm/`, `home/dot_config/fish/conf.d/99-apm.fish`, `home/dot_config/fish/functions/apm-add-skill.fish`, or `home/dot_config/fish/functions/apm-update.fish`.
 - **Commits**: Read [git](references/git.md) before preparing a commit.

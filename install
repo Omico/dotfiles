@@ -16,6 +16,7 @@ HOMEBREW_FORMULA_PACKAGES=(
   fish
   git
   starship
+  yq
 )
 
 HOMEBREW_CASK_PACKAGES=(
@@ -287,6 +288,14 @@ function install-chezmoi-via-snap {
   echo "Installing chezmoi..."
   sudo snap install chezmoi --classic
 }
+
+function install-yq-via-snap {
+  if command -v yq &>/dev/null; then
+    return
+  fi
+  echo "Installing yq..."
+  sudo snap install yq
+}
 # -----------------------------------------------------------------------
 # Ubuntu-only functions end
 # -----------------------------------------------------------------------
@@ -316,6 +325,7 @@ case "$(detect-platform)" in
     install-fira-mono-nerd-font
     install-starship
     install-chezmoi-via-snap
+    install-yq-via-snap
     setup-chezmoi
     setup-fish /usr/bin/fish
     clone-rime-auto-deploy
