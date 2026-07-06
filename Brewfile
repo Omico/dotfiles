@@ -15,8 +15,6 @@ brew "chezmoi"
 brew "cloc"
 # Cross-platform make
 brew "cmake"
-# Powerful, clean, object-oriented scripting language
-brew "ruby"
 # Dependency manager for Cocoa projects
 brew "cocoapods"
 # GNU File, Shell, and Text utilities
@@ -77,6 +75,8 @@ brew "lsusb"
 brew "mas"
 # Run a Kubernetes cluster locally
 brew "minikube"
+# Matroska media files manipulation tools
+brew "mkvtoolnix"
 # Text-based UI library
 brew "ncurses"
 # Drop-in replacement for Terraform. Infrastructure as Code Tool
@@ -109,6 +109,10 @@ brew "specify"
 brew "starship"
 # User interface to the TELNET protocol
 brew "telnet"
+# OCR (Optical Character Recognition) engine
+brew "tesseract"
+# Enables extra languages support for Tesseract
+brew "tesseract-lang"
 # Programmatically correct mistyped console commands
 brew "thefuck"
 # Official tldr client written in Rust
@@ -190,8 +194,8 @@ mas "Compressor", id: 424390742
 mas "Developer", id: 640199958
 mas "Final Cut Pro", id: 424389933
 mas "iMovie", id: 408981434
-mas "Keynote", id: 409183694
 mas "Keynote", id: 361285480
+mas "Keynote", id: 409183694
 mas "Logic Pro", id: 634148309
 mas "MainStage", id: 634159523
 mas "Motion", id: 434290957
