@@ -9,15 +9,9 @@ on:
       - "docs/**"
   workflow_dispatch:
 
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
-
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -45,6 +39,8 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    concurrency:
+      group: pages
     permissions:
       pages: write
       id-token: write
@@ -52,6 +48,21 @@ jobs:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
+      - id: check
+        name: Check branch head
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [[ "${{ github.event_name }}" == workflow_dispatch ]]; then
+            should_deploy=true
+          elif [[ "$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$GITHUB_REF_NAME" -q .object.sha)" == "$GITHUB_SHA" ]]; then
+            should_deploy=true
+          else
+            should_deploy=false
+          fi
+          echo "should_deploy=$should_deploy" >> "$GITHUB_OUTPUT"
+
       - name: Deploy to GitHub Pages
+        if: steps.check.outputs.should_deploy == 'true'
         id: deploy
         uses: actions/deploy-pages@v5
