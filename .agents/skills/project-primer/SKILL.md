@@ -21,6 +21,7 @@ Stop when the current reference gives enough guidance. Load another reference on
 - **Markdown**: Read [markdown](references/markdown.md) before editing `.md` files, skills, docs, or Markdown-like comments.
 - **Agent docs**: Read [agent-docs](references/agent-docs.md) before editing `.agents/`, `docs/`, the docs generator, or docs CI.
 - **Scripts and local commands**: Read [fish](references/fish.md) before creating, moving, or editing shell scripts, local commands, Fish functions, Fish completions, Fish-based local executables, or platform-specific helpers.
+- **Commands docs**: Read [commands-docs](references/commands-docs.md) when adding, renaming, or removing Fish autoload commands or editing `docs/src/commands/`.
 - **Orchard**: Read [orchard](references/orchard.md) before editing Orchard app packages, its executable, or its completion.
 - **APM**: Read [apm](references/apm.md) before editing APM source under `home/dot_apm/` or APM Fish helpers.
 - **Commits**: Read [git](references/git.md) before preparing a commit.

@@ -64,6 +64,10 @@ __ensure_binary_and_forward <bin_path> <short_name> <shell> <install_one_liner> 
 - Forward `$argv` so the wrapper behaves like the installed command.
 - Follow `home/dot_config/fish/functions/unix/rustup.fish` and `home/dot_config/fish/functions/unix/bun.fish` as examples.
 
+## Commands docs
+
+When changing autoloaded public commands, read [commands-docs](commands-docs.md) and update the VitePress Commands site in the same change.
+
 ## Workflow
 
 - Use Fish shell style skill (`fish-shell`) guidance for formatting and syntax validation.

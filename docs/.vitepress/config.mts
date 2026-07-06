@@ -1,4 +1,5 @@
 import { defineConfig } from "vitepress";
+import commandsSidebar from "./commands.sidebar.mts";
 import generatedSidebar from "./sidebar.generated.mts";
 import generatedNav from "./nav.generated.mts";
 
@@ -13,9 +14,12 @@ export default defineConfig({
     ],
     nav: [
       { text: "Home", link: "/" },
-      { text: "Commands", link: "/commands" },
+      { text: "Commands", link: "/commands/" },
       ...generatedNav,
     ],
-    sidebar: generatedSidebar,
+    sidebar: {
+      ...commandsSidebar,
+      ...generatedSidebar,
+    },
   },
 });
