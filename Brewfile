@@ -153,8 +153,6 @@ cask "balenaetcher"
 cask "calibre"
 # OpenAI's coding agent that runs in your terminal
 cask "codex"
-# Developer platform
-cask "dotnet-sdk"
 cask "font-fira-mono-nerd-font"
 cask "font-meslo-lg-nerd-font"
 # Cross-platform Git credential storage for multiple hosting providers
