@@ -37,6 +37,8 @@ brew "gh"
 brew "git"
 # Git extension for versioning large files
 brew "git-lfs"
+# GNU Privacy Guard (OpenPGP)
+brew "gnupg"
 # Open source programming language to build simple/reliable/efficient software
 brew "go"
 # Development kit for the Java programming language
@@ -157,8 +159,6 @@ cask "font-fira-mono-nerd-font"
 cask "font-meslo-lg-nerd-font"
 # Cross-platform Git credential storage for multiple hosting providers
 cask "git-credential-manager"
-# Tools to protect your emails and files
-cask "gpg-suite"
 # Helper application for the Keka file archiver
 cask "kekaexternalhelper"
 # Open-source cross-platform alternative to AirDrop
