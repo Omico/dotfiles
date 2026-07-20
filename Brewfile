@@ -1,4 +1,5 @@
 tap "anomalyco/tap"
+tap "gentleman-programming/tap", trusted: { casks: ["engram"] }
 tap "homebrew/core"
 tap "jakewharton/repo", trusted: true
 # Static analysis and lint tool, for (ba)sh scripts
@@ -143,6 +144,8 @@ brew "yq"
 brew "zip"
 # The AI coding agent built for the terminal.
 brew "anomalyco/tap/opencode", trusted: true
+# Persistent memory for AI coding agents. Agent-agnostic, single binary, zero dependencies.
+brew "gentleman-programming/tap/engram", trusted: true
 # Command-line tools for building and debugging Android apps
 cask "android-commandlinetools"
 # Allows connection to a computer remotely
