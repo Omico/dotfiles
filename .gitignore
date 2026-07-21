@@ -1,5 +1,6 @@
+*.pyc
 .DS_Store
-/.idea
+.idea/
 /Brewfile.lock.json
 /home/dot_apm/apm.custom.yml
 /home/dot_apm/apm.yml
