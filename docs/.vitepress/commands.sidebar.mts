@@ -9,6 +9,7 @@ export default {
     { text: "MLflow", link: "/commands/mlflow/" },
     { text: "Shell", link: "/commands/shell/" },
     { text: "Toolchains", link: "/commands/toolchains/" },
+    { text: "VS Code", link: "/commands/vscode/" },
     { text: "Xcode", link: "/commands/xcode/" },
   ],
 };

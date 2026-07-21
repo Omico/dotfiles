@@ -24,6 +24,7 @@ Source definitions live under [`home/dot_config/fish/functions/`](https://github
 | [MLflow](./mlflow) | macOS | Local tracking server via launchd |
 | [Shell](./shell) | Mixed | Reload Fish and sync configs to chezmoi |
 | [Toolchains](./toolchains) | Mixed | Node.js, Bun, Rust, Flutter, Java, Gradle |
+| [VS Code](./vscode) | Unix | Shared Code/Cursor User settings merge |
 | [Xcode](./xcode) | macOS | Switch Xcode versions and open downloads |
 
 Platform-specific functions load only when `fish_platform` matches (set at `chezmoi apply` time). Each command page lists its supported platforms.
