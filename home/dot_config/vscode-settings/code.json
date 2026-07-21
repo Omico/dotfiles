@@ -1,0 +1,24 @@
+{
+  "github.copilot.enable": {
+    "*": true,
+    "dotenv": false,
+    "java-properties": false,
+    "markdown": true,
+    "plaintext": false,
+    "scminput": false,
+    "yaml": true
+  },
+  "gitlens.advanced.messages": {
+    "suppressCommitHasNoPreviousCommitWarning": true
+  },
+  "gitlens.hovers.currentLine.over": "line",
+  "remote.SSH.useLocalServer": false,
+  "settingsSync.ignoredSettings": [
+    "remote.SSH.configFile",
+    "remote.SSH.remotePlatform",
+    "shellformat.path",
+    "parallels-desktop.devops-service.path"
+  ],
+  "telemetry.telemetryLevel": "off",
+  "workbench.editor.useModal": "some"
+}

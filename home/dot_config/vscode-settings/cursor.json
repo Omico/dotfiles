@@ -1,0 +1,13 @@
+{
+  "cursor.composer.shouldChimeAfterChatFinishes": true,
+  "cursor.composer.usageSummaryDisplay": "always",
+  "cursor.cpp.disabledLanguages": [
+    "dotenv",
+    "java-properties",
+    "plaintext",
+    "scminput"
+  ],
+  "cursor.general.emailPrivacyEnabled": true,
+  "cursor.general.fontSmoothingAntialiased_v2": false,
+  "go.toolsManagement.autoUpdate": true
+}

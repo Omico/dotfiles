@@ -62,6 +62,8 @@ brew "jadx"
 brew "jenkins-lts", restart_service: :changed
 # Manage your Java environment
 brew "jenv"
+# Lightweight and flexible command-line JSON processor
+brew "jq"
 # Environment diagnostics for Kotlin Multiplatform Mobile app development
 brew "kdoctor"
 # Statically typed programming language for the JVM
