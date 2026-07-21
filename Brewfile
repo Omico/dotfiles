@@ -96,6 +96,8 @@ brew "powershell"
 brew "promptfoo"
 # Protocol buffers (Google's data interchange format)
 brew "protobuf"
+# Python testing framework
+brew "pytest"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.11"
 # Interpreted, interactive, object-oriented programming language
