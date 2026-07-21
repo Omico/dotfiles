@@ -16,6 +16,13 @@ Use this reference when deciding where Fish code belongs or shaping functions an
 - Avoid slow, noisy, or side-effect-heavy startup code in non-interactive shells.
 - Completions should compute candidates only; avoid installs, network calls, or state-changing work.
 
+## Interpreter Boundaries
+
+- Prefer a Fish-native implementation for Fish command behavior when it remains clear and maintainable.
+- Do not embed another language's program directly in Fish through `python -c`, `node -e`, or equivalent interpreter strings, whether single-line or multiline.
+- Move cross-language implementation into a dedicated source file and let Fish invoke it through a narrow argument and stream contract.
+- Keep the Fish entry point responsible for shell concerns such as platform routing, dependency checks, and user-facing diagnostics; follow the local workspace convention for private helper placement.
+
 ## Shebangs
 
 - Put `#!/usr/bin/env fish` on the first line of standalone executable Fish scripts.

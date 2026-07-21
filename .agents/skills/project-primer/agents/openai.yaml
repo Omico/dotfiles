@@ -1,4 +1,4 @@
 interface:
   display_name: "Project Primer"
-  short_description: "Routes to local references for stored text, Markdown, docs, Fish, Orchard, APM, and commits"
+  short_description: "Route repository work to focused local references"
   default_prompt: "Use $project-primer before exploring or changing this repository."

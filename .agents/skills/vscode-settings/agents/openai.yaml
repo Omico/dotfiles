@@ -1,0 +1,4 @@
+interface:
+  display_name: "VS Code Settings"
+  short_description: "Pull or push vscode-settings between live and repo"
+  default_prompt: "Use $vscode-settings to pull live Code/Cursor settings into managed layers."

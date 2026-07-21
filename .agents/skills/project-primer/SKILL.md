@@ -1,6 +1,6 @@
 ---
 name: project-primer
-description: Use before exploring or changing this chezmoi repository. Routes to the smallest local reference for stored text, Markdown, docs, Fish scripts, Orchard, APM, or commits.
+description: Use before exploring or changing this chezmoi repository. Routes to the smallest local reference for stored text, Markdown, docs, Fish scripts, Orchard, APM, VS Code settings, or commits.
 ---
 
 # Project Primer
@@ -24,4 +24,5 @@ Stop when the current reference gives enough guidance. Load another reference on
 - **Commands docs**: Read [commands-docs](references/commands-docs.md) when adding, renaming, or removing Fish autoload commands or editing `docs/src/commands/`.
 - **Orchard**: Read [orchard](references/orchard.md) before editing Orchard app packages, its executable, or its completion.
 - **APM**: Read [apm](references/apm.md) before editing APM source under `home/dot_apm/` or APM Fish helpers.
+- **VS Code settings**: Use the `vscode-settings` skill (`.agents/skills/vscode-settings/`) before Pull, Push, or editing layers under `home/dot_config/vscode-settings/`.
 - **Commits**: Read [git](references/git.md) before preparing a commit.
