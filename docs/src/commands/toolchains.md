@@ -8,6 +8,12 @@ Install or upgrade language runtimes and build tools from the shell.
 
 Ensure `~/.bun/bin/bun` exists (official install script on first use), then forward arguments to Bun.
 
+## `codex`
+
+**Platforms:** Unix (`linux`, `darwin`, `wsl`)
+
+Ensure `~/.local/bin/codex` exists (official install script on first use), then forward arguments to Codex.
+
 ## `flutter-init`
 
 **Platforms:** Unix (`linux`, `darwin`, `wsl`)
