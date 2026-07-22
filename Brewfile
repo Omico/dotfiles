@@ -10,6 +10,8 @@ brew "actionlint"
 brew "aria2"
 # User-friendly launcher for Bazel
 brew "bazelisk"
+# Toolchain of the web
+brew "biome"
 # Manage your dotfiles across multiple diverse machines, securely
 brew "chezmoi"
 # Statistics utility to count lines of code
@@ -96,7 +98,7 @@ brew "powershell"
 brew "promptfoo"
 # Protocol buffers (Google's data interchange format)
 brew "protobuf"
-# Python testing framework
+# Simple powerful testing with Python
 brew "pytest"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.11"
@@ -160,8 +162,6 @@ cask "anythingllm"
 cask "balenaetcher"
 # E-books management software
 cask "calibre"
-# OpenAI's coding agent that runs in your terminal
-cask "codex"
 cask "font-fira-mono-nerd-font"
 cask "font-meslo-lg-nerd-font"
 # Cross-platform Git credential storage for multiple hosting providers
