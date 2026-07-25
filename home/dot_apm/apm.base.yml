@@ -26,7 +26,6 @@ dependencies:
     - anthropics/skills/skills/xlsx
     - apollographql/skills/skills/rust-best-practices
     - figma/mcp-server-guide
-    - git@github.com:Omico/skills.git
     - github/awesome-copilot/skills/editorconfig
     - github/awesome-copilot/skills/excalidraw-diagram-generator
     - github/awesome-copilot/skills/first-ask
