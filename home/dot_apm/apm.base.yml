@@ -36,7 +36,14 @@ dependencies:
     - hashicorp/agent-skills/terraform/code-generation/skills/terraform-test
     - hashicorp/agent-skills/terraform/module-generation
     - hashicorp/agent-skills/terraform/provider-development
+    - mattpocock/skills/skills/engineering/codebase-design
+    - mattpocock/skills/skills/engineering/research
+    - mattpocock/skills/skills/engineering/resolving-merge-conflicts
     - mattpocock/skills/skills/productivity/grill-me
+    - mattpocock/skills/skills/productivity/grilling
+    - mattpocock/skills/skills/productivity/handoff
+    - mattpocock/skills/skills/productivity/teach
+    - mattpocock/skills/skills/productivity/writing-great-skills
     - nuxt/ui/skills/nuxt-ui
     - op7418/Humanizer-zh
     - vercel-labs/agent-skills/skills/web-design-guidelines
