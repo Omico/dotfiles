@@ -25,6 +25,8 @@ dependencies:
     - anthropics/skills/skills/pptx
     - anthropics/skills/skills/xlsx
     - apollographql/skills/skills/rust-best-practices
+    - ast-grep/agent-skill/ast-grep/skills/ast-grep
+    - ast-grep/agent-skill/ast-grep/skills/outline
     - figma/mcp-server-guide
     - github/awesome-copilot/skills/editorconfig
     - github/awesome-copilot/skills/excalidraw-diagram-generator
