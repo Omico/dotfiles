@@ -8,6 +8,8 @@ brew "shellcheck"
 brew "actionlint"
 # Download with resuming and segmented downloading
 brew "aria2"
+# Code searching, linting, rewriting
+brew "ast-grep"
 # User-friendly launcher for Bazel
 brew "bazelisk"
 # Toolchain of the web
@@ -112,6 +114,8 @@ brew "repo"
 brew "ripgrep"
 # Autoformat shell script source code
 brew "shfmt"
+# SOund eXchange: universal sound sample translator
+brew "sox"
 # Toolkit to help you get started with Spec-Driven Development
 brew "specify"
 # Cross-shell prompt for astronauts
@@ -152,6 +156,8 @@ brew "zip"
 brew "anomalyco/tap/opencode", trusted: true
 # Persistent memory for AI coding agents. Agent-agnostic, single binary, zero dependencies.
 brew "gentleman-programming/tap/engram", trusted: true
+# AI companion and VTuber application
+cask "airi"
 # Command-line tools for building and debugging Android apps
 cask "android-commandlinetools"
 # Allows connection to a computer remotely
