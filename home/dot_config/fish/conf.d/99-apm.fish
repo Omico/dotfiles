@@ -127,7 +127,7 @@ end
 function __apm-normalize-skill-refs
     set -l pkgs
     for ref in $argv
-        # https://github.com/<owner>/<repo>/blob/<branch>/<path[/SKILL.md]> -> github.com/<owner>/<repo>/<path>
+        # https://github.com/<owner>/<repo>/blob/<branch>/<path[/SKILL.md]> -> <owner>/<repo>/<path>
         set -l m (string match -r '^https?://github\.com/([^/]+)/([^/]+)/blob/([^/]+)/(.+)$' "$ref")
         if test (count $m) -ge 5
             set -l owner $m[2]
@@ -135,10 +135,9 @@ function __apm-normalize-skill-refs
             set -l relpath $m[5]
             set -l relpath (string replace -r '/SKILL\.md$' '' "$relpath")
             set -l relpath (string replace -r '/$' '' "$relpath")
-            set -a pkgs "github.com/$owner/$repo/$relpath"
-        else
-            set -a pkgs "$ref"
+            set ref "$owner/$repo/$relpath"
         end
+        set -a pkgs (string replace -r '^github\.com/' '' "$ref")
     end
     printf "%s\n" $pkgs
 end

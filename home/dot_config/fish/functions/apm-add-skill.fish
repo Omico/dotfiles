@@ -5,7 +5,7 @@ function apm-add-skill --description "Add skill packages to APM source config, i
 Usage: apm-add-skill [--global] <package> [<package> ...]
   default: add packages to the local custom source
   --global: add packages to the tracked base source
-  github.com/owner/repo/path/to/skill
+  owner/repo/path/to/skill
   https://github.com/owner/repo/blob/<branch>/path/SKILL.md  (blob URLs are normalized)"
 
     argparse g/global h/help -- $argv

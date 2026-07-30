@@ -18,7 +18,7 @@ apm-add-skill [--global] <package> [<package> ...]
 
 - **Default** — write packages to the local custom source
 - **`--global`** — write packages to the tracked base source
-- **Package refs** — `github.com/owner/repo/path/to/skill`, or GitHub blob URLs (normalized automatically)
+- **Package refs** — use `owner/repo/path/to/skill` for GitHub; blob URLs are normalized automatically and omit the `github.com/` prefix
 
 ## `apm-update`
 

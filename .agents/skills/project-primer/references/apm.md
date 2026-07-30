@@ -23,6 +23,7 @@ When editing those Fish files, also read [fish](fish.md).
 
 ## Dependencies
 
+- Omit the `github.com/` prefix for GitHub dependencies; use `owner/repo/path` instead.
 - Keep every entry under `dependencies: apm:` sorted.
 - Compare entries by the full dependency string exactly as written.
 - Preserve the existing YAML structure and quoting style.
