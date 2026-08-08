@@ -47,7 +47,7 @@ dependencies:
     - mattpocock/skills/skills/productivity/teach
     - mattpocock/skills/skills/productivity/writing-for-agents
     - nuxt/ui/skills/nuxt-ui
-    - op7418/Humanizer-zh
+    - op7418/humanizer-zh
     - vercel-labs/agent-skills/skills/web-design-guidelines
     - vercel-labs/skills/skills/find-skills
   mcp:
