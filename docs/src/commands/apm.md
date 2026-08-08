@@ -22,4 +22,4 @@ apm-add-skill [--global] <package> [<package> ...]
 
 ## `apm-update`
 
-Refreshes agent skills from `~/.apm`: merge source configs, run `apm self-update`, then `apm update --yes --parallel-downloads 32`, and relink skills into agent directories.
+Refreshes agent skills from `~/.apm`: merge source configs, run `apm self-update`, then `apm update --yes --parallel-downloads 32`, and symlink each skill from `~/.apm/.agents/skills/<name>` into `~/.agents/skills/<name>`.

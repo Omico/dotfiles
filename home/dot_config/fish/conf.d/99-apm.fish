@@ -112,15 +112,56 @@ function __apm-link-skills-to-agents
         return 1
     end
 
-    if test -e "$agents_skills"; and not test -L "$agents_skills"
-        echo "Error: $agents_skills exists and is not a symlink." >&2
+    # Migrate from linking the whole skills directory to per-skill symlinks.
+    if test -L "$agents_skills"
+        command rm "$agents_skills"
+        or begin
+            echo "Error: failed to remove directory symlink $agents_skills." >&2
+            return 1
+        end
+    end
+
+    if test -e "$agents_skills"; and not test -d "$agents_skills"
+        echo "Error: $agents_skills exists and is not a directory." >&2
         return 1
     end
 
-    command ln -sf "$apm_skills" "$agents_skills"
+    command mkdir -p "$agents_skills"
     or begin
-        echo "Error: failed to link $agents_skills." >&2
+        echo "Error: failed to create $agents_skills." >&2
         return 1
+    end
+
+    for entry in $agents_skills/*
+        set -l name (path basename $entry)
+        if test -L $entry
+            set -l target (readlink $entry)
+            if string match -q -- "$apm_skills/*" $target
+                if not test -e "$apm_skills/$name"
+                    command rm -f $entry
+                    or return 1
+                end
+            end
+        end
+    end
+
+    for skill_dir in $apm_skills/*
+        test -d $skill_dir; or continue
+        test -L $skill_dir; and continue
+
+        set -l name (path basename $skill_dir)
+        set -l dest "$agents_skills/$name"
+
+        if test -e $dest; and not test -L $dest
+            printf "Error: %s exists and is not a symlink.\n" $dest >&2
+            return 1
+        end
+
+        command ln -sfn $skill_dir $dest
+        or begin
+            printf "Error: failed to link %s.\n" $dest >&2
+            return 1
+        end
     end
 end
 
