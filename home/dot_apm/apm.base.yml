@@ -33,11 +33,7 @@ dependencies:
     - github/awesome-copilot/skills/first-ask
     - github/awesome-copilot/skills/git-commit
     - github/awesome-copilot/skills/github-issues
-    - hashicorp/agent-skills/terraform/code-generation/skills/terraform-search-import
-    - hashicorp/agent-skills/terraform/code-generation/skills/terraform-style-guide
-    - hashicorp/agent-skills/terraform/code-generation/skills/terraform-test
-    - hashicorp/agent-skills/terraform/module-generation
-    - hashicorp/agent-skills/terraform/provider-development
+    - hashicorp/agent-skills/plugins/terraform
     - mattpocock/skills/skills/engineering/codebase-design
     - mattpocock/skills/skills/engineering/research
     - mattpocock/skills/skills/engineering/resolving-merge-conflicts
