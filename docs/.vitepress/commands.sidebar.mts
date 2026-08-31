@@ -11,5 +11,6 @@ export default {
     { text: "Toolchains", link: "/commands/toolchains/" },
     { text: "VS Code", link: "/commands/vscode/" },
     { text: "Xcode", link: "/commands/xcode/" },
+    { text: "Zed", link: "/commands/zed/" },
   ],
 };

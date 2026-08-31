@@ -26,5 +26,6 @@ Source definitions live under [`home/dot_config/fish/functions/`](https://github
 | [Toolchains](./toolchains) | Mixed | Node.js, Bun, Rust, Flutter, Java, Gradle |
 | [VS Code](./vscode) | Unix | Shared Code/Cursor User settings merge |
 | [Xcode](./xcode) | macOS | Switch Xcode versions and open downloads |
+| [Zed](./zed) | Unix | Portable Zed settings backup and restore |
 
 Platform-specific functions load only when `fish_platform` matches (set at `chezmoi apply` time). Each command page lists its supported platforms.

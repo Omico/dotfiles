@@ -6,7 +6,7 @@ Reload Fish configuration and push local config changes back into chezmoi.
 
 **Platforms:** Unix (`linux`, `darwin`, `wsl`)
 
-Add local configuration to the chezmoi source tree: format Fish with `fish_indent`, normalize permissions, forget and re-add Fish `conf.d` and `functions` (including platform scopes), and sync Ghostty and Starship config.
+Add local configuration to the chezmoi source tree: format Fish with `fish_indent`, normalize permissions, forget and re-add Fish `conf.d` and `functions` (including platform scopes), sync Ghostty and Starship config, and pull portable Zed settings while excluding machine-bound keys.
 
 ## `fish-reload`
 

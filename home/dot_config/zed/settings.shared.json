@@ -1,0 +1,79 @@
+{
+  "restore_on_startup": "launchpad",
+  "features": {
+    "edit_predictions": {
+      "provider": "none"
+    }
+  },
+  "title_bar": {
+    "show_onboarding_banner": false
+  },
+  "preview_tabs": {
+    "enable_preview_from_file_finder": true,
+    "enable_keep_preview_on_code_navigation": true
+  },
+  "tabs": {
+    "file_icons": true,
+    "git_status": true,
+    "show_diagnostics": "errors"
+  },
+  "git": {
+    "diff_base": "default_branch",
+    "inline_blame": {
+      "enabled": false
+    }
+  },
+  "toolbar": {
+    "selections_menu": false,
+    "agent_review": false
+  },
+  "gutter": {
+    "runnables": true
+  },
+  "languages": {
+    "Markdown": {
+      "remove_trailing_whitespace_on_save": true
+    },
+    "Shell Script": {
+      "tab_size": 2,
+      "hard_tabs": false
+    }
+  },
+  "cli_default_open_behavior": "existing_window",
+  "terminal": {
+    "shell": "system",
+    "dock": "bottom"
+  },
+  "project_panel": {
+    "dock": "left"
+  },
+  "outline_panel": {
+    "dock": "right"
+  },
+  "collaboration_panel": {
+    "dock": "right"
+  },
+  "git_panel": {
+    "group_by": "none",
+    "dock": "right"
+  },
+  "buffer_line_height": "standard",
+  "agent": {
+    "dock": "right",
+    "favorite_models": [],
+    "model_parameters": [],
+    "enable_feedback": false
+  },
+  "text_rendering_mode": "platform_default",
+  "ui_font_family": ".SystemUIFont",
+  "buffer_font_family": "FiraMono Nerd Font Mono",
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false
+  },
+  "base_keymap": "JetBrains",
+  "icon_theme": "Material Icon Theme",
+  "ui_font_size": 16,
+  "buffer_font_size": 16.0,
+  "theme": "Fleet Dark"
+}

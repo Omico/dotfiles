@@ -30,6 +30,10 @@ command -q rustc; and echo "Using Rust "(set_color cyan)(string split -f2 ' ' --
 if type -q vscode-settings-apply
     vscode-settings-apply; or exit $status
 end
+
+if type -q zed-settings-apply
+    zed-settings-apply; or exit $status
+end
 {{ end -}}
 
 command -q fnm; and fnm-upgrade-latest-lts
