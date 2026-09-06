@@ -88,6 +88,8 @@ brew "minikube"
 brew "mkvtoolnix"
 # Text-based UI library
 brew "ncurses"
+# Create, run, and share large language models (LLMs)
+brew "ollama"
 # Drop-in replacement for Terraform. Infrastructure as Code Tool
 brew "opentofu"
 # 7-Zip (high compression file archiver) implementation
@@ -178,6 +180,8 @@ cask "kekaexternalhelper"
 cask "localsend"
 # Office suite
 cask "microsoft-office"
+# Open-source download manager
+cask "motrix@beta"
 # Peer to peer Bitorrent client
 cask "qbittorrent"
 # 3D modeling software used to create and manipulate 3D models
