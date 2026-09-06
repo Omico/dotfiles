@@ -35,7 +35,7 @@ If the change touches Orchard files, read [orchard](orchard.md) for chezmoi sour
 
 - Keep autoloaded public commands as flat `functions/<command>.fish` files.
 - Do not create feature- or tool-specific subdirectories under `functions/`, such as `functions/apm/`.
-- The only allowed subdirectories under `functions/` are platform routers: `darwin/`, `linux/`, `unix/`, and future platform names loaded by `01-platform-autoload.fish`.
+- The only allowed subdirectories under `functions/` are platform routers: `darwin/`, `linux/`, `unix/`, and future platform names.
 - Put shared private helpers for a feature in `conf.d/` startup snippets when they must load before autoload, or colocate them with the public command file when autoload order is sufficient.
 - Prefix private helpers with `__` and keep one primary public function per autoload file.
 - Before extracting a private helper, check whether it will have more than one caller. If it would be referenced only once, evaluate whether the split is necessary; prefer inlining when it only wraps a short call chain without reuse, shared setup, or a distinct responsibility boundary.
