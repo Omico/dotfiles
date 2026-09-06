@@ -38,6 +38,12 @@ Install the latest Node.js LTS with `fnm`, set it as default, remove other insta
 
 Walk up from the current directory for an executable `gradlew` (stopping at a `.git` root). Run the wrapper when found; otherwise invoke `gradle`.
 
+## `mise`
+
+**Platforms:** Unix (`linux`, `darwin`, `wsl`)
+
+Ensure `~/.local/bin/mise` exists (official install script on first use), then forward arguments to mise. First install also activates mise in the current session. Later shells activate from `conf.d/unix` when `mise` is on `PATH`. Global `auto_update` is tracked in `~/.config/mise/config.toml`.
+
 ## `rustup`
 
 **Platforms:** Unix (`linux`, `darwin`, `wsl`)

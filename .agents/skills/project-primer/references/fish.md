@@ -62,7 +62,7 @@ __ensure_binary_and_forward --bin <path> --name <short_name> --install <function
 - Pass `--install` with a function that installs the binary; the function receives the binary path.
 - Put first-time session setup in that function when the current shell must be activated after install.
 - Put `--` before `$argv` so user flags are forwarded to the installed command.
-- Follow `home/dot_config/fish/functions/unix/rustup.fish` and `home/dot_config/fish/functions/unix/bun.fish` as examples.
+- Follow `home/dot_config/fish/functions/unix/rustup.fish` and `home/dot_config/fish/functions/unix/bun.fish` as examples, and `home/dot_config/fish/functions/unix/mise.fish` when install also activates the current session.
 
 ## Commands docs
 
