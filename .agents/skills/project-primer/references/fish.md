@@ -56,12 +56,12 @@ If the change touches Orchard files, read [orchard](orchard.md) for chezmoi sour
 For wrappers that install an upstream CLI when its binary is missing, reuse `__ensure_binary_and_forward` from `home/dot_config/fish/conf.d/00-core-functions.fish`. Keep public wrappers thin and do not duplicate that helper under `functions/`.
 
 ```fish
-__ensure_binary_and_forward <bin_path> <short_name> <shell> <install_one_liner> $argv
+__ensure_binary_and_forward --bin <path> --name <short_name> --install <function> -- $argv
 ```
 
-- Use `sh` or `bash` for `<shell>`.
-- Pass installer commands as the one-liner consumed by `command $shell -c`.
-- Forward `$argv` so the wrapper behaves like the installed command.
+- Pass `--install` with a function that installs the binary; the function receives the binary path.
+- Put first-time session setup in that function when the current shell must be activated after install.
+- Put `--` before `$argv` so user flags are forwarded to the installed command.
 - Follow `home/dot_config/fish/functions/unix/rustup.fish` and `home/dot_config/fish/functions/unix/bun.fish` as examples.
 
 ## Commands docs
