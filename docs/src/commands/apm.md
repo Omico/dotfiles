@@ -6,7 +6,7 @@ Wrappers around the [APM](https://aka.ms/apm-unix) CLI for installing the binary
 
 ## `apm`
 
-Forwards to the APM CLI. Installs to `/usr/local/bin/apm` via the official Unix installer when the binary is missing.
+Ensure `~/.local/bin/apm` exists (official Unix installer on first use), then forward arguments to the APM CLI. First install also activates APM in the current session. Later shells activate from the installer-generated `~/.config/fish/conf.d/apm.fish`.
 
 ## `apm-add-skill`
 
