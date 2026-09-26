@@ -8,12 +8,10 @@ dependencies:
     - OmicoDev/skills
     - antfu/skills/skills/nuxt
     - antfu/skills/skills/pnpm
-    - antfu/skills/skills/slidev
     - antfu/skills/skills/vite
     - antfu/skills/skills/vitepress
     - antfu/skills/skills/vitest
     - antfu/skills/skills/vue
-    - antfu/skills/skills/vue-best-practices
     - anthropics/skills/skills/algorithmic-art
     - anthropics/skills/skills/canvas-design
     - anthropics/skills/skills/doc-coauthoring
@@ -44,8 +42,10 @@ dependencies:
     - nuxt/ui/skills/nuxt-ui
     - op7418/humanizer-zh
     - promptfoo/promptfoo/plugins/promptfoo
+    - slidevjs/slidev/skills/slidev
     - vercel-labs/agent-skills/skills/web-design-guidelines
     - vercel-labs/skills/skills/find-skills
+    - vuejs-ai/skills/skills/vue-best-practices
   mcp:
     - name: agent-skills
       registry: false
