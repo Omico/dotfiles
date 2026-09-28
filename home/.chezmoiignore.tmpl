@@ -6,4 +6,10 @@
 .config/fish/completions/orchard.fish
 .config/orchard/**
 .local/bin/orchard
+Library/LaunchAgents/me.omico.environment.plist
+{{- end }}
+
+# Linux-only
+{{- if ne .chezmoi.os "linux" }}
+.config/environment.d/60-dotfiles.conf
 {{- end }}

@@ -1,0 +1,7 @@
+#!/usr/bin/env fish
+
+# Generated from .chezmoidata/environment.toml.
+{{- $environment := mergeOverwrite (dict) .environment.common (get .environment .chezmoi.os | default dict) }}
+{{- range $key, $value := $environment }}
+set -gx {{ $key }} '{{ $value | replace "\\" "\\\\" | replace "'" "\\'" }}'
+{{- end }}

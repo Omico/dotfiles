@@ -1,0 +1,40 @@
+#!/usr/bin/env fish
+
+{{ if eq .chezmoi.os "darwin" -}}
+set -l domain gui/(id -u)
+if not launchctl print "$domain" >/dev/null 2>&1
+    echo "Desktop environment will load at the next graphical login."
+    exit 0
+end
+
+set -l agent "$HOME/Library/LaunchAgents/me.omico.environment.plist"
+if not test -f "$agent"
+    exit 0
+end
+
+# Reuse the login agent's commands for an immediate, synchronous refresh.
+set -l activation (plutil -extract ProgramArguments.2 raw -o - "$agent" | string collect); or exit $status
+/bin/sh -ec "$activation"; or exit $status
+
+if launchctl print "$domain/me.omico.environment" >/dev/null 2>&1
+    launchctl bootout "$domain/me.omico.environment"; or exit $status
+end
+launchctl bootstrap "$domain" "$agent"; or exit $status
+{{ end -}}
+
+{{ if eq .chezmoi.os "linux" -}}
+if not command -q systemctl; or not systemctl --user show-environment >/dev/null 2>&1
+    echo "Desktop environment will load when a systemd user manager starts."
+    exit 0
+end
+
+systemctl --user daemon-reload; or exit $status
+
+set -l environment_file "$HOME/.config/fish/conf.d/00-environment.fish"
+if command -q dbus-update-activation-environment; and test -f "$environment_file"
+    source "$environment_file"; or exit $status
+    {{ $environment := mergeOverwrite (dict) .environment.common (get .environment .chezmoi.os | default dict) -}}
+    set -l environment_keys{{ range $key, $value := $environment }} {{ $key }}{{ end }}
+    dbus-update-activation-environment --systemd $environment_keys; or exit $status
+end
+{{ end -}}

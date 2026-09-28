@@ -1,0 +1,17 @@
+# Static, non-secret values shared by shells and desktop sessions.
+# Platform sections override common values. Keep runtime-derived values in Fish.
+[environment.common]
+# Default editor and locale
+EDITOR = "code"
+LC_ALL = "en_US.UTF-8"
+
+# Claude Code
+CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1"
+DISABLE_TELEMETRY = "1"
+
+# Promptfoo
+PROMPTFOO_DISABLE_TELEMETRY = "1"
+
+[environment.darwin]
+# Homebrew
+HOMEBREW_NO_ANALYTICS = "1"

@@ -1,0 +1,5 @@
+# Generated from .chezmoidata/environment.toml.
+{{- $environment := mergeOverwrite (dict) .environment.common (get .environment .chezmoi.os | default dict) }}
+{{- range $key, $value := $environment }}
+{{ $key }}="{{ $value | replace "\\" "\\\\" | replace "\"" "\\\"" | replace "$" "$$" }}"
+{{- end }}
