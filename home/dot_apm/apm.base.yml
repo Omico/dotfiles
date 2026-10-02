@@ -33,7 +33,6 @@ dependencies:
     - hashicorp/agent-skills/plugins/terraform
     - mattpocock/skills/skills/engineering/codebase-design
     - mattpocock/skills/skills/engineering/research
-    - mattpocock/skills/skills/engineering/resolving-merge-conflicts
     - mattpocock/skills/skills/productivity/grill-me
     - mattpocock/skills/skills/productivity/grilling
     - mattpocock/skills/skills/productivity/handoff
