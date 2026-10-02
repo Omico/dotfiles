@@ -3,6 +3,7 @@ export default {
     { text: "Overview", link: "/commands/" },
     { text: "APM", link: "/commands/apm/" },
     { text: "Cloudflare WARP", link: "/commands/cloudflare-warp/" },
+    { text: "Codex", link: "/commands/codex/" },
     { text: "Git", link: "/commands/git/" },
     { text: "GNOME", link: "/commands/gnome/" },
     { text: "Homebrew", link: "/commands/homebrew/" },

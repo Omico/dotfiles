@@ -1,0 +1,87 @@
+# Selected portable preferences. Deletion requires an explicit leaf path in remove.
+remove = []
+
+[settings]
+approval_policy = "on-request"
+model = "gpt-6-astra"
+model_reasoning_effort = "medium"
+personality = "pragmatic"
+sandbox_mode = "workspace-write"
+service_tier = "default"
+
+[settings.sandbox_workspace_write]
+network_access = true
+
+[settings.desktop]
+appearanceTheme = "dark"
+codeFontSize = 16
+followUpQueueMode = "queue"
+reduced-motion-preference = "system"
+sansFontSize = 16
+useFontSmoothing = true
+usePointerCursors = false
+dictationDictionary = []
+notifications-turn-mode = "unfocused"
+dock-icon-preference = "codex-system"
+conversationDetailMode = "STEPS_COMMANDS"
+enabled-reasoning-efforts = ["low", "medium", "high", "xhigh", "ultra", "max"]
+show-context-window-usage = true
+git-branch-prefix = ""
+git-commit-instructions = "Use Conventional Commits for all commit messages. For English subjects, use sentence case after `type(scope):`.\n"
+defaultTerminalLocation = "right"
+appearanceDiffMarkerStyle = "color"
+appearanceDarkCodeThemeId = "codex"
+default-workspace-full-view = false
+
+[settings.desktop.appearanceDarkChromeTheme]
+accent = "#3a83f7"
+accentSource = "chatgpt"
+contrast = 60
+ink = "#fcfcfc"
+opaqueWindows = false
+surface = "#111111"
+
+[settings.desktop.appearanceDarkChromeTheme.semanticColors]
+diffAdded = "#00a240"
+diffRemoved = "#e02e2a"
+skill = "#b06dff"
+
+
+[settings.plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[settings.plugins."pdf@openai-primary-runtime"]
+enabled = true
+
+[settings.plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[settings.plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[settings.plugins."template-creator@openai-primary-runtime"]
+enabled = true
+
+[settings.plugins."visualize@openai-bundled"]
+enabled = true
+
+[settings.plugins."creative-production@openai-curated-remote"]
+enabled = false
+
+[settings.plugins."browser@openai-bundled"]
+enabled = true
+
+[settings.plugins."codex-app-tools@openai-bundled"]
+enabled = true
+
+[settings.plugins."unified-computer-use@openai-bundled"]
+enabled = true
+
+[settings.plugins."openviking-memory@openviking"]
+enabled = true
+
+[settings.plugins."computer-use@openai-bundled"]
+enabled = true
+
+[settings.plugins."code-review@openai-bundled"]
+enabled = true

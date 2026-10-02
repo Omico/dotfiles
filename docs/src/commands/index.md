@@ -18,6 +18,7 @@ Source definitions live under [`home/dot_config/fish/functions/`](https://github
 | --- | --- | --- |
 | [APM](./apm) | All | APM CLI and agent skill packages |
 | [Cloudflare WARP](./cloudflare-warp) | macOS | WARP install and Tailscale split tunneling |
+| [Codex](./codex) | Unix | Selected Codex preferences with local state preservation |
 | [Git](./git) | Mixed | Clone, init, reset, GitKraken, iCloud sync |
 | [GNOME](./gnome) | Linux | Login keyring and Remote Desktop |
 | [Homebrew](./homebrew) | macOS | Brewfile backup, restore, upgrades |
