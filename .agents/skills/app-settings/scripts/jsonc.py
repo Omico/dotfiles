@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Parse VS Code JSONC without changing source positions."""
+"""Parse JSONC objects without changing source positions."""
 
 from __future__ import annotations
 
@@ -201,7 +201,7 @@ def load_jsonc_object(path: pathlib.Path) -> dict[str, Any]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Normalize a VS Code JSONC object to JSON")
+    parser = argparse.ArgumentParser(description="Normalize a JSONC object to JSON")
     parser.add_argument("path", type=pathlib.Path, help="Path to a JSONC object")
     args = parser.parse_args()
 

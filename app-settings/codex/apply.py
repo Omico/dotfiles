@@ -192,7 +192,7 @@ def main():
     args = parser.parse_args()
     directory = Path(__file__).resolve().parent
     shared_path = directory / "settings.shared.toml"
-    local_path = directory / "settings.local.toml"
+    local_path = Path.home() / ".config/codex-settings/settings.local.toml"
     codex_home = Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex"))).expanduser()
     live_path = codex_home / "config.toml"
     shared = read(shared_path)

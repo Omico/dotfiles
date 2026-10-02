@@ -1,0 +1,4 @@
+interface:
+  display_name: "Application Settings"
+  short_description: "Sync shared Codex, Code/Cursor, and Zed settings"
+  default_prompt: "Use $app-settings to pull selected portable application settings into the repository."

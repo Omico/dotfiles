@@ -3,7 +3,7 @@
 function vscode-settings-apply --description 'Merge vscode-settings into Code/Cursor User settings'
     __vscode_settings_check_runtime; or return 1
 
-    set -l source_dir "$HOME/.config/vscode-settings"
+    set -l source_dir "$HOME/.local/share/chezmoi/app-settings/vscode-based"
     set -l shared_path "$source_dir/shared.json"
     if test -L "$shared_path"; or not test -f "$shared_path"
         echo "Error: shared settings is not a regular file: $shared_path" >&2

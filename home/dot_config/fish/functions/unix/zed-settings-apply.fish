@@ -5,10 +5,10 @@ function zed-settings-apply --description 'Merge portable Zed settings into the 
     __vscode_settings_check_runtime; or return 1
     __zed_settings_check_platform; or return 1
 
-    set -l source_dir "$HOME/.config/zed"
+    set -l source_dir "$HOME/.local/share/chezmoi/app-settings/zed"
     set -l shared_path "$source_dir/settings.shared.json"
     set -l ignored_path "$source_dir/settings.ignored.json"
-    set -l live_path "$source_dir/settings.json"
+    set -l live_path "$HOME/.config/zed/settings.json"
 
     __zed_settings_require_regular_file "$shared_path" 'shared settings'; or return 1
     __zed_settings_require_regular_file "$ignored_path" 'ignored keys'; or return 1
@@ -52,26 +52,14 @@ function zed-settings-pull --description 'Update portable Zed settings from the 
     __vscode_settings_check_runtime; or return 1
     __zed_settings_check_platform; or return 1
 
-    command -q chezmoi; or begin
-        echo 'Error: chezmoi is required to locate the Zed settings source.' >&2
-        return 1
-    end
-
-    set -l source_dir "$HOME/.config/zed"
+    set -l source_dir "$HOME/.local/share/chezmoi/app-settings/zed"
     set -l ignored_path "$source_dir/settings.ignored.json"
-    set -l managed_path "$source_dir/settings.shared.json"
-    set -l live_path "$source_dir/settings.json"
+    set -l source_path "$source_dir/settings.shared.json"
+    set -l live_path "$HOME/.config/zed/settings.json"
 
     __zed_settings_require_regular_file "$ignored_path" 'ignored keys'; or return 1
     __zed_settings_require_regular_file "$live_path" 'live settings'; or return 1
-
-    set -l source_path (command chezmoi source-path "$managed_path")
-    set -l status_source_path $status
-    if test $status_source_path -ne 0; or test (count $source_path) -ne 1; or test -z "$source_path"
-        printf 'Error: failed to resolve the chezmoi source for %s\n' "$managed_path" >&2
-        return 1
-    end
-    __zed_settings_require_regular_file "$source_path" 'chezmoi source settings'; or return 1
+    __zed_settings_require_regular_file "$source_path" 'source settings'; or return 1
 
     set -l tmp_path (__vscode_settings_prepare_output "$source_path")
     or return 1

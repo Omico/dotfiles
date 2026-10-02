@@ -39,7 +39,7 @@ class ApplyTests(unittest.TestCase):
         )
         self.addCleanup(self.temp_dir.cleanup)
         self.home = pathlib.Path(self.temp_dir.name)
-        self.source_dir = self.home / ".config/vscode-settings"
+        self.source_dir = self.home / ".local/share/chezmoi/app-settings/vscode-based"
         self.code_live = self.home / ".config/Code/User/settings.json"
         self.cursor_live = self.home / ".config/Cursor/User/settings.json"
         self.source_dir.mkdir(parents=True)

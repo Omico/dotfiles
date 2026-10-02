@@ -12,6 +12,10 @@ Open a new Fish shell, or run [`fish-reload`](./shell) in an existing session, s
 
 Source definitions live under [`home/dot_config/fish/functions/`](https://github.com/Omico/dotfiles/tree/HEAD/home/dot_config/fish/functions) in the chezmoi source tree.
 
+## Managed application settings
+
+Codex, Code/Cursor, and Zed settings layers live in the repository's top-level `app-settings/` directory, under `codex/`, `vscode-based/`, and `zed/`. Commands read these files directly from `~/.local/share/chezmoi/app-settings/`; chezmoi does not install intermediate copies. Pull updates the repository files, and Apply merges them into each application's live settings.
+
 ## Browse by topic
 
 | Topic | Platforms | Summary |

@@ -1,17 +1,21 @@
-# Generate from live settings
+# Pull Code/Cursor settings
 
 Read for **Pull**: regenerating managed layers from live Code/Cursor User `settings.json`.
+
+## Scope
+
+This command always imports both Code and Cursor and rewrites `shared.json`, `code.json`, and `cursor.json`. Both live inputs are required. `--code` and `--cursor` select input paths, not applications. For a single-app Pull request, follow Select the scope in `SKILL.md` before writing the sources. `--dry-run` only reports the paired import; it does not authorize it.
 
 ## Command
 
 ```bash
-python3 .agents/skills/vscode-settings/scripts/generate-from-live.py
-python3 .agents/skills/vscode-settings/scripts/generate-from-live.py --help
-python3 .agents/skills/vscode-settings/scripts/generate-from-live.py --dry-run
-python3 .agents/skills/vscode-settings/scripts/generate-from-live.py --code PATH --cursor PATH --out PATH
+python3 .agents/skills/app-settings/scripts/pull-vscode-based.py
+python3 .agents/skills/app-settings/scripts/pull-vscode-based.py --help
+python3 .agents/skills/app-settings/scripts/pull-vscode-based.py --dry-run
+python3 .agents/skills/app-settings/scripts/pull-vscode-based.py --code PATH --cursor PATH --out PATH
 ```
 
-Default `--out` is `<repo>/home/dot_config/vscode-settings`, resolved from the script path (cwd-safe).
+Default `--out` is `<repo>/app-settings/vscode-based`, resolved from the script path (cwd-safe).
 
 ## Behavior
 
@@ -22,13 +26,13 @@ Default `--out` is `<repo>/home/dot_config/vscode-settings`, resolved from the s
 
 Ignored JSON files are **inputs only**; the script does not rewrite them. Edit ignore keys in those files directly.
 
-Pull uses the package-local `scripts/vscode_settings_jsonc.py`. Push has a Fish-native normalizer; keep both implementations aligned with the JSONC behavior tests and strict-number rules.
+Pull uses the package-local `scripts/jsonc.py`. Push has a Fish-native normalizer; keep both implementations aligned with the JSONC behavior tests and strict-number rules.
 
 **Regenerating overwrites** `shared.json`, `code.json`, and `cursor.json`. Restore curated managed edits afterward when needed (for example brace-glob simplifications).
 
-## After generate
+## After Pull
 
-Finish with the package checklist in `SKILL.md`. Do not Push unless the user asked.
+Review the three layer diffs, restore curated edits when needed, and follow Completion in `SKILL.md`. Apply only when requested.
 
 ## Exit codes
 

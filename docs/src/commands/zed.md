@@ -6,8 +6,8 @@ Back up and restore portable [Zed user settings](https://zed.dev/docs/configurin
 
 ## Settings layers
 
-- **Portable source** — `~/.config/zed/settings.shared.json`, managed by chezmoi from `home/dot_config/zed/settings.shared.json`
-- **Ignored keys** — `~/.config/zed/settings.ignored.json`, a required JSON array of top-level keys that must remain machine-local
+- **Portable source** — `~/.local/share/chezmoi/app-settings/zed/settings.shared.json`, tracked at `app-settings/zed/settings.shared.json` and read directly by the commands
+- **Ignored keys** — `~/.local/share/chezmoi/app-settings/zed/settings.ignored.json`, a required JSON array of top-level keys that must remain machine-local
 - **Live target** — `~/.config/zed/settings.json`
 
 The ignored keys are `agent_servers`, `context_servers`, `language_models`, and `ssh_connections`. They are excluded during Pull and cannot override live values during Apply, even if they are accidentally added to `settings.shared.json`.

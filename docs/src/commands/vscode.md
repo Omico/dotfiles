@@ -2,7 +2,7 @@
 
 **Platforms:** Unix (`linux`, `darwin`, `wsl`)
 
-Merge managed VS Code and Cursor User settings from `~/.config/vscode-settings/` into each app's live `settings.json`.
+Merge managed VS Code and Cursor User settings from `~/.local/share/chezmoi/app-settings/vscode-based/` into each app's live `settings.json`.
 
 ## `vscode-settings-apply`
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate managed vscode-settings layers from live Code and Cursor User settings."""
+"""Pull live Code and Cursor user settings into managed layers."""
 
 from __future__ import annotations
 
@@ -12,8 +12,8 @@ import sys
 import tempfile
 from typing import Any
 
-from vscode_settings_jsonc import JsoncError
-from vscode_settings_jsonc import load_jsonc_object as parse_jsonc_object
+from jsonc import JsoncError
+from jsonc import load_jsonc_object as parse_jsonc_object
 
 EXIT_USAGE = 2
 EXIT_OPERATIONAL = 1
@@ -189,26 +189,17 @@ def classify(
     code_ignored: set[str],
     cursor_ignored: set[str],
 ) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+    code_excluded = ignored | code_ignored
+    cursor_excluded = ignored | cursor_ignored
+    code = {key: value for key, value in code.items() if key not in code_excluded}
+    cursor = {key: value for key, value in cursor.items() if key not in cursor_excluded}
+
     shared: dict[str, Any] = {}
     code_only: dict[str, Any] = {}
     cursor_only: dict[str, Any] = {}
 
     for key in sorted(set(code) | set(cursor)):
-        in_code = key in code
-        in_cursor = key in cursor
-        skip_code = in_code and (key in ignored or key in code_ignored)
-        skip_cursor = in_cursor and (key in ignored or key in cursor_ignored)
-
-        if in_code and in_cursor:
-            # Honor per-app ignores (same as apply): skip only the ignored side.
-            if skip_code and skip_cursor:
-                continue
-            if skip_code:
-                cursor_only[key] = cursor[key]
-                continue
-            if skip_cursor:
-                code_only[key] = code[key]
-                continue
+        if key in code and key in cursor:
             code_val = code[key]
             cursor_val = cursor[key]
             if json_values_equal(code_val, cursor_val):
@@ -225,16 +216,15 @@ def classify(
             else:
                 code_only[key] = code_val
                 cursor_only[key] = cursor_val
-        elif in_code:
-            if not skip_code:
-                code_only[key] = code[key]
-        elif not skip_cursor:
+        elif key in code:
+            code_only[key] = code[key]
+        else:
             cursor_only[key] = cursor[key]
 
     return shared, code_only, cursor_only
 
 
-def generate_from_live(
+def pull_settings(
     code_path: pathlib.Path,
     cursor_path: pathlib.Path,
     out_dir: pathlib.Path,
@@ -279,8 +269,8 @@ def generate_from_live(
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
-            "Generate shared.json, code.json, and cursor.json from live Code/Cursor "
-            "User settings. Ignored keys are read from existing *.ignored.json files."
+            "Pull live Code/Cursor User settings into shared.json, code.json, "
+            "and cursor.json. Ignored keys are read from existing *.ignored.json files."
         ),
     )
     parser.add_argument(
@@ -297,7 +287,7 @@ def main() -> None:
         "--out",
         type=pathlib.Path,
         default=None,
-        help="Output directory (default: <repo>/home/dot_config/vscode-settings)",
+        help="Output directory (default: <repo>/app-settings/vscode-based)",
     )
     parser.add_argument(
         "--dry-run",
@@ -309,7 +299,7 @@ def main() -> None:
     default_code, default_cursor = default_live_paths()
     code_path = args.code or default_code
     cursor_path = args.cursor or default_cursor
-    out_dir = args.out or (repo_root() / "home" / "dot_config" / "vscode-settings")
+    out_dir = args.out or (repo_root() / "app-settings" / "vscode-based")
 
     if code_path.is_symlink() or not code_path.is_file():
         fail(f"Error: Code settings is not a regular file: {code_path}")
@@ -317,7 +307,7 @@ def main() -> None:
         fail(f"Error: Cursor settings is not a regular file: {cursor_path}")
 
     try:
-        generate_from_live(code_path, cursor_path, out_dir, dry_run=args.dry_run)
+        pull_settings(code_path, cursor_path, out_dir, dry_run=args.dry_run)
     except (OSError, ValueError) as exc:
         fail(
             f"Error: failed to write managed layers under {out_dir}: {exc}",

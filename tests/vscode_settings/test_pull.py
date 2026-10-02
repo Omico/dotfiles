@@ -12,19 +12,19 @@ import unittest
 from unittest import mock
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-GENERATOR = ROOT / ".agents/skills/vscode-settings/scripts/generate-from-live.py"
+PULL_SCRIPT = ROOT / ".agents/skills/app-settings/scripts/pull-vscode-based.py"
 JSONC_HELPER = (
-    ROOT / ".agents/skills/vscode-settings/scripts/vscode_settings_jsonc.py"
+    ROOT / ".agents/skills/app-settings/scripts/jsonc.py"
 )
 
 
-def load_generator_module():
-    sys.path.insert(0, str(GENERATOR.parent))
-    spec = importlib.util.spec_from_file_location("vscode_settings_generator", GENERATOR)
+def load_pull_module():
+    spec = importlib.util.spec_from_file_location("vscode_based_pull", PULL_SCRIPT)
     if spec is None or spec.loader is None:
-        raise RuntimeError(f"failed to load {GENERATOR}")
+        raise RuntimeError(f"failed to load {PULL_SCRIPT}")
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    with mock.patch.object(sys, "path", [str(PULL_SCRIPT.parent), *sys.path]):
+        spec.loader.exec_module(module)
     return module
 
 
@@ -38,7 +38,7 @@ def run_python(script: pathlib.Path, *args: pathlib.Path | str) -> subprocess.Co
     )
 
 
-class JsoncHelperTests(unittest.TestCase):
+class JsoncTests(unittest.TestCase):
     def test_accepts_jsonc_without_changing_string_content(self) -> None:
         source = textwrap.dedent(
             r'''
@@ -160,7 +160,7 @@ class JsoncHelperTests(unittest.TestCase):
             self.assertIn("invalid JSONC", result.stderr)
 
 
-class GenerateFromLiveTests(unittest.TestCase):
+class PullTests(unittest.TestCase):
     def test_classifies_complete_jsonc_and_honors_ignored_keys(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             fixture = pathlib.Path(temp_dir)
@@ -204,7 +204,7 @@ class GenerateFromLiveTests(unittest.TestCase):
             (output_dir / "code.ignored.json").write_text('["ignored.code"]\n')
 
             result = run_python(
-                GENERATOR,
+                PULL_SCRIPT,
                 "--code",
                 code_path,
                 "--cursor",
@@ -248,7 +248,7 @@ class GenerateFromLiveTests(unittest.TestCase):
             cursor_path.write_text('{"yaml.disableSchemaDetection": false}\n')
 
             result = run_python(
-                GENERATOR,
+                PULL_SCRIPT,
                 "--code",
                 code_path,
                 "--cursor",
@@ -278,7 +278,7 @@ class GenerateFromLiveTests(unittest.TestCase):
             cursor_path.write_text("{}\n")
 
             live_result = run_python(
-                GENERATOR,
+                PULL_SCRIPT,
                 "--code",
                 code_path,
                 "--cursor",
@@ -294,7 +294,7 @@ class GenerateFromLiveTests(unittest.TestCase):
             output_dir.mkdir()
             (output_dir / "ignored.json").write_bytes(b"[\xff]\n")
             ignored_result = run_python(
-                GENERATOR,
+                PULL_SCRIPT,
                 "--code",
                 code_path,
                 "--cursor",
@@ -318,7 +318,7 @@ class GenerateFromLiveTests(unittest.TestCase):
             (output_dir / "ignored.json").mkdir()
 
             result = run_python(
-                GENERATOR,
+                PULL_SCRIPT,
                 "--code",
                 code_path,
                 "--cursor",
@@ -346,7 +346,7 @@ class GenerateFromLiveTests(unittest.TestCase):
             (output_dir / "ignored.json").write_text("")
 
             result = run_python(
-                GENERATOR,
+                PULL_SCRIPT,
                 "--code",
                 code_path,
                 "--cursor",
@@ -382,7 +382,7 @@ class GenerateFromLiveTests(unittest.TestCase):
                     (output_dir / "ignored.json").symlink_to(real_ignored)
 
                 result = run_python(
-                    GENERATOR,
+                    PULL_SCRIPT,
                     "--code",
                     code_path,
                     "--cursor",
@@ -408,7 +408,7 @@ class GenerateFromLiveTests(unittest.TestCase):
                 cursor_path.write_text("{}\n")
 
                 result = run_python(
-                    GENERATOR,
+                    PULL_SCRIPT,
                     "--code",
                     code_path,
                     "--cursor",
@@ -442,7 +442,7 @@ class GenerateFromLiveTests(unittest.TestCase):
             before = {path: path.read_bytes() for path in outputs}
 
             result = run_python(
-                GENERATOR,
+                PULL_SCRIPT,
                 "--code",
                 code_path,
                 "--cursor",
@@ -476,7 +476,7 @@ class GenerateFromLiveTests(unittest.TestCase):
                 before = {path: path.read_bytes() for path in outputs}
 
                 result = run_python(
-                    GENERATOR,
+                    PULL_SCRIPT,
                     "--code",
                     code_path,
                     "--cursor",
@@ -508,7 +508,7 @@ class GenerateFromLiveTests(unittest.TestCase):
             code_before = code_output.read_bytes()
 
             result = run_python(
-                GENERATOR,
+                PULL_SCRIPT,
                 "--code",
                 code_path,
                 "--cursor",
@@ -525,7 +525,7 @@ class GenerateFromLiveTests(unittest.TestCase):
             self.assertEqual(list(output_dir.glob("*.bak")), [])
 
     def test_replace_failure_rolls_back_existing_layers(self) -> None:
-        generator = load_generator_module()
+        pull = load_pull_module()
 
         with tempfile.TemporaryDirectory() as temp_dir:
             output_dir = pathlib.Path(temp_dir)
@@ -537,7 +537,7 @@ class GenerateFromLiveTests(unittest.TestCase):
             for path in paths:
                 path.write_text(f'{{"original": "{path.stem}"}}\n')
             before = {path: path.read_bytes() for path in paths}
-            real_replace = generator.os.replace
+            real_replace = pull.os.replace
 
             def fail_code_replace(source, destination):
                 source_path = pathlib.Path(source)
@@ -547,12 +547,12 @@ class GenerateFromLiveTests(unittest.TestCase):
                 return real_replace(source, destination)
 
             with mock.patch.object(
-                generator.os,
+                pull.os,
                 "replace",
                 side_effect=fail_code_replace,
             ):
                 with self.assertRaisesRegex(OSError, "forced replacement failure"):
-                    generator.write_json_layers(
+                    pull.write_json_layers(
                         [
                             (paths[0], {"new": "shared"}),
                             (paths[1], {"new": "code"}),
@@ -566,7 +566,7 @@ class GenerateFromLiveTests(unittest.TestCase):
             self.assertEqual(list(output_dir.glob("*.bak")), [])
 
     def test_rollback_replace_failure_uses_copy_fallback(self) -> None:
-        generator = load_generator_module()
+        pull = load_pull_module()
 
         with tempfile.TemporaryDirectory() as temp_dir:
             output_dir = pathlib.Path(temp_dir)
@@ -578,7 +578,7 @@ class GenerateFromLiveTests(unittest.TestCase):
             for path in paths:
                 path.write_text(f'{{"original": "{path.stem}"}}\n')
             before = {path: path.read_bytes() for path in paths}
-            real_replace = generator.os.replace
+            real_replace = pull.os.replace
 
             def fail_replacement_and_rollback_rename(source, destination):
                 source_path = pathlib.Path(source)
@@ -590,12 +590,12 @@ class GenerateFromLiveTests(unittest.TestCase):
                 return real_replace(source, destination)
 
             with mock.patch.object(
-                generator.os,
+                pull.os,
                 "replace",
                 side_effect=fail_replacement_and_rollback_rename,
             ):
                 with self.assertRaisesRegex(OSError, "forced replacement failure"):
-                    generator.write_json_layers(
+                    pull.write_json_layers(
                         [
                             (paths[0], {"new": "shared"}),
                             (paths[1], {"new": "code"}),
@@ -609,7 +609,7 @@ class GenerateFromLiveTests(unittest.TestCase):
             self.assertEqual(list(output_dir.glob(".*.bak")), [])
 
     def test_rollback_failure_preserves_recovery_backup(self) -> None:
-        generator = load_generator_module()
+        pull = load_pull_module()
 
         with tempfile.TemporaryDirectory() as temp_dir:
             output_dir = pathlib.Path(temp_dir)
@@ -621,8 +621,8 @@ class GenerateFromLiveTests(unittest.TestCase):
             for path in paths:
                 path.write_text(f'{{"original": "{path.stem}"}}\n')
             before = {path: path.read_bytes() for path in paths}
-            real_replace = generator.os.replace
-            real_copy2 = generator.shutil.copy2
+            real_replace = pull.os.replace
+            real_copy2 = pull.shutil.copy2
 
             def fail_replacement_and_rollback_rename(source, destination):
                 source_path = pathlib.Path(source)
@@ -642,12 +642,12 @@ class GenerateFromLiveTests(unittest.TestCase):
 
             with (
                 mock.patch.object(
-                    generator.os,
+                    pull.os,
                     "replace",
                     side_effect=fail_replacement_and_rollback_rename,
                 ),
                 mock.patch.object(
-                    generator.shutil,
+                    pull.shutil,
                     "copy2",
                     side_effect=fail_rollback_copy,
                 ),
@@ -656,7 +656,7 @@ class GenerateFromLiveTests(unittest.TestCase):
                     OSError,
                     "recovery backups preserved",
                 ):
-                    generator.write_json_layers(
+                    pull.write_json_layers(
                         [
                             (paths[0], {"new": "shared"}),
                             (paths[1], {"new": "code"}),

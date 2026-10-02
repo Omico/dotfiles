@@ -10,7 +10,7 @@ import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
-SPEC = importlib.util.spec_from_file_location("codex_settings", ROOT / "home/dot_config/codex-settings/apply.py")
+SPEC = importlib.util.spec_from_file_location("codex_settings", ROOT / "app-settings/codex/apply.py")
 sync = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(sync)
 
@@ -133,7 +133,7 @@ env_key = "EXAMPLE_PROVIDER_API_KEY"
             shutil.copyfile(sync.__file__, helper)
             (folder / 'settings.shared.toml').write_text('[settings]\nmodel="new"\n')
             runtime = folder / 'runtime'
-            env = dict(os.environ, CODEX_HOME=str(runtime))
+            env = dict(os.environ, HOME=str(folder), CODEX_HOME=str(runtime))
             command = [sys.executable, str(helper)]
             subprocess.run(command + ['--dry-run'], env=env, check=True, capture_output=True)
             self.assertFalse(runtime.exists())
@@ -164,7 +164,7 @@ env_key = "EXAMPLE_PROVIDER_API_KEY"
             self.assertFalse((runtime / 'settings-sync-backups').exists())
 
     def test_checked_in_selection_excludes_runtime_and_machine_data(self):
-        doc = sync.parse((ROOT / 'home/dot_config/codex-settings/settings.shared.toml').read_bytes())
+        doc = sync.parse((ROOT / 'app-settings/codex/settings.shared.toml').read_bytes())
         fields = dict(sync.leaves(doc['settings']))
         self.assertFalse({'mcp_servers', 'hooks', 'projects', 'model_providers', 'marketplaces', 'skills', 'apps'} & {p[0] for p in fields})
         for path, value in fields.items():
@@ -194,7 +194,7 @@ class PublishTests(unittest.TestCase):
 
     def test_default_pending_changes_never_reach_publisher(self):
         shared = Path(sync.__file__).parent / 'settings.shared.toml'
-        local = Path(sync.__file__).parent / 'settings.local.toml'
+        local = Path.home() / '.config/codex-settings/settings.local.toml'
         original_read = sync.read
         def fixture(path, optional=False):
             if path == shared:
@@ -267,7 +267,7 @@ class PublishTests(unittest.TestCase):
 
     def test_dry_run_and_noop_do_not_write(self):
         shared = sync.Path(sync.__file__).parent / 'settings.shared.toml'
-        local = sync.Path(sync.__file__).parent / 'settings.local.toml'
+        local = sync.Path.home() / '.config/codex-settings/settings.local.toml'
         real_read = sync.read
         def read_fixture(path, optional=False):
             if path == shared:

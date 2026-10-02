@@ -24,7 +24,7 @@ Keep writers stopped until completion. Known running writers or failed process c
 
 ### Share preferences
 
-Edit `home/dot_config/codex-settings/settings.shared.toml`, then run `chezmoi apply` to install it under `~/.config/codex-settings/`.
+Edit `app-settings/codex/settings.shared.toml` in the chezmoi repository. The command reads this source directly; no intermediate copy is installed.
 
 Each leaf under `[settings]` overrides that field on offline apply. Arrays replace as a unit; unknown fields and comments are preserved. Empty tables own no fields. Plugin flags control enablement; installation stays local.
 
