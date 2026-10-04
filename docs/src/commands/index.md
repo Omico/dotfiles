@@ -28,7 +28,7 @@ Codex, Code/Cursor, and Zed settings layers live in the repository's top-level `
 | [Homebrew](./homebrew) | macOS | Brewfile backup, restore, upgrades |
 | [MLflow](./mlflow) | macOS | Local tracking server via launchd |
 | [Shell](./shell) | Mixed | Reload Fish and sync configs to chezmoi |
-| [Toolchains](./toolchains) | Mixed | Node.js, Bun, mise, Rust, Flutter, Java, Gradle |
+| [Toolchains](./toolchains) | Mixed | Node.js, Bun, mise, Python (uv), Rust, Flutter, Java, Gradle |
 | [VS Code](./vscode) | Unix | Shared Code/Cursor User settings merge |
 | [Xcode](./xcode) | macOS | Switch Xcode versions and open downloads |
 | [Zed](./zed) | Unix | Portable Zed settings backup and restore |

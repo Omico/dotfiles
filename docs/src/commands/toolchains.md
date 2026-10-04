@@ -55,3 +55,9 @@ Ensure `~/.cargo/bin/rustup` exists (official install script on first use), then
 **Platforms:** macOS (`darwin`)
 
 Clear `~/.jenv/versions/*`, scan `/Library/Java/JavaVirtualMachines/*.jdk`, register each JDK with jenv, and rehash.
+
+## `uv`
+
+**Platforms:** Unix (`linux`, `darwin`, `wsl`)
+
+Ensure `~/.local/bin/uv` exists (official install script on first use), then forward arguments to uv.
