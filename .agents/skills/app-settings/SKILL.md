@@ -39,5 +39,5 @@ Keep credentials, machine integrations, runtime state, and local overrides in ea
 
 - Parse touched managed files with their native format and check ignored/preserved ownership against the application route.
 - After Pull, review the source diff and retain curated edits where needed. After Edit, finish without applying live settings unless Apply was requested.
-- For Apply, use the application's existing command and report its result. Codex pending changes are a check result, not a completed live write; its offline requirement remains in force.
+- For Apply, use the application's existing command and report its result. Codex Apply writes selected shared fields directly; its dry run only reports differences.
 - If parser, Pull command, or merge behavior changes, run the affected existing tests from the repository root with `uv run --locked python -m unittest discover -s tests/vscode_settings` or `-s tests/codex_settings`. For Zed command changes, verify Pull and Apply in a temporary HOME.

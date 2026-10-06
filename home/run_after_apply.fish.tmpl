@@ -36,7 +36,6 @@ if type -q zed-settings-apply
 end
 
 if type -q codex-settings-apply
-    # Check only: pending changes require a separate offline apply.
     codex-settings-apply; or exit $status
 end
 {{ end -}}

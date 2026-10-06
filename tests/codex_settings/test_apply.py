@@ -137,18 +137,7 @@ env_key = "EXAMPLE_PROVIDER_API_KEY"
             command = [sys.executable, str(helper)]
             subprocess.run(command + ['--dry-run'], env=env, check=True, capture_output=True)
             self.assertFalse(runtime.exists())
-            pending = subprocess.run(command, env=env, capture_output=True, text=True)
-            self.assertEqual(pending.returncode, 2)
-            self.assertIn('--offline', pending.stderr)
-            self.assertFalse(runtime.exists())
-            # Isolate the process inventory; the actual test host can run Codex.
-            fake_bin = folder / 'bin'
-            fake_bin.mkdir()
-            ps = fake_bin / 'ps'
-            ps.write_text('#!/bin/sh\nprintf "/sbin/launchd\\n"\n')
-            ps.chmod(0o755)
-            env['PATH'] = str(fake_bin) + os.pathsep + env['PATH']
-            subprocess.run(command + ['--offline'], env=env, check=True, capture_output=True)
+            subprocess.run(command, env=env, check=True, capture_output=True)
             live = runtime / 'config.toml'
             self.assertEqual(sync.parse(live.read_bytes())['model'], 'new')
             before = sync.identity(live.stat())
@@ -156,12 +145,11 @@ env_key = "EXAMPLE_PROVIDER_API_KEY"
             self.assertEqual(before, sync.identity(live.stat()))
             self.assertFalse((runtime / 'settings-sync-backups').exists())
             (folder / 'settings.shared.toml').write_text('[settings]\nmodel="changed"\n')
-            ps.write_text('#!/bin/sh\nprintf "/Applications/ChatGPT.app/Contents/MacOS/ChatGPT\\n"\n')
-            blocked = subprocess.run(command + ['--offline'], env=env, capture_output=True, text=True)
-            self.assertEqual(blocked.returncode, 1)
-            self.assertIn('is running', blocked.stderr)
-            self.assertEqual(before, sync.identity(live.stat()))
-            self.assertFalse((runtime / 'settings-sync-backups').exists())
+            subprocess.run(command, env=env, check=True, capture_output=True)
+            self.assertEqual(sync.parse(live.read_bytes())['model'], 'changed')
+            backups = list((runtime / 'settings-sync-backups').iterdir())
+            self.assertEqual(len(backups), 1)
+            self.assertEqual(sync.parse(backups[0].read_bytes())['model'], 'new')
 
     def test_checked_in_selection_excludes_runtime_and_machine_data(self):
         doc = sync.parse((ROOT / 'app-settings/codex/settings.shared.toml').read_bytes())
@@ -181,18 +169,8 @@ class PublishTests(unittest.TestCase):
         self.target = Path(self.directory.name) / 'config.toml'
         self.target.write_bytes(b'# local\nx=1\n')
         self.target.chmod(0o640)
-        offline = patch.object(sync, 'require_offline')
-        offline.start()
-        self.addCleanup(offline.stop)
 
-    def test_writer_detected_before_replace_aborts(self):
-        snapshot = sync.read(self.target)
-        with patch.object(sync, 'require_offline', side_effect=[None, ValueError('Writer started')]), self.assertRaises(ValueError):
-            sync.publish(self.target, snapshot, b'x=2\n', [])
-        self.assertEqual(self.target.read_bytes(), snapshot[0])
-        self.assertFalse(list(self.target.parent.glob('.codex-settings-*')))
-
-    def test_default_pending_changes_never_reach_publisher(self):
+    def test_default_applies_pending_changes(self):
         shared = Path(sync.__file__).parent / 'settings.shared.toml'
         local = Path.home() / '.config/codex-settings/settings.local.toml'
         original_read = sync.read
@@ -203,14 +181,12 @@ class PublishTests(unittest.TestCase):
                 return b'', None
             return original_read(path, optional)
         snapshot = sync.read(self.target)
-        with patch.dict(os.environ, CODEX_HOME=str(self.target.parent)), patch('sys.argv', ['apply.py']), patch.object(sync, 'read', side_effect=fixture), patch.object(sync, 'publish') as publish:
-            with self.assertRaises(SystemExit) as result:
-                sync.main()
-            self.assertEqual(result.exception.code, 2)
-            publish.assert_not_called()
-        self.assertEqual(sync.read(self.target)[0], snapshot[0])
-        self.assertEqual(sync.identity(self.target.stat()), sync.identity(snapshot[1]))
-        self.assertEqual(list(self.target.parent.iterdir()), [self.target])
+        with patch.dict(os.environ, CODEX_HOME=str(self.target.parent)), patch('sys.argv', ['apply.py']), patch.object(sync, 'read', side_effect=fixture):
+            sync.main()
+        self.assertEqual(self.target.read_bytes(), b'# local\nx=2\n')
+        backups = list((self.target.parent / 'settings-sync-backups').iterdir())
+        self.assertEqual(len(backups), 1)
+        self.assertEqual(backups[0].read_bytes(), snapshot[0])
 
     def test_backup_exact_and_modes_preserved(self):
         snapshot = sync.read(self.target)
@@ -271,7 +247,7 @@ class PublishTests(unittest.TestCase):
         real_read = sync.read
         def read_fixture(path, optional=False):
             if path == shared:
-                return b'[settings]\nx=1\n', None
+                return (b'[settings]\nx=2\n' if '--dry-run' in sys.argv else b'[settings]\nx=1\n'), None
             if path == local:
                 return b'', None
             return real_read(path, optional)
@@ -282,23 +258,6 @@ class PublishTests(unittest.TestCase):
                 publish.assert_not_called()
         self.assertEqual(before, self.target.stat())
 
-
-class OfflineTests(unittest.TestCase):
-    def test_known_writers_block_offline_apply(self):
-        for name in ['codex', '/opt/bin/codex-cli', '/Applications/Codex.app/Contents/MacOS/Codex', '/Applications/ChatGPT.app/Contents/MacOS/ChatGPT', '/opt/bin/apm', '/app/CodexCLI']:
-            result = subprocess.CompletedProcess([], 0, stdout=name + '\n', stderr='')
-            with self.subTest(name=name), patch.object(sync.subprocess, 'run', return_value=result), self.assertRaises(ValueError):
-                sync.require_offline()
-
-    def test_process_inventory_errors_fail_closed(self):
-        for error in [FileNotFoundError(), subprocess.TimeoutExpired('ps', 10), subprocess.CalledProcessError(1, 'ps')]:
-            with self.subTest(error=error), patch.object(sync.subprocess, 'run', side_effect=error), self.assertRaises(ValueError):
-                sync.require_offline()
-
-    def test_unrelated_processes_do_not_block(self):
-        result = subprocess.CompletedProcess([], 0, stdout='/sbin/launchd\n/usr/bin/python3\n/usr/bin/fish\n', stderr='')
-        with patch.object(sync.subprocess, 'run', return_value=result):
-            sync.require_offline()
 
 
 if __name__ == '__main__':

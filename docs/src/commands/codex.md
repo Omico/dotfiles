@@ -12,23 +12,23 @@ Sync selected preferences with `$CODEX_HOME/config.toml` (default: `~/.codex/con
 codex-settings-apply --dry-run
 ```
 
-This validates the merged configuration and lists changed field paths. Without flags, the command returns `0` when synchronized or `2` when changes are pending. The chezmoi hook uses this check and leaves the live file untouched.
+This validates the merged configuration and lists changed field paths without writing.
 
-To write changes, stop Codex, ChatGPT, Codex CLI sessions, APM, and other configuration writers. In a separate terminal, run:
+To write changes, run:
 
 ```shell
-codex-settings-apply --offline
+codex-settings-apply
 ```
 
-Keep writers stopped until completion. Known running writers or failed process checks block the write, but detection cannot cover every writer or prevent one from starting. Never use `--offline` in the automatic hook.
+The chezmoi hook runs this command automatically. Changed fields are applied directly; synchronized files are left untouched. No application shutdown is required. If a source or live file changes during the operation, the command fails so you can run it again.
 
 ### Share preferences
 
 Edit `app-settings/codex/settings.shared.toml` in the chezmoi repository. The command reads this source directly; no intermediate copy is installed.
 
-Each leaf under `[settings]` overrides that field on offline apply. Arrays replace as a unit; unknown fields and comments are preserved. Empty tables own no fields. Plugin flags control enablement; installation stays local.
+Each leaf under `[settings]` overrides that field on apply. Arrays replace as a unit; unknown fields and comments are preserved. Empty tables own no fields. Plugin flags control enablement; installation stays local.
 
-To share App changes, copy the selected values into this source file. Otherwise, the next offline apply restores the shared values. `chezmoi_add_configs` does not import Codex settings.
+To share App changes, copy the selected values into this source file. Otherwise, the next apply restores the shared values. `chezmoi_add_configs` does not import Codex settings.
 
 ### Keep machine preferences
 
@@ -54,7 +54,7 @@ Keep the entry until all machines apply it, or indefinitely to remove future App
 
 Changed files are backed up under `$CODEX_HOME/settings-sync-backups/` before atomic replacement. Existing file modes are preserved; new files and backups use `0600`, and the backup directory uses `0700`. Unchanged files are untouched; symlinked and hard-linked live files are rejected.
 
-Backups can contain secrets and remain local until manually removed. Stop all writers before restoring a backup with the original file mode. Snapshot checks and the helper's lock supplement the offline requirement; they cannot coordinate writes from other applications.
+Backups can contain secrets and remain local until manually removed. Stop all writers before restoring a backup with the original file mode. Snapshot checks and the helper's lock detect concurrent changes but cannot coordinate writes from other applications. An application can later rewrite a shared field; the next apply restores its shared value.
 
 ### Test
 

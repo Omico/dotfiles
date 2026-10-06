@@ -12,8 +12,6 @@ import math
 import os
 from pathlib import Path
 import stat
-import subprocess
-import sys
 import tempfile
 
 import tomlkit
@@ -132,23 +130,8 @@ def unchanged(path, snapshot):
         raise ValueError(f"File changed; run apply again: {path}")
 
 
-def require_offline():
-    """Reject known writers; the operator must also stop editors and other writers."""
-    try:
-        processes = subprocess.run(
-            ["ps", "-A", "-o", "comm="], capture_output=True, text=True,
-            check=True, timeout=10,
-        )
-    except (OSError, subprocess.SubprocessError) as error:
-        raise ValueError("Cannot check running writers; offline apply refused") from error
-    writers = {"codex", "codex-cli", "codexcli", "chatgpt", "apm"}
-    if any(Path(line.strip()).name.lower() in writers for line in processes.stdout.splitlines()):
-        raise ValueError("Codex, ChatGPT, or APM is running. Stop configuration writers before --offline")
-
-
 def publish(path, snapshot, candidate, inputs):
-    """Publish only during an operator-controlled offline maintenance interval."""
-    require_offline()
+    """Back up and atomically replace a configuration after snapshot checks."""
     data, info = snapshot
     mode = stat.S_IMODE(info.st_mode) if info else 0o600
     fd, name = tempfile.mkstemp(prefix=".codex-settings-", dir=path.parent)
@@ -176,7 +159,6 @@ def publish(path, snapshot, candidate, inputs):
                 os.fsync(stream.fileno())
         for source, original in inputs:
             unchanged(source, original)
-        require_offline()
         unchanged(path, snapshot)
         os.replace(staged, path)
         return backup
@@ -186,9 +168,7 @@ def publish(path, snapshot, candidate, inputs):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    modes = parser.add_mutually_exclusive_group()
-    modes.add_argument("--dry-run", action="store_true", help="Validate and list changes without writing; pending changes exit successfully")
-    modes.add_argument("--offline", action="store_true", help="Write after you stop ALL configuration writers and keep them stopped until completion")
+    parser.add_argument("--dry-run", action="store_true", help="Validate and list changes without writing")
     args = parser.parse_args()
     directory = Path(__file__).resolve().parent
     shared_path = directory / "settings.shared.toml"
@@ -204,10 +184,6 @@ def main():
     if args.dry_run or not changed:
         print("Candidate valid; " + ("no changes." if not changed else "dry run only."))
         return
-    if not args.offline:
-        print("Shared settings are pending; no files were written. Stop Codex, ChatGPT, APM, and all other configuration writers, then run codex-settings-apply --offline from a separate terminal.", file=sys.stderr)
-        raise SystemExit(2)
-    require_offline()
     codex_home.mkdir(mode=0o700, parents=True, exist_ok=True)
     lock_path = codex_home / ".settings-sync.lock"
     fd = os.open(lock_path, os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
