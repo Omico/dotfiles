@@ -1,36 +1,22 @@
 from __future__ import annotations
 
 import codecs
-import importlib.util
 import json
 import pathlib
 import subprocess
-import sys
 import tempfile
 import textwrap
 import unittest
-from unittest import mock
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-PULL_SCRIPT = ROOT / ".agents/skills/app-settings/scripts/pull-vscode-based.py"
-JSONC_HELPER = (
-    ROOT / ".agents/skills/app-settings/scripts/jsonc.py"
-)
+PULL_SCRIPT = ROOT / ".agents/skills/app-settings/scripts/pull-vscode-based.mjs"
 
 
-def load_pull_module():
-    spec = importlib.util.spec_from_file_location("vscode_based_pull", PULL_SCRIPT)
-    if spec is None or spec.loader is None:
-        raise RuntimeError(f"failed to load {PULL_SCRIPT}")
-    module = importlib.util.module_from_spec(spec)
-    with mock.patch.object(sys, "path", [str(PULL_SCRIPT.parent), *sys.path]):
-        spec.loader.exec_module(module)
-    return module
-
-
-def run_python(script: pathlib.Path, *args: pathlib.Path | str) -> subprocess.CompletedProcess[str]:
+def run_bun(
+    script: pathlib.Path, *args: pathlib.Path | str
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        [sys.executable, str(script), *(str(arg) for arg in args)],
+        ["bun", "run", "--install=force", str(script), *(str(arg) for arg in args)],
         cwd=ROOT,
         check=False,
         capture_output=True,
@@ -41,13 +27,14 @@ def run_python(script: pathlib.Path, *args: pathlib.Path | str) -> subprocess.Co
 class JsoncTests(unittest.TestCase):
     def test_accepts_jsonc_without_changing_string_content(self) -> None:
         source = textwrap.dedent(
-            r'''
+            r"""
             {
               // Full-line comment.
               "url": "https://example.com/a//b",
               "literal": "/* not a comment */",
               "escaped": "quote: \" // still a string",
               "path": "C:\\temp\\",
+              "large": 9007199254740993,
               "nested": {
                 "enabled": true,
               },
@@ -56,7 +43,7 @@ class JsoncTests(unittest.TestCase):
                 2, /* block comment */
               ],
             }
-            '''
+            """
         ).lstrip()
 
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -65,16 +52,27 @@ class JsoncTests(unittest.TestCase):
                 codecs.BOM_UTF8 + source.replace("\n", "\r\n").encode()
             )
 
-            result = run_python(JSONC_HELPER, settings_path)
+            output_dir = pathlib.Path(temp_dir) / "layers"
+            result = run_bun(
+                PULL_SCRIPT,
+                "--code",
+                settings_path,
+                "--cursor",
+                settings_path,
+                "--out",
+                output_dir,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            parsed = json.loads((output_dir / "shared.json").read_text())
 
-        self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(
-            json.loads(result.stdout),
+            parsed,
             {
                 "url": "https://example.com/a//b",
                 "literal": "/* not a comment */",
                 "escaped": 'quote: " // still a string',
                 "path": "C:\\temp\\",
+                "large": 9007199254740993,
                 "nested": {"enabled": True},
                 "items": [1, 2],
             },
@@ -85,19 +83,33 @@ class JsoncTests(unittest.TestCase):
             settings_path = pathlib.Path(temp_dir) / "settings.json"
             settings_path.write_text('{\n  "a": /* unfinished\n')
 
-            result = run_python(JSONC_HELPER, settings_path)
+            result = run_bun(
+                PULL_SCRIPT,
+                "--code",
+                settings_path,
+                "--cursor",
+                settings_path,
+                "--dry-run",
+            )
 
-        self.assertEqual(result.returncode, 1)
-        self.assertIn(f"{settings_path}:2:8: unterminated block comment", result.stderr)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn(f"{settings_path}:2:8:", result.stderr)
 
     def test_invalid_utf8_is_reported_without_a_traceback(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             settings_path = pathlib.Path(temp_dir) / "settings.json"
             settings_path.write_bytes(b'{"value": "\xff"}\n')
 
-            result = run_python(JSONC_HELPER, settings_path)
+            result = run_bun(
+                PULL_SCRIPT,
+                "--code",
+                settings_path,
+                "--cursor",
+                settings_path,
+                "--dry-run",
+            )
 
-        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.returncode, 2)
         self.assertIn(f"Error: failed to read {settings_path}", result.stderr)
         self.assertNotIn("Traceback", result.stderr)
 
@@ -107,9 +119,16 @@ class JsoncTests(unittest.TestCase):
                 settings_path = pathlib.Path(temp_dir) / "settings.json"
                 settings_path.write_text(source)
 
-                result = run_python(JSONC_HELPER, settings_path)
+                result = run_bun(
+                    PULL_SCRIPT,
+                    "--code",
+                    settings_path,
+                    "--cursor",
+                    settings_path,
+                    "--dry-run",
+                )
 
-            self.assertEqual(result.returncode, 1)
+            self.assertEqual(result.returncode, 2)
             self.assertIn("invalid JSONC", result.stderr)
 
     def test_rejects_non_object_root(self) -> None:
@@ -117,24 +136,42 @@ class JsoncTests(unittest.TestCase):
             settings_path = pathlib.Path(temp_dir) / "settings.json"
             settings_path.write_text("[1, 2,]\n")
 
-            result = run_python(JSONC_HELPER, settings_path)
+            result = run_bun(
+                PULL_SCRIPT,
+                "--code",
+                settings_path,
+                "--cursor",
+                settings_path,
+                "--dry-run",
+            )
 
-        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.returncode, 2)
         self.assertIn(f"{settings_path}:1:1: expected a JSON object", result.stderr)
 
     def test_rejects_non_standard_numeric_constants(self) -> None:
         for constant in ("NaN", "Infinity", "-Infinity"):
-            with self.subTest(constant=constant), tempfile.TemporaryDirectory() as temp_dir:
+            with (
+                self.subTest(constant=constant),
+                tempfile.TemporaryDirectory() as temp_dir,
+            ):
                 settings_path = pathlib.Path(temp_dir) / "settings.json"
                 settings_path.write_text(
-                    f'{{\n  "valid": true,\n  "value": {constant}\n}}\n'
+                    f'{{\n  "valid": "\u20ac",\n  "value": {constant}\n}}\n'
                 )
 
-                result = run_python(JSONC_HELPER, settings_path)
+                result = run_bun(
+                    PULL_SCRIPT,
+                    "--code",
+                    settings_path,
+                    "--cursor",
+                    settings_path,
+                    "--dry-run",
+                )
 
-            self.assertEqual(result.returncode, 1)
-            self.assertIn(f"invalid JSON constant: {constant}", result.stderr)
-            self.assertIn(f"{settings_path}:3:12:", result.stderr)
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("invalid JSONC", result.stderr)
+            column = 12
+            self.assertIn(f"{settings_path}:3:{column}:", result.stderr)
 
     def test_rejects_out_of_range_json_numbers(self) -> None:
         for number in ("1e999", "1" + ("0" * 400)):
@@ -142,10 +179,17 @@ class JsoncTests(unittest.TestCase):
                 settings_path = pathlib.Path(temp_dir) / "settings.json"
                 settings_path.write_text(f'{{\n  "value": {number}\n}}\n')
 
-                result = run_python(JSONC_HELPER, settings_path)
+                result = run_bun(
+                    PULL_SCRIPT,
+                    "--code",
+                    settings_path,
+                    "--cursor",
+                    settings_path,
+                    "--dry-run",
+                )
 
-            self.assertEqual(result.returncode, 1)
-            self.assertIn(f"JSON number is out of range: {number}", result.stderr)
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("Number too big to be stored in double", result.stderr)
             self.assertIn(f"{settings_path}:2:12:", result.stderr)
 
     def test_rejects_invalid_empty_jsonc_entries(self) -> None:
@@ -154,9 +198,16 @@ class JsoncTests(unittest.TestCase):
                 settings_path = pathlib.Path(temp_dir) / "settings.json"
                 settings_path.write_text(source)
 
-                result = run_python(JSONC_HELPER, settings_path)
+                result = run_bun(
+                    PULL_SCRIPT,
+                    "--code",
+                    settings_path,
+                    "--cursor",
+                    settings_path,
+                    "--dry-run",
+                )
 
-            self.assertEqual(result.returncode, 1)
+            self.assertEqual(result.returncode, 2)
             self.assertIn("invalid JSONC", result.stderr)
 
 
@@ -171,7 +222,7 @@ class PullTests(unittest.TestCase):
 
             code_path.write_text(
                 textwrap.dedent(
-                    '''
+                    """
                     {
                       "shared": {"enabled": true},
                       "code.only": 1, // Code-specific.
@@ -181,12 +232,12 @@ class PullTests(unittest.TestCase):
                       "type.nested": {"value": false},
                       "yaml.disableSchemaDetection": ["code"],
                     }
-                    '''
+                    """
                 )
             )
             cursor_path.write_text(
                 textwrap.dedent(
-                    '''
+                    """
                     {
                       /* Cursor keeps the same shared object. */
                       "shared": {"enabled": true},
@@ -197,13 +248,13 @@ class PullTests(unittest.TestCase):
                       "type.nested": {"value": 0},
                       "yaml.disableSchemaDetection": ["cursor"],
                     }
-                    '''
+                    """
                 )
             )
             (output_dir / "ignored.json").write_text('["ignored.global"]\n')
             (output_dir / "code.ignored.json").write_text('["ignored.code"]\n')
 
-            result = run_python(
+            result = run_bun(
                 PULL_SCRIPT,
                 "--code",
                 code_path,
@@ -247,7 +298,7 @@ class PullTests(unittest.TestCase):
             code_path.write_text('{"yaml.disableSchemaDetection": true}\n')
             cursor_path.write_text('{"yaml.disableSchemaDetection": false}\n')
 
-            result = run_python(
+            result = run_bun(
                 PULL_SCRIPT,
                 "--code",
                 code_path,
@@ -277,7 +328,7 @@ class PullTests(unittest.TestCase):
             code_path.write_bytes(b'{"value": "\xff"}\n')
             cursor_path.write_text("{}\n")
 
-            live_result = run_python(
+            live_result = run_bun(
                 PULL_SCRIPT,
                 "--code",
                 code_path,
@@ -293,7 +344,7 @@ class PullTests(unittest.TestCase):
             code_path.write_text("{}\n")
             output_dir.mkdir()
             (output_dir / "ignored.json").write_bytes(b"[\xff]\n")
-            ignored_result = run_python(
+            ignored_result = run_bun(
                 PULL_SCRIPT,
                 "--code",
                 code_path,
@@ -317,7 +368,7 @@ class PullTests(unittest.TestCase):
             cursor_path.write_text("{}\n")
             (output_dir / "ignored.json").mkdir()
 
-            result = run_python(
+            result = run_bun(
                 PULL_SCRIPT,
                 "--code",
                 code_path,
@@ -345,7 +396,7 @@ class PullTests(unittest.TestCase):
             cursor_path.write_text('{"cursor": true}\n')
             (output_dir / "ignored.json").write_text("")
 
-            result = run_python(
+            result = run_bun(
                 PULL_SCRIPT,
                 "--code",
                 code_path,
@@ -363,7 +414,10 @@ class PullTests(unittest.TestCase):
 
     def test_symlink_live_and_ignored_inputs_are_rejected(self) -> None:
         for symlink_name in ("code", "ignored"):
-            with self.subTest(symlink_name=symlink_name), tempfile.TemporaryDirectory() as temp_dir:
+            with (
+                self.subTest(symlink_name=symlink_name),
+                tempfile.TemporaryDirectory() as temp_dir,
+            ):
                 fixture = pathlib.Path(temp_dir)
                 real_code = fixture / "real-code.json"
                 code_path = fixture / "code.json"
@@ -381,7 +435,7 @@ class PullTests(unittest.TestCase):
                     real_ignored.write_text('["local"]\n')
                     (output_dir / "ignored.json").symlink_to(real_ignored)
 
-                result = run_python(
+                result = run_bun(
                     PULL_SCRIPT,
                     "--code",
                     code_path,
@@ -407,7 +461,7 @@ class PullTests(unittest.TestCase):
                 code_path.write_text(f'{{"value": {number}}}\n')
                 cursor_path.write_text("{}\n")
 
-                result = run_python(
+                result = run_bun(
                     PULL_SCRIPT,
                     "--code",
                     code_path,
@@ -441,7 +495,7 @@ class PullTests(unittest.TestCase):
                 path.write_text(f'{{"original": "{path.stem}"}}\n')
             before = {path: path.read_bytes() for path in outputs}
 
-            result = run_python(
+            result = run_bun(
                 PULL_SCRIPT,
                 "--code",
                 code_path,
@@ -475,7 +529,7 @@ class PullTests(unittest.TestCase):
                     path.write_text(f'{{"original": "{path.stem}"}}\n')
                 before = {path: path.read_bytes() for path in outputs}
 
-                result = run_python(
+                result = run_bun(
                     PULL_SCRIPT,
                     "--code",
                     code_path,
@@ -507,7 +561,7 @@ class PullTests(unittest.TestCase):
             shared_before = shared_output.read_bytes()
             code_before = code_output.read_bytes()
 
-            result = run_python(
+            result = run_bun(
                 PULL_SCRIPT,
                 "--code",
                 code_path,
@@ -523,154 +577,6 @@ class PullTests(unittest.TestCase):
             self.assertEqual(code_output.read_bytes(), code_before)
             self.assertEqual(list(output_dir.glob("*.tmp")), [])
             self.assertEqual(list(output_dir.glob("*.bak")), [])
-
-    def test_replace_failure_rolls_back_existing_layers(self) -> None:
-        pull = load_pull_module()
-
-        with tempfile.TemporaryDirectory() as temp_dir:
-            output_dir = pathlib.Path(temp_dir)
-            paths = [
-                output_dir / "shared.json",
-                output_dir / "code.json",
-                output_dir / "cursor.json",
-            ]
-            for path in paths:
-                path.write_text(f'{{"original": "{path.stem}"}}\n')
-            before = {path: path.read_bytes() for path in paths}
-            real_replace = pull.os.replace
-
-            def fail_code_replace(source, destination):
-                source_path = pathlib.Path(source)
-                destination_path = pathlib.Path(destination)
-                if destination_path == paths[1] and source_path.suffix == ".tmp":
-                    raise OSError("forced replacement failure")
-                return real_replace(source, destination)
-
-            with mock.patch.object(
-                pull.os,
-                "replace",
-                side_effect=fail_code_replace,
-            ):
-                with self.assertRaisesRegex(OSError, "forced replacement failure"):
-                    pull.write_json_layers(
-                        [
-                            (paths[0], {"new": "shared"}),
-                            (paths[1], {"new": "code"}),
-                            (paths[2], {"new": "cursor"}),
-                        ]
-                    )
-
-            for path in paths:
-                self.assertEqual(path.read_bytes(), before[path])
-            self.assertEqual(list(output_dir.glob("*.tmp")), [])
-            self.assertEqual(list(output_dir.glob("*.bak")), [])
-
-    def test_rollback_replace_failure_uses_copy_fallback(self) -> None:
-        pull = load_pull_module()
-
-        with tempfile.TemporaryDirectory() as temp_dir:
-            output_dir = pathlib.Path(temp_dir)
-            paths = [
-                output_dir / "shared.json",
-                output_dir / "code.json",
-                output_dir / "cursor.json",
-            ]
-            for path in paths:
-                path.write_text(f'{{"original": "{path.stem}"}}\n')
-            before = {path: path.read_bytes() for path in paths}
-            real_replace = pull.os.replace
-
-            def fail_replacement_and_rollback_rename(source, destination):
-                source_path = pathlib.Path(source)
-                destination_path = pathlib.Path(destination)
-                if destination_path == paths[1] and source_path.suffix == ".tmp":
-                    raise OSError("forced replacement failure")
-                if destination_path == paths[0] and source_path.suffix == ".bak":
-                    raise OSError("forced rollback rename failure")
-                return real_replace(source, destination)
-
-            with mock.patch.object(
-                pull.os,
-                "replace",
-                side_effect=fail_replacement_and_rollback_rename,
-            ):
-                with self.assertRaisesRegex(OSError, "forced replacement failure"):
-                    pull.write_json_layers(
-                        [
-                            (paths[0], {"new": "shared"}),
-                            (paths[1], {"new": "code"}),
-                            (paths[2], {"new": "cursor"}),
-                        ]
-                    )
-
-            for path in paths:
-                self.assertEqual(path.read_bytes(), before[path])
-            self.assertEqual(list(output_dir.glob(".*.tmp")), [])
-            self.assertEqual(list(output_dir.glob(".*.bak")), [])
-
-    def test_rollback_failure_preserves_recovery_backup(self) -> None:
-        pull = load_pull_module()
-
-        with tempfile.TemporaryDirectory() as temp_dir:
-            output_dir = pathlib.Path(temp_dir)
-            paths = [
-                output_dir / "shared.json",
-                output_dir / "code.json",
-                output_dir / "cursor.json",
-            ]
-            for path in paths:
-                path.write_text(f'{{"original": "{path.stem}"}}\n')
-            before = {path: path.read_bytes() for path in paths}
-            real_replace = pull.os.replace
-            real_copy2 = pull.shutil.copy2
-
-            def fail_replacement_and_rollback_rename(source, destination):
-                source_path = pathlib.Path(source)
-                destination_path = pathlib.Path(destination)
-                if destination_path == paths[1] and source_path.suffix == ".tmp":
-                    raise OSError("forced replacement failure")
-                if destination_path == paths[0] and source_path.suffix == ".bak":
-                    raise OSError("forced rollback rename failure")
-                return real_replace(source, destination)
-
-            def fail_rollback_copy(source, destination, *args, **kwargs):
-                source_path = pathlib.Path(source)
-                destination_path = pathlib.Path(destination)
-                if destination_path == paths[0] and source_path.suffix == ".bak":
-                    raise OSError("forced rollback copy failure")
-                return real_copy2(source, destination, *args, **kwargs)
-
-            with (
-                mock.patch.object(
-                    pull.os,
-                    "replace",
-                    side_effect=fail_replacement_and_rollback_rename,
-                ),
-                mock.patch.object(
-                    pull.shutil,
-                    "copy2",
-                    side_effect=fail_rollback_copy,
-                ),
-            ):
-                with self.assertRaisesRegex(
-                    OSError,
-                    "recovery backups preserved",
-                ):
-                    pull.write_json_layers(
-                        [
-                            (paths[0], {"new": "shared"}),
-                            (paths[1], {"new": "code"}),
-                            (paths[2], {"new": "cursor"}),
-                        ]
-                    )
-
-            self.assertNotEqual(paths[0].read_bytes(), before[paths[0]])
-            self.assertEqual(paths[1].read_bytes(), before[paths[1]])
-            self.assertEqual(paths[2].read_bytes(), before[paths[2]])
-            backups = list(output_dir.glob(".*.bak"))
-            self.assertEqual(len(backups), 1)
-            self.assertEqual(backups[0].read_bytes(), before[paths[0]])
-            self.assertEqual(list(output_dir.glob(".*.tmp")), [])
 
 
 if __name__ == "__main__":

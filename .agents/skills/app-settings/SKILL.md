@@ -1,6 +1,7 @@
 ---
 name: app-settings
 description: Sync or edit app-settings for Codex, VS Code/Cursor, and Zed; use for Pull from live settings, Apply to apps, or shared and local setting ownership.
+compatibility: Code/Cursor Pull requires Bun 1.3.11 or newer; the first run needs npm registry access to cache its pinned inline dependency.
 ---
 
 # Application settings
@@ -24,7 +25,7 @@ Select the requested applications and operation before writing. “All app-setti
 
 ## Routes
 
-- **Code/Cursor Pull**: read [vscode-pull.md](references/vscode-pull.md), then use the bundled Pull command.
+- **Code/Cursor Pull**: read [vscode-pull.md](references/vscode-pull.md), then run `bun run --install=force scripts/pull-vscode-based.mjs` from this skill directory.
 - **Code/Cursor Apply or source edits**: read [vscode-based.md](references/vscode-based.md).
 - **Codex Pull, checks, Apply, or source edits**: read [codex.md](references/codex.md).
 - **Zed Pull, Apply, or source edits**: read [zed.md](references/zed.md).
@@ -40,4 +41,4 @@ Keep credentials, machine integrations, runtime state, and local overrides in ea
 - Parse touched managed files with their native format and check ignored/preserved ownership against the application route.
 - After Pull, review the source diff and retain curated edits where needed. After Edit, finish without applying live settings unless Apply was requested.
 - For Apply, use the application's existing command and report its result. Codex Apply writes selected shared fields directly; its dry run only reports differences.
-- If parser, Pull command, or merge behavior changes, run the affected existing tests from the repository root with `uv run --locked python -m unittest discover -s tests/vscode_settings` or `-s tests/codex_settings`. For Zed command changes, verify Pull and Apply in a temporary HOME.
+- If parser, Pull command, or merge behavior changes, run the affected existing tests from the repository root with `uv run --locked python -m unittest discover -s tests/vscode_settings` or `-s tests/codex_settings`. For Code/Cursor Pull changes, also run `node --test tests/vscode_settings/test_pull.test.mjs` (requires Node.js 22 or newer). For Zed command changes, verify Pull and Apply in a temporary HOME.

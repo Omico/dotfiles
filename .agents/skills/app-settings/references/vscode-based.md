@@ -31,7 +31,7 @@ The command accepts full JSONC in existing live settings and prepares both outpu
 
 Push depends on Fish, `iconv`, and `jq` 1.7 or newer with literal-number preservation. Startup verifies the required `jq` behavior. Fish validates UTF-8 and rejects raw NUL bytes before capturing file content; its normalizer then removes JSONC comments and trailing commas without touching string content, rejects non-standard or out-of-range JSON numbers, and lets `jq` validate one root document and perform shallow map operations without routing JSON through YAML semantics.
 
-Pull's Python parser remains package-local at `.agents/skills/app-settings/scripts/jsonc.py` so the skill is standalone.
+Pull uses Bun with the pinned inline import `jsonc-parser@3.3.1` in `scripts/pull-vscode-based.mjs`; run `bun run --install=force scripts/pull-vscode-based.mjs` from the skill directory. Bun caches the dependency without a manifest or separate install step. See [Pull](vscode-pull.md) for prerequisites and input checks.
 
 Live targets:
 
@@ -44,7 +44,7 @@ Hook: `home/run_after_apply.fish.tmpl` runs `vscode-settings-apply` on Unix when
 
 ## Fish implementation layout
 
-Keep Push self-contained in `vscode-settings-apply.fish`. The public function appears first as a small orchestration layer; private Fish-native helpers follow in runtime/platform, input parsing, merge preparation, and transactional-write sections. Python remains limited to the standalone Pull command and tests.
+Keep Push self-contained in `vscode-settings-apply.fish`. The public function appears first as a small orchestration layer; private Fish-native helpers follow in runtime/platform, input parsing, merge preparation, and transactional-write sections. Pull uses a self-contained Bun script; Python runs the existing CLI integration tests.
 
 ## Layer rules
 
