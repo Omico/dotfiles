@@ -4,7 +4,21 @@ version = "0.0.0"
 requires-python = ">=3.11"
 
 [dependency-groups]
-dev = ["tomlkit==0.13.3"]
+dev = [
+    # 1.40.x CLI checks exclude hidden skill scripts even with explicit include paths.
+    "basedpyright==1.38.2",
+    "ruff>=0.16.10",
+    "tomlkit==0.13.3",
+]
 
 [tool.uv]
 package = false
+
+[tool.ruff]
+extend-exclude = ["docs/src/agent-skills"]
+
+[tool.basedpyright]
+include = ["app-settings", ".agents/skills/app-settings/scripts", "tests"]
+exclude = ["**/node_modules", "**/__pycache__", "**/.venv"]
+pythonVersion = "3.11"
+typeCheckingMode = "standard"

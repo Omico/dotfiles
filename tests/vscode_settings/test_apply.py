@@ -13,25 +13,25 @@ import unittest
 from collections.abc import Mapping
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-APPLY_FUNCTION = (
-    ROOT / "home/dot_config/fish/functions/unix/vscode-settings-apply.fish"
-)
+APPLY_FUNCTION = ROOT / "home/dot_config/fish/functions/unix/vscode-settings-apply.fish"
+
+
+def require_tool(name: str) -> str:
+    executable = shutil.which(name)
+    if executable is None:
+        raise unittest.SkipTest(f"{name} is required")
+    return executable
 
 
 class ApplyTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.fish = shutil.which("fish")
-        cls.iconv = shutil.which("iconv")
-        cls.jq = shutil.which("jq")
-        cls.cat = shutil.which("cat")
-        cls.cmp = shutil.which("cmp")
-        cls.mv = shutil.which("mv")
-        if any(
-            tool is None
-            for tool in (cls.fish, cls.iconv, cls.jq, cls.cat, cls.cmp, cls.mv)
-        ):
-            raise unittest.SkipTest("fish, iconv, jq, cat, cmp, and mv are required")
+        cls.fish = require_tool("fish")
+        cls.iconv = require_tool("iconv")
+        cls.jq = require_tool("jq")
+        cls.cat = require_tool("cat")
+        cls.cmp = require_tool("cmp")
+        cls.mv = require_tool("mv")
 
     def setUp(self) -> None:
         self.temp_dir = tempfile.TemporaryDirectory(
@@ -64,8 +64,10 @@ class ApplyTests(unittest.TestCase):
                 self.fish,
                 "--no-config",
                 "-c",
-                "set -g fish_platform linux; source $APPLY_FUNCTION; "
-                "vscode-settings-apply",
+                (
+                    "set -g fish_platform linux; source $APPLY_FUNCTION; "
+                    "vscode-settings-apply"
+                ),
             ],
             cwd=ROOT,
             env=env,
@@ -108,12 +110,10 @@ class ApplyTests(unittest.TestCase):
             '{\n  "objectSetting": {"fromCursor": true}\n}\n'
         )
         (self.source_dir / "ignored.json").write_text('["ignoredSetting"]\n')
-        (self.source_dir / "code.ignored.json").write_text(
-            '["codeIgnoredSetting"]\n'
-        )
+        (self.source_dir / "code.ignored.json").write_text('["codeIgnoredSetting"]\n')
 
         code_jsonc = textwrap.dedent(
-            r'''
+            r"""
             {
               // Code live settings are valid JSONC.
               "objectSetting": {"stale": true},
@@ -129,7 +129,7 @@ class ApplyTests(unittest.TestCase):
               "liveLargeInteger": 9007199254740993,
               "liveMergeKey": {"<<": {"nested": true}, "keep": 2},
             }
-            '''
+            """
         ).lstrip()
         self.code_live.write_bytes(
             codecs.BOM_UTF8 + code_jsonc.replace("\n", "\r\n").encode()
@@ -173,9 +173,7 @@ class ApplyTests(unittest.TestCase):
         )
         self.assertEqual(code_settings["url"], "https://example.com/a//b")
         self.assertEqual(code_settings["literal"], "/* not a comment */")
-        self.assertEqual(
-            code_settings["escaped"], 'quote: " // still a string'
-        )
+        self.assertEqual(code_settings["escaped"], 'quote: " // still a string')
         self.assertEqual(code_settings["commaLiteral"], ",}")
         self.assertEqual(cursor_settings["objectSetting"], {"fromCursor": True})
         self.assertEqual(cursor_settings["ignoredSetting"], "cursor-live")
@@ -215,14 +213,10 @@ class ApplyTests(unittest.TestCase):
         shim_dir = self.home / ".test-bin"
         shim_dir.mkdir()
         jq_shim = shim_dir / "jq"
-        jq_shim.write_text(
-            "#!/bin/sh\nprintf '%s\\n' '{\"value\":9007199254740992}'\n"
-        )
+        jq_shim.write_text("#!/bin/sh\nprintf '%s\\n' '{\"value\":9007199254740992}'\n")
         jq_shim.chmod(jq_shim.stat().st_mode | stat.S_IXUSR)
 
-        result = self.run_apply(
-            {"PATH": f"{shim_dir}{os.pathsep}{os.environ['PATH']}"}
-        )
+        result = self.run_apply({"PATH": f"{shim_dir}{os.pathsep}{os.environ['PATH']}"})
 
         self.assert_apply_status(1, result)
         self.assertIn("literal-number preservation", result.stderr)

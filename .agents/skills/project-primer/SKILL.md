@@ -1,6 +1,6 @@
 ---
 name: project-primer
-description: Use before exploring or changing this chezmoi repository. Routes to the smallest local reference for stored text, Markdown, docs, Fish scripts, Orchard, APM, VS Code settings, or commits.
+description: Use before exploring or changing this chezmoi repository. Routes to rules for text, Markdown, docs, Python, Fish, Orchard, APM, app settings, and commits.
 ---
 
 # Project Primer
@@ -10,6 +10,7 @@ Repository rule router. Load first, then open only the focused references needed
 ## Use
 
 - Read the route table and choose the smallest matching reference.
+- After changing Python files, run `uv run --locked ruff check .`, `uv run --locked ruff format --check .`, and `uv run --locked basedpyright` from the repository root; fix all reported issues before completing the task.
 
 ## Stop Rule
 
