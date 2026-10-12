@@ -26,6 +26,7 @@ dependencies:
     - github/awesome-copilot/skills/git-commit
     - github/awesome-copilot/skills/github-issues
     - hashicorp/agent-skills/plugins/terraform
+    - mattpocock/skills/skills/engineering/retro
     - mattpocock/skills/skills/productivity/grilling
     - mattpocock/skills/skills/productivity/teach
     - mattpocock/skills/skills/productivity/writing-for-agents
