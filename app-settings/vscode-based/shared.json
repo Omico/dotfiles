@@ -123,7 +123,6 @@
   "git.confirmSync": false,
   "git.enableSmartCommit": true,
   "git.openRepositoryInParentFolders": "always",
-  "gitlens.telemetry.enabled": false,
   "hediet.vscode-drawio.resizeImages": null,
   "hexeditor.columnWidth": 16,
   "hexeditor.defaultEndianness": "little",
@@ -133,31 +132,7 @@
   "java.errors.incompleteClasspath.severity": "ignore",
   "java.project.importOnFirstTimeStartup": "automatic",
   "json.maxItemsComputed": 9999999,
-  "json.schemaDownload.trustedDomains": {
-    "https://developer.microsoft.com/json-schemas/": true,
-    "https://json-schema.org/": true,
-    "https://json.schemastore.org/": true,
-    "https://models.dev": true,
-    "https://opencode.ai": true,
-    "https://raw.githubusercontent.com/devcontainers/spec/": true,
-    "https://raw.githubusercontent.com/microsoft/vscode/": true,
-    "https://schemastore.azurewebsites.net/": true,
-    "https://www.schemastore.org/": true
-  },
   "markdown.preview.fontFamily": "'Source Code Pro', '思源黑体'",
-  "markdownlint.config": {
-    "MD024": {
-      "siblings_only": true
-    },
-    "MD033": {
-      "allowed_elements": [
-        "details",
-        "summary",
-        "br"
-      ]
-    },
-    "MD045": false
-  },
   "mdb.mcp.server": "prompt",
   "mdb.sendTelemetry": false,
   "notebook.cellToolbarLocation": {
@@ -173,8 +148,6 @@
   "redhat.telemetry.enabled": false,
   "security.workspace.trust.untrustedFiles": "open",
   "shellformat.flag": "-i 2 -ci",
-  "telemetry.feedback.enabled": false,
-  "telemetry.telemetryLevel": "off",
   "terminal.integrated.defaultProfile.linux": "fish",
   "terminal.integrated.defaultProfile.osx": "fish",
   "terminal.integrated.defaultProfile.windows": "PowerShell",

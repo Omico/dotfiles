@@ -1,4 +1,5 @@
 {
+  "diff_view_style": "split",
   "restore_on_startup": "launchpad",
   "features": {
     "edit_predictions": {

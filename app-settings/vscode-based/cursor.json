@@ -1,4 +1,5 @@
 {
+  "cursor.chatMaxWidth": 720,
   "cursor.composer.shouldChimeAfterChatFinishes": true,
   "cursor.composer.usageSummaryDisplay": "always",
   "cursor.cpp.disabledLanguages": [
