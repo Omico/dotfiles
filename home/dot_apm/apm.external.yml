@@ -1,4 +1,6 @@
 dependencies:
   apm:
+    - mattpocock/skills/skills/engineering/codebase-design
     - mattpocock/skills/skills/engineering/research
     - mattpocock/skills/skills/productivity/handoff
+    - op7418/humanizer-zh
