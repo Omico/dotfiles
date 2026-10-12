@@ -1,9 +1,15 @@
 # Static, non-secret values shared by shells and desktop sessions.
 # Platform sections override common values. Keep runtime-derived values in Fish.
 [environment.common]
+# Shared telemetry opt-out
+DO_NOT_TRACK = "true"
+
 # Default editor and locale
 EDITOR = "code"
 LC_ALL = "en_US.UTF-8"
+
+# GitHub CLI
+GH_TELEMETRY = "false"
 
 # Claude Code
 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1"
@@ -11,6 +17,9 @@ DISABLE_TELEMETRY = "1"
 
 # Promptfoo
 PROMPTFOO_DISABLE_TELEMETRY = "1"
+
+# .NET CLI
+DOTNET_CLI_TELEMETRY_OPTOUT = "1"
 
 [environment.darwin]
 # Homebrew

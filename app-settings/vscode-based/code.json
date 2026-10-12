@@ -19,6 +19,5 @@
     "shellformat.path",
     "parallels-desktop.devops-service.path"
   ],
-  "telemetry.telemetryLevel": "off",
   "workbench.editor.useModal": "some"
 }

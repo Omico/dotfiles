@@ -7,6 +7,12 @@ personality = "pragmatic"
 sandbox_mode = "workspace-write"
 service_tier = "default"
 
+[settings.analytics]
+enabled = false
+
+[settings.feedback]
+enabled = false
+
 [settings.sandbox_workspace_write]
 network_access = true
 
