@@ -1,0 +1,4 @@
+# Vita is installed separately through vita@vita-local, not through APM.
+dependencies:
+  apm:
+    - git@github.com:Omico/skills.git

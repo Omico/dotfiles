@@ -3,10 +3,11 @@
 set -g __apm_home "$HOME/.apm"
 set -g __apm_yq_merge_expr '
   select(fileIndex == 0) as $base |
-  select(fileIndex == 1) as $custom |
+  select(fileIndex == 1) as $environment |
+  select(fileIndex == 2) as $custom |
   $base |
-  .dependencies.apm = ((($base.dependencies.apm // []) + ($custom.dependencies.apm // [])) | unique | sort) |
-  .dependencies.mcp = ((($base.dependencies.mcp // []) + ($custom.dependencies.mcp // [])))
+  .dependencies.apm = ((($base.dependencies.apm // []) + ($environment.dependencies.apm // []) + ($custom.dependencies.apm // [])) | unique | sort) |
+  .dependencies.mcp = ((($base.dependencies.mcp // []) + ($environment.dependencies.mcp // []) + ($custom.dependencies.mcp // [])))
 '
 
 function __apm-run-global-apm
@@ -29,15 +30,64 @@ function __apm-require-source-paths
     test -d "$source_dir"; or set source_dir "$HOME/.local/share/chezmoi/home/dot_apm"
 
     set -l base_path "$source_dir/apm.base.yml"
-    set -l custom_path "$source_dir/apm.custom.yml"
-
     test -e "$base_path"; or begin
         printf "Error: base source not found: %s\n" "$base_path" >&2
         return 1
     end
 
+    set -l environment
+    if test -e "$source_dir/apm.environment"
+        set environment (string trim <"$source_dir/apm.environment")
+    else
+        if command -q gh
+            set -l login (gh api --hostname github.com user --jq .login 2>/dev/null)
+            set -l login_status $status
+            if test $login_status -eq 0; and test (count $login) -eq 1; and string match -rq '^[A-Za-z0-9][A-Za-z0-9-]*$' -- "$login"
+                if string match -qi Omico -- "$login"
+                    set environment internal
+                else
+                    set environment external
+                end
+            end
+        end
+        if test -z "$environment"
+            if not isatty stdin
+                printf "Error: select external or internal in %s/apm.environment before running without terminal input.\n" "$source_dir" >&2
+                return 1
+            end
+            printf 'Select the skill environment:\n1. external — Public external skills\n2. internal — Vita + Omico Skills\n' >&2
+            while true
+                printf 'Selection: ' >&2
+                read --local --prompt-str '' selection; or return 1
+                switch "$selection"
+                    case 1 external
+                        set environment external
+                    case 2 internal
+                        set environment internal
+                    case '*'
+                        echo 'Enter 1 (external) or 2 (internal).' >&2
+                        continue
+                end
+                break
+            end
+        end
+        printf '%s\n' "$environment" >"$source_dir/apm.environment"; or return 1
+    end
+    if not contains -- "$environment" external internal
+        echo "Error: apm.environment must contain external or internal." >&2
+        return 1
+    end
+    set -l custom_path "$source_dir/apm.custom.yml"
+    set -l environment_path "$source_dir/apm.$environment.yml"
+
+    test -f "$environment_path"; or begin
+        printf "Error: environment source not found: %s\n" "$environment_path" >&2
+        return 1
+    end
+
     echo "$base_path"
     echo "$custom_path"
+    echo "$environment_path"
 end
 
 function __apm-ensure-custom-source --argument-names custom_path
@@ -79,21 +129,19 @@ function __apm-merge-source-config
     set -l paths (__apm-require-source-paths); or return $status
     set -l base_path $paths[1]
     set -l custom_path $paths[2]
+    set -l environment_path $paths[3]
     set -l output_path "$__apm_home/apm.yml"
 
     command mkdir -p "$__apm_home"; or return 1
 
-    if test -e "$custom_path"
-        set -l temporary_path "$output_path.tmp."(random)
-        yq eval-all "$__apm_yq_merge_expr" "$base_path" "$custom_path" >"$temporary_path"
-        or begin
-            command rm -f "$temporary_path"
-            return 1
-        end
-        command mv "$temporary_path" "$output_path"
-    else
-        command cp "$base_path" "$output_path"
+    __apm-ensure-custom-source "$custom_path"; or return $status
+    set -l temporary_path "$output_path.tmp."(random)
+    yq eval-all "$__apm_yq_merge_expr" "$base_path" "$environment_path" "$custom_path" >"$temporary_path"
+    or begin
+        command rm -f "$temporary_path"
+        return 1
     end
+    command mv "$temporary_path" "$output_path"
 end
 
 function __apm-link-skills-to-agents
@@ -152,7 +200,15 @@ function __apm-link-skills-to-agents
         set -l name (path basename $skill_dir)
         set -l dest "$agents_skills/$name"
 
-        if test -e $dest; and not test -L $dest
+        # Preserve links owned by plugins or other local installers.
+        if test -L $dest
+            if test (readlink $dest) != "$skill_dir"
+                printf "Keeping existing skill link: %s\n" $dest
+            end
+            continue
+        end
+
+        if test -e $dest
             printf "Error: %s exists and is not a symlink.\n" $dest >&2
             return 1
         end

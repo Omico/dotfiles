@@ -2,24 +2,41 @@
 
 **Platforms:** All
 
-Wrappers around the [APM](https://aka.ms/apm-unix) CLI for installing the binary and managing agent skill packages in this dotfiles repo.
+Install and update agent skills with [APM](https://aka.ms/apm-unix).
+
+## Choose an environment
+
+On first use, `apm-update` or `apm-add-skill` uses the GitHub account from `gh`: `Omico` selects `internal`; other accounts select `external`. If detection fails, choose manually. The selection is saved for later calls.
+
+To set the environment manually, write `external` or `internal` to `home/dot_apm/apm.environment` in the chezmoi source directory. This selects the corresponding dependency file and keeps additions from `apm.custom.yml`. Unattended commands require a saved selection or successful account detection.
 
 ## `apm`
 
-Ensure `~/.local/bin/apm` exists (official Unix installer on first use), then forward arguments to the APM CLI. First install also activates APM in the current session. Later shells activate from the installer-generated `~/.config/fish/conf.d/apm.fish`.
+Run an APM command. The wrapper installs the CLI on first use if needed.
+
+```shell
+apm --help
+```
 
 ## `apm-add-skill`
 
-Adds skill packages to an APM source config, runs `apm install`, and tracks the updated source file with `chezmoi add`.
+Add and install one or more skills:
 
 ```shell
-apm-add-skill [--global] <package> [<package> ...]
+apm-add-skill <package> [<package> ...]
+apm-add-skill --global <package> [<package> ...]
 ```
 
-- **Default** — write packages to the local custom source
-- **`--global`** — write packages to the tracked base source
-- **Package refs** — use `owner/repo/path/to/skill` for GitHub; blob URLs are normalized automatically and omit the `github.com/` prefix
+- **Default:** save to the local `apm.custom.yml`.
+- **`--global`:** save to the tracked `apm.base.yml`, shared by both environments.
+- **Package:** use `owner/repo/path/to/skill` or a GitHub file URL.
+
+For tracked additions specific to one environment, edit `home/dot_apm/apm.external.yml` or `home/dot_apm/apm.internal.yml` in the chezmoi source directory.
 
 ## `apm-update`
 
-Refreshes agent skills from `~/.apm`: merge source configs, run `apm self-update`, then `apm update --yes --parallel-downloads 32`, and symlink each skill from `~/.apm/.agents/skills/<name>` into `~/.agents/skills/<name>`.
+Update the APM CLI and all skills configured for the selected environment, including local additions:
+
+```shell
+apm-update
+```

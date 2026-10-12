@@ -5,5 +5,6 @@
 .idea/
 /Brewfile.lock.json
 /home/dot_apm/apm.custom.yml
+/home/dot_apm/apm.environment
 /home/dot_apm/apm.yml
 /home/dot_codex/
