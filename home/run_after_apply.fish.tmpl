@@ -13,8 +13,12 @@ if test -d "$HOME/Library/Rime"
 end
 {{ end -}}
 
-# Ubuntu 24.04
+# Ubuntu
 {{ if eq (index .chezmoi.osRelease "id") "ubuntu" -}}
+echo "🐧 Updating APT packages..."
+sudo apt update -y -o APT::Update::Error-Mode=any; or exit $status
+sudo apt upgrade -y; or exit $status
+
 if command -q snap
     echo "🐧 Updating Snap packages..."
     sudo snap refresh
