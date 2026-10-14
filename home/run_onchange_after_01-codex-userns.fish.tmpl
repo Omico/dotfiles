@@ -1,0 +1,29 @@
+{{ if and (eq .chezmoi.os "linux") (stat "/sys/module/apparmor/parameters/enabled") -}}
+{{ if and (eq (include "/sys/module/apparmor/parameters/enabled" | trim) "Y") (or (lookPath "apparmor_parser") (stat "/sbin/apparmor_parser")) (stat "/etc/apparmor.d") -}}
+#!/usr/bin/env fish
+# Codex target: {{ $codex := joinPath .chezmoi.homeDir ".local/bin/codex" }}{{ if stat $codex }}{{ output "readlink" "-f" $codex | trim }}{{ end }}
+
+codex --version >/dev/null; or exit 1
+set -l codex_path (readlink -f "$HOME/.local/bin/codex"); or exit 1
+
+set -l parser (command -s apparmor_parser)
+test -n "$parser"; or set parser /sbin/apparmor_parser
+test -x "$parser"; and test -d /etc/apparmor.d; or exit 1
+
+set -l target /etc/apparmor.d/codex-userns
+set -l work (mktemp -d); or exit 1
+function __codex_userns_cleanup --on-event fish_exit --inherit-variable work
+    command rm -rf -- "$work"
+end
+printf {{ includeTemplate "codex-userns" (dict "codexPath" "%s") | replace "\\" "\\\\" | replace "'" "\\'" | squote }} "$codex_path" >"$work/profile"; or exit 1
+
+set -l previous /dev/null
+test -e "$target"; and set previous "$target"
+diff -u -- "$previous" "$work/profile"
+test $status -le 1; or exit 1
+$parser -Q -K -I /etc/apparmor.d "$work/profile"; or exit 1
+
+sudo install -o root -g root -m 0644 "$work/profile" "$target"; or exit 1
+sudo "$parser" -r "$target"; or exit 1
+{{ end -}}
+{{ end -}}
