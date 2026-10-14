@@ -2,8 +2,13 @@
 set -e
 set -o pipefail
 
-# Record the user to configure (correct when script is run with sudo)
-INSTALL_USER=${SUDO_USER:-$(whoami)}
+if [ "$EUID" -eq 0 ]; then
+  echo "Run this installer as your regular user, without sudo. It uses sudo when needed." >&2
+  exit 1
+fi
+
+# Configure the same user that runs chezmoi and the systemd user manager.
+INSTALL_USER=$(id -un)
 
 trap 'echo "Error: install failed at line $LINENO (last command: $BASH_COMMAND)" >&2; exit 1' ERR
 
@@ -321,6 +326,7 @@ case "$(detect-platform)" in
     setup-git-lfs-deb-repository
     setup-visual-studio-code-deb-repository
     install-basic-apt-packages "${UBUNTU_APT_PACKAGES[@]}"
+    sudo loginctl enable-linger "$INSTALL_USER"
     setup-inotify-max-user-watches
     install-fnm
     install-fira-mono-nerd-font
@@ -329,6 +335,8 @@ case "$(detect-platform)" in
     install-yq-via-snap
     setup-chezmoi
     setup-fish /usr/bin/fish
+    systemctl --user daemon-reload
+    systemctl --user enable --now codex-remote-control.service
     clone-rime-auto-deploy
     ;;
   *)
