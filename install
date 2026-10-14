@@ -73,6 +73,7 @@ UBUNTU_APT_PACKAGES=(
   openssh-server
   python3-pip
   qemu-kvm
+  ripgrep
   ruby
   synaptic
   unzip
