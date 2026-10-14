@@ -135,13 +135,20 @@ function __apm-merge-source-config
     command mkdir -p "$__apm_home"; or return 1
 
     __apm-ensure-custom-source "$custom_path"; or return $status
-    set -l temporary_path "$output_path.tmp."(random)
-    yq eval-all "$__apm_yq_merge_expr" "$base_path" "$environment_path" "$custom_path" >"$temporary_path"
+    # Snap yq can read non-hidden paths under HOME.
+    set -l temporary_dir (command mktemp -d "$HOME/apm-merge.XXXXXXXXXX"); or return 1
+    command cp "$base_path" "$temporary_dir/apm.base.yml"
+    and command cp "$environment_path" "$temporary_dir/apm.environment.yml"
+    and command cp "$custom_path" "$temporary_dir/apm.custom.yml"
+    and yq eval-all "$__apm_yq_merge_expr" "$temporary_dir/apm.base.yml" "$temporary_dir/apm.environment.yml" "$temporary_dir/apm.custom.yml" >"$temporary_dir/apm.yml"
     or begin
-        command rm -f "$temporary_path"
+        command rm -rf "$temporary_dir"
         return 1
     end
-    command mv "$temporary_path" "$output_path"
+    command mv "$temporary_dir/apm.yml" "$output_path"
+    set -l move_status $status
+    command rm -rf "$temporary_dir"; or return 1
+    return $move_status
 end
 
 function __apm-link-skills-to-agents
