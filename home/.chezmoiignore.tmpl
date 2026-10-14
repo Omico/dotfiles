@@ -17,4 +17,5 @@ Library/LaunchAgents/me.omico.environment.plist
 # Linux-only
 {{- if ne .chezmoi.os "linux" }}
 .config/environment.d/60-dotfiles.conf
+.config/systemd/user/codex-remote-control.service
 {{- end }}

@@ -1,0 +1,12 @@
+[Unit]
+Description=Codex remote control
+
+[Service]
+Type=simple
+WorkingDirectory=%h
+ExecStart=/usr/bin/fish -c 'codex remote-control --no-daemon'
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=default.target
