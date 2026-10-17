@@ -1,0 +1,11 @@
+{{ if has .chezmoi.os (list "darwin" "linux") -}}
+#!/usr/bin/env fish
+
+rustup toolchain install stable >/dev/null 2>&1
+rustup update >/dev/null 2>&1
+command -q rustc; or exit 0
+
+echo "Using Rust "(set_color cyan)(string split -f2 ' ' -- (rustc --version))(set_color normal)
+
+exit 0
+{{ end -}}

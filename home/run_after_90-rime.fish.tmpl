@@ -1,0 +1,12 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env fish
+
+set -l rime_dir "$HOME/Library/Rime"
+test -d "$rime_dir"; or exit 0
+
+echo "🔤 Updating Rime configurations..."
+update-git-repo "$rime_dir"; or echo "❌ Failed to update $rime_dir"
+cp -fv "$HOME"/.local/share/chezmoi/rime/*.custom.yaml "$rime_dir/"
+
+exit 0
+{{ end -}}

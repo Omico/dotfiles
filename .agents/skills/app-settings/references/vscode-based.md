@@ -40,7 +40,7 @@ Live targets:
 | darwin | `~/Library/Application Support/Code/User/settings.json` | `~/Library/Application Support/Cursor/User/settings.json` |
 | linux / wsl | `~/.config/Code/User/settings.json` | `~/.config/Cursor/User/settings.json` |
 
-Hook: `home/run_after_90-upgrade.fish.tmpl` runs `vscode-settings-apply` on Unix when the function exists and propagates a failed apply status.
+Hook: `home/run_after_90-app-settings.fish.tmpl` runs `vscode-settings-apply` on Unix when the function exists and propagates a failed apply status.
 
 ## Fish implementation layout
 

@@ -1,0 +1,7 @@
+{{ if eq (index .chezmoi.osRelease "id") "ubuntu" -}}
+#!/usr/bin/env fish
+
+echo "🐧 Updating APT packages..."
+sudo apt update -y -o APT::Update::Error-Mode=any; or exit $status
+sudo apt upgrade -y; or exit $status
+{{ end -}}

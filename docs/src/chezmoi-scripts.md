@@ -20,7 +20,7 @@ These bands are repository conventions:
 | `80–89` | Setup verification |
 | `90–99` | Maintenance and updates, including their result checks |
 
-Start at the band's lowest number. Independent scripts may share a number; prerequisites use lower numbers than their consumers. Preserve unrelated assignments. If dependencies conflict with bands, split responsibilities or document the exception beside the script.
+Start at the band's lowest number. Splitting a script preserves its priority: independent tasks share that number and sort by name. Change numbers only for explicit ordering dependencies, placing prerequisites before consumers. Preserve unrelated assignments. If dependencies conflict with bands, split responsibilities or document the exception beside the script.
 
 ## Execution
 
