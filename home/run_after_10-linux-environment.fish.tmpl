@@ -1,0 +1,19 @@
+{{ if eq .chezmoi.os "linux" -}}
+#!/usr/bin/env fish
+
+if not command -q systemctl; or not systemctl --user show-environment >/dev/null 2>&1
+    echo "Desktop environment will load when a systemd user manager starts."
+    exit 0
+end
+
+systemctl --user daemon-reload; or exit $status
+
+set -l environment_file "$HOME/.config/fish/conf.d/00-environment.fish"
+command -q dbus-update-activation-environment; or exit 0
+test -f "$environment_file"; or exit 0
+
+source "$environment_file"; or exit $status
+{{ $environment := mergeOverwrite (dict) .environment.common (get .environment .chezmoi.os | default dict) -}}
+set -l environment_keys{{ range $key, $value := $environment }} {{ $key }}{{ end }}
+dbus-update-activation-environment --systemd $environment_keys; or exit $status
+{{ end -}}

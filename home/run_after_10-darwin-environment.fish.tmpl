@@ -1,0 +1,21 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env fish
+
+set -l domain gui/(id -u)
+if not launchctl print "$domain" >/dev/null 2>&1
+    echo "Desktop environment will load at the next graphical login."
+    exit 0
+end
+
+set -l agent "$HOME/Library/LaunchAgents/me.omico.environment.plist"
+test -f "$agent"; or exit 0
+
+# Reuse the login agent's commands for an immediate, synchronous refresh.
+set -l activation (plutil -extract ProgramArguments.2 raw -o - "$agent" | string collect); or exit $status
+/bin/sh -ec "$activation"; or exit $status
+
+if launchctl print "$domain/me.omico.environment" >/dev/null 2>&1
+    launchctl bootout "$domain/me.omico.environment"; or exit $status
+end
+launchctl bootstrap "$domain" "$agent"; or exit $status
+{{ end -}}
