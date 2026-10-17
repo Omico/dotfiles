@@ -1,0 +1,6 @@
+{{ if eq (index .chezmoi.osRelease "ubuntuCodename") "noble" -}}
+#!/usr/bin/env fish
+
+set -l user (id -un); or exit $status
+sudo loginctl enable-linger "$user"; or exit $status
+{{ end -}}

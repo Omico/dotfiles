@@ -4,6 +4,8 @@ This repository contains my personal dotfiles and automation setup, managed with
 
 ## Installation
 
+The installer bootstraps Git, Fish, and chezmoi, then runs `chezmoi apply`. Platform-specific `run_once_*` scripts install the remaining packages and configure the system. Dependencies run before file application; environment activation, application setup, and routine updates follow it. Failed setup scripts retry on the next apply; successful ones rerun only when their rendered content changes.
+
 ::: code-group
 
 ```shell [macOS]

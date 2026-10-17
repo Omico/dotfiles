@@ -1,0 +1,15 @@
+{{ if eq (index .chezmoi.osRelease "ubuntuCodename") "noble" -}}
+#!/usr/bin/env fish
+
+command -q code; and exit 0
+
+{{ includeTemplate "installer-workdir.fish" . }}
+curl -fsSL https://packages.microsoft.com/keys/microsoft.asc -o "$work/microsoft.asc"; or exit $status
+gpg --dearmor --output "$work/microsoft.gpg" "$work/microsoft.asc"; or exit $status
+sudo install -m 0644 "$work/microsoft.gpg" /usr/share/keyrings/microsoft.gpg; or exit $status
+set -l architecture (dpkg --print-architecture); or exit $status
+printf 'Types: deb\nURIs: https://packages.microsoft.com/repos/code\nSuites: stable\nComponents: main\nArchitectures: %s\nSigned-By: /usr/share/keyrings/microsoft.gpg\n' "$architecture" >"$work/vscode.sources"; or exit $status
+sudo install -m 0644 "$work/vscode.sources" /etc/apt/sources.list.d/vscode.sources; or exit $status
+printf 'code code/add-microsoft-repo boolean true\n' >"$work/code.seed"; or exit $status
+sudo debconf-set-selections "$work/code.seed"; or exit $status
+{{ end -}}

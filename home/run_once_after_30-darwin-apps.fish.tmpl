@@ -1,0 +1,7 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env fish
+
+for app in firefox google-chrome visual-studio-code
+    orchard install $app; or exit $status
+end
+{{ end -}}

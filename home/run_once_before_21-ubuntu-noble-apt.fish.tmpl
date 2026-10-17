@@ -1,0 +1,39 @@
+{{ if eq (index .chezmoi.osRelease "ubuntuCodename") "noble" -}}
+#!/usr/bin/env fish
+
+sudo apt update -o APT::Update::Error-Mode=any; or exit $status
+sudo apt install -y \
+    apt-transport-https \
+    bridge-utils \
+    code \
+    cpu-checker \
+    curl \
+    fcitx5-rime \
+    fish \
+    fontconfig \
+    gedit \
+    git \
+    git-lfs \
+    gpg \
+    jq \
+    libsecret-tools \
+    libvirt-clients \
+    libvirt-daemon-system \
+    mesa-utils \
+    openjdk-11-jdk \
+    openjdk-17-jdk \
+    openjdk-21-jdk \
+    openssh-server \
+    python3-pip \
+    qemu-kvm \
+    ripgrep \
+    rsync \
+    ruby \
+    synaptic \
+    unzip \
+    xclip \
+    zip; or exit $status
+
+sudo apt autoremove -y; or exit $status
+sudo apt clean; or exit $status
+{{ end -}}

@@ -1,0 +1,9 @@
+{{ if eq (index .chezmoi.osRelease "ubuntuCodename") "noble" -}}
+#!/usr/bin/env fish
+
+set -l conf /etc/sysctl.d/99-inotify-max-user-watches.conf
+if not test -f "$conf"; or not string match -qr '^\s*fs\.inotify\.max_user_watches\s*=' -- (cat "$conf")
+    printf 'fs.inotify.max_user_watches=1048576\n' | sudo tee "$conf" >/dev/null; or exit $status
+end
+sudo sysctl --system; or exit $status
+{{ end -}}

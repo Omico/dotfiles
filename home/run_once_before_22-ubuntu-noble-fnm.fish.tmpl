@@ -1,0 +1,10 @@
+{{ if eq (index .chezmoi.osRelease "ubuntuCodename") "noble" -}}
+#!/usr/bin/env fish
+
+command -q fnm; and exit 0
+test -x "$HOME/.local/share/fnm/fnm"; and exit 0
+
+{{ includeTemplate "installer-workdir.fish" . }}
+curl -fsSL https://fnm.vercel.app/install -o "$work/fnm.sh"; or exit $status
+bash "$work/fnm.sh" --skip-shell; or exit $status
+{{ end -}}

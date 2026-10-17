@@ -1,0 +1,9 @@
+{{ if eq (index .chezmoi.osRelease "ubuntuCodename") "noble" -}}
+#!/usr/bin/env fish
+
+command -q starship; and exit 0
+
+{{ includeTemplate "installer-workdir.fish" . }}
+curl -fsSL https://starship.rs/install.sh -o "$work/starship.sh"; or exit $status
+sh "$work/starship.sh" -y; or exit $status
+{{ end -}}

@@ -1,0 +1,9 @@
+{{ if has .chezmoi.os (list "darwin" "linux") -}}
+#!/usr/bin/env fish
+
+set -l target "$HOME/Git/Mark24Code/rime-auto-deploy"
+if not test -d "$target"
+    git clone --depth=1 --branch latest https://github.com/Mark24Code/rime-auto-deploy.git "$target"; or exit $status
+end
+rsync -u {{ joinPath .chezmoi.sourceDir "../rime" | quote }}/*.custom.yaml "$target/custom/"; or exit $status
+{{ end -}}

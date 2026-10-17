@@ -1,0 +1,5 @@
+{{ if eq (index .chezmoi.osRelease "ubuntuCodename") "noble" -}}
+#!/usr/bin/env fish
+
+sudo add-apt-repository -y ppa:git-core/ppa; or exit $status
+{{ end -}}

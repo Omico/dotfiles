@@ -1,0 +1,5 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env fish
+
+brew install aria2 jq starship yq; or exit $status
+{{ end -}}

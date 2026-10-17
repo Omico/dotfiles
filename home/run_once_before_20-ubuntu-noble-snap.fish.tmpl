@@ -1,0 +1,7 @@
+{{ if eq (index .chezmoi.osRelease "ubuntuCodename") "noble" -}}
+#!/usr/bin/env fish
+
+command -q yq; and exit 0
+
+sudo snap install yq; or exit $status
+{{ end -}}

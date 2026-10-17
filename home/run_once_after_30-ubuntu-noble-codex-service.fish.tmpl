@@ -1,0 +1,6 @@
+{{ if eq (index .chezmoi.osRelease "ubuntuCodename") "noble" -}}
+#!/usr/bin/env fish
+
+systemctl --user daemon-reload; or exit $status
+systemctl --user enable --now codex-remote-control.service; or exit $status
+{{ end -}}

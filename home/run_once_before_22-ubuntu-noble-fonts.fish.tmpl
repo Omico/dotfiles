@@ -1,0 +1,17 @@
+{{ if eq (index .chezmoi.osRelease "ubuntuCodename") "noble" -}}
+#!/usr/bin/env fish
+
+{{ includeTemplate "installer-workdir.fish" . }}
+curl -fsSL https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest -o "$work/release.json"; or exit $status
+set -l tag (jq -r '.tag_name // empty' "$work/release.json"); or exit $status
+test -n "$tag"; or begin
+    echo "Failed to resolve the Nerd Fonts release." >&2
+    exit 1
+end
+
+curl -fsSL "https://github.com/ryanoasis/nerd-fonts/releases/download/$tag/FiraMono.zip" -o "$work/FiraMono.zip"; or exit $status
+set -l font_dir "$HOME/.local/share/fonts"
+mkdir -p "$font_dir"; or exit $status
+unzip -qo "$work/FiraMono.zip" -d "$font_dir"; or exit $status
+fc-cache -fv; or exit $status
+{{ end -}}
