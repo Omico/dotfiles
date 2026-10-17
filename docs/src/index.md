@@ -33,12 +33,20 @@ brew-restore
 
 :::
 
-### Run Rime auto deploy
+### Rime configuration
+
+Chezmoi writes the custom YAML files directly to `~/Library/Rime/` on macOS and `~/.local/share/fcitx5/rime/` on Linux, matching the Fcitx5 package installed on Ubuntu. The macOS-only `squirrel.custom.yaml` is excluded from Linux. Edit the shared sources under `rime/`, then run `chezmoi apply`. The user directories retain upstream dictionaries, generated files, and local data; they are not exact directories.
+
+Install or update the upstream Rime Ice configuration separately. If using Rime auto deploy, obtain its checkout manually and run its installer, then apply the custom configuration again because the installer replaces the Rime directory and copies its own defaults:
 
 ```shell
+git clone --depth=1 --branch latest https://github.com/Mark24Code/rime-auto-deploy.git "$HOME/Git/Mark24Code/rime-auto-deploy"
 cd "$HOME/Git/Mark24Code/rime-auto-deploy"
 ./installer.rb
+chezmoi apply
 ```
+
+Skip cloning if the checkout already exists. On Linux, select Fcitx5 in the installer. Reload or deploy the input method after applying the custom files. Chezmoi does not manage the installer checkout or run upstream Git updates during apply.
 
 ## Upgrade local dotfiles
 

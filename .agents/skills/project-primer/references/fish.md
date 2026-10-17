@@ -14,7 +14,7 @@ If the change touches Orchard files, read [orchard](orchard.md) for chezmoi sour
 
 - Edit the chezmoi source paths, not the applied files in `$HOME`.
 - Follow [english-only](english-only.md) for comments, descriptions, messages, and user-facing output.
-- When creating any new script or command, choose the target path by platform scope first: platform-exclusive scripts must be Fish functions under `home/dot_config/fish/functions/<platform>/<command>.fish`, not `home/dot_local/bin/executable_*`; use `home/dot_local/bin/executable_*` only for commands that should be installed as standalone executables outside the Fish platform autoload tree.
+- When creating any new script or command, choose the target path by platform scope first: platform-exclusive scripts must be Fish functions under `home/dot_config/fish/exact_functions/exact_<platform>/<command>.fish`, not `home/dot_local/bin/executable_*`; use `home/dot_local/bin/executable_*` only for commands that should be installed as standalone executables outside the Fish platform autoload tree.
 - Start Fish files under `home/dot_config/fish/` with `#!/usr/bin/env fish`.
 - Start standalone Fish executables under `home/dot_local/bin/` with `#!/usr/bin/env fish`.
 - Keep the shebang in `conf.d` snippets even though Fish sources those files.
@@ -22,14 +22,15 @@ If the change touches Orchard files, read [orchard](orchard.md) for chezmoi sour
 
 ## Layout
 
-- **Core config**: `home/dot_config/fish/config.fish`
-- **Startup snippets**: `home/dot_config/fish/conf.d/*.fish`
-- **Platform startup snippets**: `home/dot_config/fish/conf.d/<platform>/*.fish`
-- **Functions**: `home/dot_config/fish/functions/<command>.fish`
-- **Platform functions**: `home/dot_config/fish/functions/<platform>/<command>.fish`
+- **Startup snippets**: `home/dot_config/fish/exact_conf.d/*.fish`
+- **Platform startup snippets**: `home/dot_config/fish/exact_conf.d/exact_<platform>/*.fish`
+- **Functions**: `home/dot_config/fish/exact_functions/<command>.fish`
+- **Platform functions**: `home/dot_config/fish/exact_functions/exact_<platform>/<command>.fish`
 - **Completions**: `home/dot_config/fish/completions/<command>.fish`
 - **Executables**: `home/dot_local/bin/executable_*`
 - **Repository scripts**: `scripts/*.fish`
+
+Source directories use `exact_` attributes; applied Fish paths omit those attributes. Keep them when adding files so directory cleanup remains declarative.
 
 ## Function layout
 
@@ -42,7 +43,7 @@ If the change touches Orchard files, read [orchard](orchard.md) for chezmoi sour
 
 ## Platform routing
 
-- `fish_platform` is initialized in `home/dot_config/fish/conf.d/00-fish-platform.fish.tmpl` from chezmoi data (`.chezmoi.os`, `.chezmoi.kernel.osrelease`).
+- `fish_platform` is initialized in `home/dot_config/fish/exact_conf.d/00-fish-platform.fish.tmpl` from chezmoi data (`.chezmoi.os`, `.chezmoi.kernel.osrelease`).
 - Re-run `chezmoi apply` after moving Fish config to a different OS or environment (for example WSL vs native Linux); the rendered value is fixed at apply time, not detected at shell startup.
 - Expected values are `darwin`, `linux`, `wsl`, `msys`, and `other`.
 - Prefer `fish_platform` over direct `uname` checks in Fish code.
@@ -53,7 +54,7 @@ If the change touches Orchard files, read [orchard](orchard.md) for chezmoi sour
 
 ## Installer wrappers
 
-For wrappers that install an upstream CLI when its binary is missing, reuse `__ensure_binary_and_forward` from `home/dot_config/fish/conf.d/00-core-functions.fish`. Keep public wrappers thin and do not duplicate that helper under `functions/`.
+For wrappers that install an upstream CLI when its binary is missing, reuse `__ensure_binary_and_forward` from `home/dot_config/fish/exact_conf.d/00-core-functions.fish`. Keep public wrappers thin and do not duplicate that helper under `functions/`.
 
 ```fish
 __ensure_binary_and_forward --bin <path> --name <short_name> --install <function> -- $argv
@@ -62,7 +63,7 @@ __ensure_binary_and_forward --bin <path> --name <short_name> --install <function
 - Pass `--install` with a function that installs the binary; the function receives the binary path.
 - Put first-time session setup in that function when the current shell must be activated after install.
 - Put `--` before `$argv` so user flags are forwarded to the installed command.
-- Follow `home/dot_config/fish/functions/unix/rustup.fish` and `home/dot_config/fish/functions/unix/bun.fish` as examples, and `home/dot_config/fish/functions/unix/mise.fish` when install also activates the current session.
+- Follow `home/dot_config/fish/exact_functions/exact_unix/rustup.fish` and `home/dot_config/fish/exact_functions/exact_unix/bun.fish` as examples, and `home/dot_config/fish/exact_functions/exact_unix/mise.fish` when install also activates the current session.
 
 ## Commands docs
 

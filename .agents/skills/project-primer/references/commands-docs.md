@@ -1,6 +1,6 @@
 # Commands Docs
 
-Read this when adding, renaming, or removing autoloaded public Fish commands under `home/dot_config/fish/functions/`, or when editing `docs/src/commands/` or `docs/.vitepress/commands.sidebar.mts`.
+Read this when adding, renaming, or removing autoloaded public Fish commands under `home/dot_config/fish/exact_functions/`, or when editing `docs/src/commands/` or `docs/.vitepress/commands.sidebar.mts`.
 
 ## Contract
 

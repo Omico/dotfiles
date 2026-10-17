@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 
 set -l repo_root (path resolve (path dirname (status filename))/../..)
-source "$repo_root/home/dot_config/fish/conf.d/99-apm.fish"
+source "$repo_root/home/dot_config/fish/exact_conf.d/99-apm.fish"
 set -g apm_test_root (mktemp -d)
 set -g __apm_home "$apm_test_root/runtime"
 

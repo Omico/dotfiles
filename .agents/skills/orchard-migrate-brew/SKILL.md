@@ -7,7 +7,7 @@ description: Use when migrating installed Homebrew casks to Orchard app packages
 
 ## Overview
 
-This skill guides **`orchard migrate brew`** flows for macOS GUI apps that are currently installed via Homebrew casks and should be managed by Orchard instead. It covers both **global dry-run plans** and **targeted cask handling**, including authoring new `home/dot_config/orchard/apps/<app_id>.fish` packages when no Orchard package exists yet.
+This skill guides **`orchard migrate brew`** flows for macOS GUI apps that are currently installed via Homebrew casks and should be managed by Orchard instead. It covers both **global dry-run plans** and **targeted cask handling**, including authoring new `home/dot_config/exact_orchard/exact_apps/<app_id>.fish` packages when no Orchard package exists yet.
 
 For app package format, helpers, and quality bar, always use the **`orchard`** skill as the primary reference — [SKILL.md](../orchard/SKILL.md) and [references/app-package-format.md](../orchard/references/app-package-format.md).
 
@@ -36,7 +36,7 @@ For app package format, helpers, and quality bar, always use the **`orchard`** s
 - **Outputs**
   - Summary of outdated casks that **can** migrate (Orchard package exists) vs those that **cannot yet** (no Orchard package)
   - After confirmation: result summary for `orchard migrate brew` (successes and failures only, not full logs unless requested)
-  - For authoring flows: new or updated `home/dot_config/orchard/apps/<cask>.fish` plus reminders to run `chezmoi apply` and `orchard install <app_id>`
+  - For authoring flows: new or updated `home/dot_config/exact_orchard/exact_apps/<cask>.fish` plus reminders to run `chezmoi apply` and `orchard install <app_id>`
 
 ---
 
@@ -63,15 +63,15 @@ For app package format, helpers, and quality bar, always use the **`orchard`** s
 
 - Parse cask names from the user’s message
 - For each cask:
-  - Check whether `home/dot_config/orchard/apps/<cask>.fish` already exists
+  - Check whether `home/dot_config/exact_orchard/exact_apps/<cask>.fish` already exists
   - If a package exists:
     - Explain what `orchard migrate brew --plan` would show for that context, or suggest using `orchard install <app_id>` directly if migration is unnecessary
   - If no package exists:
     - Enter Orchard package authoring mode:
       - Ask for any missing details (homepage, download URL, special install behavior)
       - Prefer `brew info --cask <cask>` when local `brew` is available; otherwise use the GitHub API to read the cask file from `Homebrew/homebrew-cask` and extract homepage, download URL, and install details
-      - Follow the **`orchard`** skill and **`app-package-format`** reference to draft `home/dot_config/orchard/apps/<cask>.fish`
-    - Write the Orchard app package directly to `home/dot_config/orchard/apps/<cask>.fish` based on the user’s request, without asking for extra confirmation
+      - Follow the **`orchard`** skill and **`app-package-format`** reference to draft `home/dot_config/exact_orchard/exact_apps/<cask>.fish`
+    - Write the Orchard app package directly to `home/dot_config/exact_orchard/exact_apps/<cask>.fish` based on the user’s request, without asking for extra confirmation
 - After any package change, remind the user to:
   - Run `chezmoi apply`
   - Run `orchard list` and `orchard install <app_id>` as appropriate

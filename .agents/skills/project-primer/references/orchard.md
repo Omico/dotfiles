@@ -4,13 +4,13 @@ Read this before changing Orchard, the local macOS app manager for dmg, zip, and
 
 ## Source Map
 
-- **App packages**: `home/dot_config/orchard/apps/<app_id>.fish`
+- **App packages**: `home/dot_config/exact_orchard/exact_apps/<app_id>.fish`
 - **Main script**: `home/dot_local/bin/executable_orchard`
 - **Completions**: `home/dot_config/fish/completions/orchard.fish`
 
 These are chezmoi source paths. `chezmoi apply` maps them into `$HOME`:
 
-- `home/dot_config/orchard/apps/*.fish` → `~/.config/orchard/apps/*.fish`
+- `home/dot_config/exact_orchard/exact_apps/*.fish` → `~/.config/orchard/apps/*.fish`
 - `home/dot_local/bin/executable_orchard` → `~/.local/bin/orchard`
 - `home/dot_config/fish/completions/orchard.fish` → `~/.config/fish/completions/orchard.fish`
 
@@ -25,11 +25,11 @@ These are chezmoi source paths. `chezmoi apply` maps them into `$HOME`:
 
 Map paths from that skill into this chezmoi source tree:
 
-- `apps/<app_id>.fish` → `home/dot_config/orchard/apps/<app_id>.fish`
+- `apps/<app_id>.fish` → `home/dot_config/exact_orchard/exact_apps/<app_id>.fish`
 - Orchard executable source → `home/dot_local/bin/executable_orchard`
 - Fish completion source → `home/dot_config/fish/completions/orchard.fish`
 
-For cask-conversion candidate checks, run commands from the repository root and compare against `home/dot_config/orchard/apps/*.fish`.
+For cask-conversion candidate checks, run commands from the repository root and compare against `home/dot_config/exact_orchard/exact_apps/*.fish`.
 
 ## Verification
 

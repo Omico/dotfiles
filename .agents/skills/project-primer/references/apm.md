@@ -2,9 +2,9 @@
 
 Read this before editing APM source files under `home/dot_apm/` or APM Fish helpers and commands:
 
-- `home/dot_config/fish/conf.d/99-apm.fish`
-- `home/dot_config/fish/functions/apm-add-skill.fish`
-- `home/dot_config/fish/functions/apm-update.fish`
+- `home/dot_config/fish/exact_conf.d/99-apm.fish`
+- `home/dot_config/fish/exact_functions/apm-add-skill.fish`
+- `home/dot_config/fish/exact_functions/apm-update.fish`
 
 When editing those Fish files, also read [fish](fish.md).
 

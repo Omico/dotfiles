@@ -7,7 +7,7 @@ description: Use when adding a new Orchard app package so orchard list and orcha
 
 ## Purpose
 
-Create a new **`home/dot_config/orchard/apps/<app_id>.fish`** package so `orchard list` / `orchard install` can manage the app.
+Create a new **`home/dot_config/exact_orchard/exact_apps/<app_id>.fish`** package so `orchard list` / `orchard install` can manage the app.
 
 ## Behavior
 

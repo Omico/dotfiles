@@ -13,7 +13,10 @@ import time
 import unittest
 from pathlib import Path
 
-SOURCE = Path(__file__).resolve().parents[2] / "home/dot_config/fish/conf.d/99-apm.fish"
+SOURCE = (
+    Path(__file__).resolve().parents[2]
+    / "home/dot_config/fish/exact_conf.d/99-apm.fish"
+)
 FISH = shutil.which("fish")
 
 

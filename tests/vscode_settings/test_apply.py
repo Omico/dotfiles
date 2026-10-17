@@ -13,7 +13,9 @@ import unittest
 from collections.abc import Mapping
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-APPLY_FUNCTION = ROOT / "home/dot_config/fish/functions/unix/vscode-settings-apply.fish"
+APPLY_FUNCTION = (
+    ROOT / "home/dot_config/fish/exact_functions/exact_unix/vscode-settings-apply.fish"
+)
 
 
 def require_tool(name: str) -> str:

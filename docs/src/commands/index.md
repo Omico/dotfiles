@@ -10,7 +10,7 @@ chezmoi apply
 
 Open a new Fish shell, or run [`fish-reload`](./shell) in an existing session, so functions are loaded.
 
-Source definitions live under [`home/dot_config/fish/functions/`](https://github.com/Omico/dotfiles/tree/HEAD/home/dot_config/fish/functions) in the chezmoi source tree.
+Source definitions live under [`home/dot_config/fish/exact_functions/`](https://github.com/Omico/dotfiles/tree/HEAD/home/dot_config/fish/exact_functions) in the chezmoi source tree.
 
 ## Managed application settings
 

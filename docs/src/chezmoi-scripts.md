@@ -28,6 +28,10 @@ Start at the band's lowest number. Splitting a script preserves its priority: in
 - **Recovery:** Scripts must tolerate retries and repeated execution. Consumers check required state even when prerequisite scripts are skipped.
 - **Templates:** Empty or whitespace-only output skips execution. Templates are evaluated before scripts run; check state created during the same apply at runtime. Include inputs that should trigger `onchange` in rendered content.
 
+## Managed directories
+
+Fish startup snippets and functions, Ghostty configuration, and Orchard packages use `exact_` source directories. Chezmoi removes unmanaged entries in those directories during file application, and includes those removals in `diff` and dry-run output. Nested directories that need the same policy also carry `exact_`; the policy is not recursive by itself. Keep installer-owned files such as Fish's `conf.d/apm.fish` in `.chezmoiignore.tmpl`. Other configuration directories retain their existing ownership.
+
 ## Validation
 
 Check names, references, and dependency order. Render supported and unsupported platforms; check Fish syntax and formatting for nonempty output. Preview with `chezmoi apply --dry-run --verbose --source-path <source-file>`. A preview does not execute commands; verify changed runtime behavior separately, including retry and failure paths.
