@@ -70,6 +70,7 @@ When changing autoloaded public commands, read [commands-docs](commands-docs.md)
 
 ## Workflow
 
+- For chezmoi lifecycle scripts under `home/run_*`, read `docs/src/chezmoi-scripts.md` from the repository root before adding, renaming, or changing execution order.
 - Use Fish shell style skill (`fish-shell`) guidance for formatting and syntax validation.
 - Run targeted syntax checks for touched Fish files, for example:
 

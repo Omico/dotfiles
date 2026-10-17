@@ -40,6 +40,8 @@ cd "$HOME/Git/Mark24Code/rime-auto-deploy"
 
 ## Upgrade local dotfiles
 
+See [Chezmoi script naming and priority](./chezmoi-scripts.md) for lifecycle script conventions.
+
 ```shell
 chezmoi update
 ```

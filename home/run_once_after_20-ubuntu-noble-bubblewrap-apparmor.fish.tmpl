@@ -1,0 +1,16 @@
+{{ if eq (index .chezmoi.osRelease "ubuntuCodename") "noble" -}}
+#!/usr/bin/env fish
+
+sudo apt update -y -o APT::Update::Error-Mode=any; or exit $status
+sudo apt install -y \
+    bubblewrap \
+    apparmor-profiles \
+    apparmor-utils; or exit $status
+
+sudo install -m 0644 \
+    /usr/share/apparmor/extra-profiles/bwrap-userns-restrict \
+    /etc/apparmor.d/bwrap-userns-restrict; or exit $status
+
+sudo apparmor_parser -r \
+    /etc/apparmor.d/bwrap-userns-restrict; or exit $status
+{{ end -}}
