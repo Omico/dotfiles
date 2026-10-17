@@ -23,7 +23,6 @@ dependencies:
     - ast-grep/agent-skill/ast-grep/skills/outline
     - figma/mcp-server-guide
     - github/awesome-copilot/skills/excalidraw-diagram-generator
-    - github/awesome-copilot/skills/git-commit
     - github/awesome-copilot/skills/github-issues
     - hashicorp/agent-skills/plugins/terraform
     - mattpocock/skills/skills/engineering/retro
