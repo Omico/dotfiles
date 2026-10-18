@@ -8,7 +8,7 @@ function orchard_resolve_download_url_callback
         set arch aarch64
     end
 
-    set -l json (curl -fsSL "https://zed.dev/api/releases/latest?asset=Zed.dmg&stable=1&os=macos&arch=$arch" 2>/dev/null)
+    set -l json (curl -fsSL "https://zed.dev/api/releases/latest?asset=zed&stable=1&os=macos&arch=$arch" 2>/dev/null)
     if test -z "$json"
         echo "Failed to fetch Zed release metadata." >&2
         return 1

@@ -65,6 +65,24 @@ class ResolverTests(unittest.TestCase):
                     result.stdout.strip(), f"https://example.invalid/{asset}.dmg"
                 )
 
+    def test_zed_requests_the_supported_asset_parameter(self):
+        mock = """
+function curl
+    string match -q '*asset=zed&stable=1&os=macos&arch=*' -- "$argv[-1]"; or return 22
+    set -l expected_arch x86_64
+    test "$MOCK_ARCH" = arm64; and set expected_arch aarch64
+    string match -q "*arch=$expected_arch" -- "$argv[-1]"; or return 22
+    printf '%s' '{"version":"test","url":"https://example.invalid/Zed.dmg"}'
+end
+"""
+        for architecture in ("arm64", "x86_64"):
+            with self.subTest(architecture=architecture):
+                result = self.run_resolver("zed", architecture, mock)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(
+                    result.stdout.strip(), "https://example.invalid/Zed.dmg"
+                )
+
 
 if __name__ == "__main__":
     unittest.main()
