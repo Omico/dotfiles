@@ -54,7 +54,7 @@ function __gcl_normalize_repository_path --argument-names repository
         set remote_path (string replace -r '^[^/@]+@' '' -- $remote_path)
         set remote_path (string replace -r '^([^/:]+):[0-9]+/' '$1/' -- $remote_path)
     else
-        set remote_path (string replace -r '^[^@:/]+@([^:]+):' '$1/' -- $remote_path)
+        set remote_path (string replace -r '^(?:[^@:/]+@)?([^/:]+):' '$1/' -- $remote_path)
     end
 
     set remote_path (string replace -r '/+$' '' -- $remote_path)

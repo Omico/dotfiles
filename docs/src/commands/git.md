@@ -8,6 +8,8 @@ Repository workflows, Git clients, and macOS-specific sync helpers.
 
 Clone a repository into a directory layout derived from its remote URL. Unconfigured hosts use `$HOME/Git/<remote-path>`.
 
+SCP-style remotes accept an optional username: both `git@host:team/repo.git` and `host:team/repo.git` preserve `team/repo` and use the same host-specific clone root.
+
 ```shell
 gcl <repository> [git-clone-args...]
 ```

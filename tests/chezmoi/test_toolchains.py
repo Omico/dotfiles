@@ -87,6 +87,41 @@ class ShellToolchainTests(unittest.TestCase):
                 self.assertEqual(result.returncode, expected, result.stderr)
                 self.assertEqual((self.root / "calls").read_text().splitlines(), calls)
 
+    def test_gcl_preserves_scp_paths_and_host_overrides(self):
+        self.executable(
+            "git",
+            f"#!{sys.executable}\n"
+            "import json, os, sys\nfrom pathlib import Path\n"
+            "(Path(os.environ['HOME']) / 'calls.json').write_text(json.dumps(sys.argv[1:]))\n",
+        )
+        for command in ("mkdir", "dirname", "seq"):
+            binary = shutil.which(command)
+            assert binary
+            (self.binaries / command).symlink_to(binary)
+        for remote in (
+            "work.example:team/repo.git",
+            "git@work.example:team/repo.git",
+            "ssh://git@work.example:2222/team/repo.git",
+            "https://work.example/team/repo.git",
+        ):
+            with self.subTest(remote=remote):
+                self.env["remote"] = remote
+                result = self.run_fish(
+                    "gcl.fish",
+                    'set -g gcl_remote_host_base_dirs work.example "$HOME/clone root"\n'
+                    'gcl "$remote" --depth=1',
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(
+                    json.loads((self.root / "calls.json").read_text()),
+                    [
+                        "clone",
+                        "--depth=1",
+                        remote,
+                        str(self.root / "clone root/team/repo"),
+                    ],
+                )
+
     def test_keyring_commands_preserve_existing_files_and_report_real_state(self):
         keyring = self.root / ".local/share/keyrings/default.keyring"
         keyring.parent.mkdir(parents=True)
