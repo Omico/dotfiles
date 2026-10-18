@@ -116,6 +116,23 @@ class InstallTests(unittest.TestCase):
                     self.assertFalse((target / "new").exists())
                     self.assertEqual(list(target.parent.glob(".orchard-install.*")), [])
 
+    def test_cleanup_reports_failure_and_handles_present_and_absent_cache(self):
+        cache = self.root / "cache/orchard"
+        cache.mkdir(parents=True)
+        marker = cache / "archive"
+        marker.write_text("cached")
+        result = self.run_fish("function rm; return 23; end\n_orchard_cmd_cleanup")
+        self.assertEqual(result.returncode, 23, result.stderr)
+        self.assertNotIn("Cache cleared", result.stdout)
+        self.assertTrue(marker.exists())
+        result = self.run_fish("_orchard_cmd_cleanup")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Cache cleared", result.stdout)
+        self.assertFalse(cache.exists())
+        result = self.run_fish("_orchard_cmd_cleanup")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("already empty", result.stdout)
+
     def test_failed_restore_retains_and_reports_the_backup(self):
         result, target = self.run_install("dmg", "restore")
         self.assertEqual(result.returncode, 30, result.stderr)

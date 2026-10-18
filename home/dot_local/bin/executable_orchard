@@ -823,7 +823,7 @@ end
 # -----------------------------------------------------------------------------
 function _orchard_cmd_cleanup
     if test -d "$_orchard_cache_dir"
-        rm -rf "$_orchard_cache_dir"
+        rm -rf "$_orchard_cache_dir"; or return $status
         echo "Cache cleared: $_orchard_cache_dir"
     else
         echo "Cache is already empty: $_orchard_cache_dir"
