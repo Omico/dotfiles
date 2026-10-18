@@ -4,11 +4,13 @@ This repository contains my personal dotfiles and automation setup, managed with
 
 ## Installation
 
+Supported platforms: macOS on Apple Silicon (native `arm64` shell) and Ubuntu 24.04.
+
 The installer bootstraps Git, Fish, and chezmoi, then runs `chezmoi apply`. Platform-specific setup scripts install the remaining packages and configure the system. Dependencies run before file application; environment activation, application setup, and routine updates follow it. Failed setup scripts retry on the next apply. Platform package lists in `home/.chezmoidata/darwin.toml` and `home/.chezmoidata/ubuntu.toml` trigger their `run_onchange_*` installers when the rendered list changes; other one-time setup retains its existing execution rules. The full Homebrew environment remains in `Brewfile`.
 
 ::: code-group
 
-```shell [macOS]
+```shell [macOS (Apple Silicon)]
 # Run the installation script
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Omico/dotfiles/main/install)"
 

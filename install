@@ -9,10 +9,16 @@ fi
 
 trap 'echo "Error: install failed at line $LINENO (last command: $BASH_COMMAND)" >&2; exit 1' ERR
 
-# Outputs a platform token for case dispatch. Only darwin and ubuntu-24.04 are supported; others yield unknown.
+# Supports native Apple Silicon macOS and Ubuntu 24.04; others yield unknown.
 function detect-platform {
   case "$(uname)" in
-    Darwin) echo "darwin" ;;
+    Darwin)
+      if [ "$(uname -m)" = arm64 ]; then
+        echo "darwin"
+      else
+        echo "unknown"
+      fi
+      ;;
     Linux)
       [ -f /etc/os-release ] || {
         echo "unknown"
@@ -35,7 +41,7 @@ function detect-platform {
 
 platform=$(detect-platform)
 if [ "$platform" = unknown ]; then
-  echo "This install script only supports macOS and Ubuntu 24.04. Current: $(uname)" >&2
+  echo "This install script only supports native Apple Silicon macOS (arm64) and Ubuntu 24.04. Current: $(uname -sm)" >&2
   exit 1
 fi
 
