@@ -6,7 +6,7 @@
 #   Initialization (paths)
 #   Public API: orchard_fetch_* (callable from app .fish resolve callbacks)
 #   Usage and app loading (load app .fish, validate vars, installed/version helpers)
-#   DMG helpers (detach, mount, unmount, install from mount, cache validation)
+#   App bundle and DMG helpers (replace bundle, mount, unmount, cache validation)
 #   Command: list
 #   Command: validate
 #   Command: install (args, download, ensure archive, install by type)
@@ -167,7 +167,7 @@ function _orchard_apply_app_defaults
             set -g orchard_app_bundle_name "$orchard_app_display_name.app"
         end
     end
-    if set -q orchard_app_bundle_name
+    if set -q orchard_app_bundle_name; and not set -q orchard_app_bundle_path
         set -g orchard_app_bundle_path "/Applications/$orchard_app_bundle_name"
     end
 end
@@ -299,6 +299,47 @@ function _orchard_dmg_unmount -a mount_point
     string match -q "$_orchard_cache_dir/*" "$mount_point"; and rmdir "$mount_point" 2>/dev/null
 end
 
+# Stage the replacement beside the destination and retain the old bundle until promotion.
+function _orchard_install_app_bundle -a src
+    set -l target "$orchard_app_bundle_path"
+    set -l parent (dirname "$target")
+    sudo mkdir -p "$parent"; or return $status
+    set -l staging (sudo mktemp -d "$parent/.orchard-install.XXXXXX"); or return $status
+
+    sudo ditto "$src" "$staging/new.app"
+    set -l copy_status $status
+    if test $copy_status -ne 0
+        sudo rm -rf "$staging"
+        return $copy_status
+    end
+
+    set -l had_original false
+    if test -e "$target"; or test -L "$target"
+        sudo mv "$target" "$staging/previous.app"
+        set -l backup_status $status
+        if test $backup_status -ne 0
+            sudo rm -rf "$staging"
+            return $backup_status
+        end
+        set had_original true
+    end
+
+    sudo mv "$staging/new.app" "$target"
+    set -l install_status $status
+    if test $install_status -ne 0
+        if test "$had_original" = true
+            if not sudo mv "$staging/previous.app" "$target"
+                echo "Failed to restore $target. Original bundle retained at $staging/previous.app." >&2
+                return $install_status
+            end
+        end
+        sudo rm -rf "$staging"
+        return $install_status
+    end
+
+    sudo rm -rf "$staging"
+end
+
 function _orchard_dmg_install_app -a mount_point
     set -l name "$orchard_app_bundle_name"
     set -l src "$mount_point/$name"
@@ -310,8 +351,7 @@ function _orchard_dmg_install_app -a mount_point
         return 1
     end
     echo "Copying $orchard_app_display_name to $orchard_app_bundle_path..."
-    sudo rm -rf "$orchard_app_bundle_path"
-    sudo ditto "$src" "$orchard_app_bundle_path"
+    _orchard_install_app_bundle "$src"
 end
 
 function _orchard_dmg_install_pkg -a mount_point
@@ -495,8 +535,9 @@ function _orchard_download_archive
         --dir="$archive_dir" \
         --out="$archive_name" \
         "$orchard_app_download_url"
+    set -l download_status $status
     echo
-    return $status
+    return $download_status
 end
 
 # Ensure cached archive is complete; resume partial downloads, re-download if invalid.
@@ -592,8 +633,7 @@ function _orchard_install_zip
         return 1
     end
     echo "Copying $orchard_app_display_name to $orchard_app_bundle_path (admin required)..."
-    sudo rm -rf "$orchard_app_bundle_path"
-    sudo ditto "$src" "$orchard_app_bundle_path"
+    _orchard_install_app_bundle "$src"
     set -l ok $status
     rm -rf "$extract_dir"
     return $ok

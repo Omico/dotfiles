@@ -74,8 +74,10 @@ The script is organized in sections (see the header comment):
 - **Archive**: Compute cache path; ensure archive (validate existing or download with `aria2c`).
 - **Quit running app**: If the app is running, try to quit it via `osascript`.
 - **Before-install callback**: Run `orchard_before_install_callback` if defined.
-- **Install by type**: **dmg** (mount → copy `.app` or install `.pkg` from the mounted volume → unmount), **zip** (extract → copy .app), **pkg** (run `installer -pkg ... -target /`).
+- **Install by type**: **dmg** (mount → replace `.app` or install `.pkg` from the mounted volume → unmount), **zip** (extract → replace `.app`), **pkg** (run `installer -pkg ... -target /`).
 - **After-install callback**: Run `orchard_after_install_callback` if defined.
+
+Download failures stop installation before mounting or extraction. DMG and ZIP app replacements copy into a staging directory beside the destination before moving the existing app to a backup and promoting the new bundle. Promotion failure restores the backup; if restoration also fails, Orchard retains the backup and reports its path. Successful replacement removes the backup. This recovery covers app bundle replacement, not PKG installers or callback side effects.
 
 ### Homebrew migration failures
 
@@ -190,7 +192,7 @@ end
 ## Dependencies
 
 - **Shell**: Fish.
-- **External**: `aria2c` (for archive downloads), `curl`, `jq` (for GitHub API and many resolve callbacks), `hdiutil`, `ditto`, `installer`, `unzip`, `defaults` (for Info.plist). `sudo` is used for writing to `/Applications` and `/usr/local/bin`.
+- **External**: `aria2c` (for archive downloads), `curl`, `jq` (for GitHub API and many resolve callbacks), `hdiutil`, `ditto`, `installer`, `unzip`, `defaults` (for Info.plist), and filesystem tools including `mktemp`, `mv`, and `rm` (for staged app replacement). `sudo` is used for writing to `/Applications` and `/usr/local/bin`.
 - **macOS**: DMG/ZIP/PKG handling and `.app` layout are macOS-specific.
 
 ---
