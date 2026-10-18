@@ -3,10 +3,17 @@
 function brew-backup --description "Backup Homebrew bundle to Brewfile"
     set -l brewfile "$HOME/.local/share/chezmoi/Brewfile"
     echo "Backing up Brewfile..."
-    brew bundle dump --taps --brews --casks --mas --force --file="$brewfile"
-    chezmoi git -- diff --quiet "$brewfile"; or begin
-        chezmoi git -- add "$brewfile"
-        chezmoi git -- commit -m "Update Brewfile"
+    brew bundle dump --taps --brews --casks --mas --force --file="$brewfile"; or return $status
+    chezmoi git -- diff --quiet "$brewfile"
+    set -l diff_status $status
+    switch $diff_status
+        case 0
+            return 0
+        case 1
+            chezmoi git -- add "$brewfile"; or return $status
+            chezmoi git -- commit -m "Update Brewfile"
+        case '*'
+            return $diff_status
     end
 end
 

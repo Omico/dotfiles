@@ -8,6 +8,8 @@ Manage the chezmoi-tracked `Brewfile` and keep installed packages up to date.
 
 Dump taps, formulae, casks, and Mac App Store apps to the repo `Brewfile`, then commit when the file changes.
 
+Stop if export, diff inspection, staging, or commit fails, and return the failed step's status. An unchanged export succeeds without creating a commit.
+
 ## `brew-restore`
 
 Install packages from the chezmoi `Brewfile`.

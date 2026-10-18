@@ -54,6 +54,39 @@ class ShellToolchainTests(unittest.TestCase):
             check=False,
         )
 
+    def test_brew_backup_stops_at_each_failed_step(self):
+        self.executable(
+            "brew", '#!/bin/sh\necho export >> "$HOME/calls"\nexit "$brew_status"\n'
+        )
+        self.executable(
+            "chezmoi",
+            '#!/bin/sh\necho "$3" >> "$HOME/calls"\n'
+            'case "$3" in\n'
+            'diff) exit "$diff_status";;\n'
+            'add) exit "$add_status";;\n'
+            'commit) exit "$commit_status";;\n'
+            "*) exit 99;;\nesac\n",
+        )
+        for brew, diff, add, commit, expected, calls in (
+            (7, 1, 0, 0, 7, ["export"]),
+            (0, 128, 0, 0, 128, ["export", "diff"]),
+            (0, 1, 9, 0, 9, ["export", "diff", "add"]),
+            (0, 1, 0, 11, 11, ["export", "diff", "add", "commit"]),
+            (0, 0, 0, 0, 0, ["export", "diff"]),
+            (0, 1, 0, 0, 0, ["export", "diff", "add", "commit"]),
+        ):
+            with self.subTest(brew=brew, diff=diff, add=add, commit=commit):
+                (self.root / "calls").unlink(missing_ok=True)
+                self.env.update(
+                    brew_status=str(brew),
+                    diff_status=str(diff),
+                    add_status=str(add),
+                    commit_status=str(commit),
+                )
+                result = self.run_fish("exact_darwin/brew.fish", "brew-backup")
+                self.assertEqual(result.returncode, expected, result.stderr)
+                self.assertEqual((self.root / "calls").read_text().splitlines(), calls)
+
     def test_keyring_commands_preserve_existing_files_and_report_real_state(self):
         keyring = self.root / ".local/share/keyrings/default.keyring"
         keyring.parent.mkdir(parents=True)
