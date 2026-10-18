@@ -14,6 +14,38 @@ FISH = shutil.which("fish")
 
 @unittest.skipUnless(FISH and shutil.which("yq"), "fish and yq are required")
 class AddSkillTests(unittest.TestCase):
+    def test_normalizes_root_and_nested_skill_urls(self):
+        with tempfile.TemporaryDirectory(prefix="apm-normalize-") as directory:
+            result = subprocess.run(
+                [
+                    str(FISH),
+                    "--no-config",
+                    "-c",
+                    'source "$argv[1]"; __apm-normalize-skill-refs $argv[2..-1]',
+                    str(ROOT / "home/dot_config/fish/exact_conf.d/99-apm.fish"),
+                    "https://github.com/example/root-skill/blob/main/SKILL.md",
+                    "https://github.com/example/repo/blob/main/skills/demo/SKILL.md",
+                    "https://github.com/example/repo/blob/main/skills/demo/",
+                    "github.com/example/repo/skills/demo",
+                    "example/root-skill",
+                ],
+                env={**os.environ, "HOME": directory},
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(
+                result.stdout.splitlines(),
+                [
+                    "example/root-skill",
+                    "example/repo/skills/demo",
+                    "example/repo/skills/demo",
+                    "example/repo/skills/demo",
+                    "example/root-skill",
+                ],
+            )
+
     def exercise(self, stage, global_source=False, existing=True):
         with tempfile.TemporaryDirectory(prefix="apm-add-test-") as directory:
             root = Path(directory)

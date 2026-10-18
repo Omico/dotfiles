@@ -226,9 +226,12 @@ function __apm-normalize-skill-refs
             set -l owner $m[2]
             set -l repo $m[3]
             set -l relpath $m[5]
-            set -l relpath (string replace -r '/SKILL\.md$' '' "$relpath")
+            set -l relpath (string replace -r '(^|/)SKILL\.md$' '' "$relpath")
             set -l relpath (string replace -r '/$' '' "$relpath")
-            set ref "$owner/$repo/$relpath"
+            set ref "$owner/$repo"
+            if test -n "$relpath"
+                set ref "$ref/$relpath"
+            end
         end
         set -a pkgs (string replace -r '^github\.com/' '' "$ref")
     end

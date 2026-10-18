@@ -31,6 +31,8 @@ apm-add-skill --global <package> [<package> ...]
 - **`--global`:** save to the tracked `apm.base.yml`, shared by both environments.
 - **Package:** use `owner/repo/path/to/skill` or a GitHub file URL.
 
+A GitHub URL ending in a repository-root `SKILL.md` selects `owner/repo`; a nested `SKILL.md` selects its containing directory.
+
 For tracked additions specific to one environment, edit `home/dot_apm/apm.external.yml` or `home/dot_apm/apm.internal.yml` in the chezmoi source directory.
 
 If adding, merging, installing, or linking fails, the command restores the previous source and runtime configuration, including dependencies that were already present. This does not undo package installation or link changes already made by APM. If configuration restoration fails, the command reports the retained snapshot directory for manual recovery.
