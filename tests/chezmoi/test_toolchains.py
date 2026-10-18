@@ -38,7 +38,7 @@ class ShellToolchainTests(unittest.TestCase):
         path.write_text(body)
         path.chmod(0o755)
 
-    def run_fish(self, function, command, *, cwd=None):
+    def run_fish(self, function, command, *, cwd=None, input_text=None):
         return subprocess.run(
             [
                 str(FISH),
@@ -48,10 +48,65 @@ class ShellToolchainTests(unittest.TestCase):
             ],
             env=self.env,
             cwd=cwd,
+            input=input_text,
             text=True,
             capture_output=True,
             check=False,
         )
+
+    def test_keyring_commands_preserve_existing_files_and_report_real_state(self):
+        keyring = self.root / ".local/share/keyrings/default.keyring"
+        keyring.parent.mkdir(parents=True)
+        prelude = (
+            "function __ensure_user_dbus_env; return 0; end\n"
+            "function __gnome_keyring_require_commands; return 0; end\n"
+            "function __gnome_keyring_restart_secret_service; return 0; end\n"
+            "function __gnome_keyring_kill_stuck_secret_tool; return 0; end\n"
+            "function __gnome_keyring_login_keyring_locked; echo $mock_locked; end\n"
+        )
+        for command, locked, status in (
+            ("gnome-keyring-restart", "false", 0),
+            ("gnome-keyring-unlock", "false", 0),
+            ("gnome-keyring-status", "false", 0),
+            ("gnome-keyring-status --quiet", "false", 0),
+            ("gnome-keyring-status --quiet", "true", 1),
+            ("gnome-keyring-unlock", "true", 1),
+        ):
+            with self.subTest(command=command, locked=locked):
+                keyring.write_bytes(b"existing keyring data")
+                keyring.chmod(0o600)
+                self.env["mock_locked"] = locked
+                result = self.run_fish(
+                    "exact_linux/gnome-keyring.fish", prelude + command
+                )
+                self.assertEqual(result.returncode, status, result.stderr)
+                self.assertEqual(keyring.read_bytes(), b"existing keyring data")
+                self.assertEqual(keyring.stat().st_mode & 0o777, 0o600)
+
+    def test_rdp_setup_propagates_view_only_failure(self):
+        prelude = (
+            "function __ensure_user_dbus_env; return 0; end\n"
+            "function __grd_rdp_require_commands; return 0; end\n"
+            "function gnome-keyring-status; return 0; end\n"
+            "function isatty; return 0; end\n"
+            "function __grd_rdp_timeout\n"
+            ' printf "%s\\n" "$argv" >> "$HOME/calls"\n'
+            " if contains -- disable-view-only $argv; return $view_status; end\n"
+            " return 0\nend\n"
+        )
+        for status in (7, 0):
+            (self.root / "calls").unlink(missing_ok=True)
+            self.env["view_status"] = str(status)
+            result = self.run_fish(
+                "exact_linux/grd-rdp.fish",
+                prelude + "grd-rdp-set-credentials testuser",
+                input_text="synthetic-password\n",
+            )
+            self.assertEqual(result.returncode, status, result.stderr)
+            calls = (self.root / "calls").read_text()
+            self.assertIn("disable-view-only", calls)
+            self.assertEqual("systemctl --user restart" in calls, status == 0)
+            self.assertEqual("grdctl status" in calls, status == 0)
 
     def test_gradle_respects_directory_and_file_git_boundaries(self):
         self.executable("gradle", '#!/bin/sh\nprintf "GLOBAL %s\\n" "$*"\n')

@@ -1,7 +1,6 @@
 #!/usr/bin/env fish
 
 set -g __gnome_keyring_login_collection /org/freedesktop/secrets/collection/login
-set -g __gnome_keyring_default_keyring "$HOME/.local/share/keyrings/default.keyring"
 
 function gnome-keyring-status --description 'Check whether GNOME login keyring is locked'
     set -l quiet false
@@ -19,7 +18,6 @@ function gnome-keyring-status --description 'Check whether GNOME login keyring i
 
     __ensure_user_dbus_env; or return 1
     __gnome_keyring_require_commands timeout busctl; or return 1
-    __gnome_keyring_check_problem_default_keyring $quiet; or return 1
 
     set -l locked (__gnome_keyring_login_keyring_locked); or return 1
     if test "$locked" = true
@@ -38,7 +36,6 @@ end
 function gnome-keyring-restart --description 'Restart GNOME keyring Secret Service for current user'
     __ensure_user_dbus_env; or return 1
     __gnome_keyring_require_commands timeout gnome-keyring-daemon; or return 1
-    __gnome_keyring_delete_problem_default_keyring false; or return 1
     __gnome_keyring_kill_stuck_secret_tool; or return 1
     __gnome_keyring_restart_secret_service; or return 1
 end
@@ -46,7 +43,6 @@ end
 function gnome-keyring-unlock --description 'Unlock GNOME login keyring for current user session'
     __ensure_user_dbus_env; or return 1
     __gnome_keyring_require_commands timeout gnome-keyring-daemon busctl; or return 1
-    __gnome_keyring_delete_problem_default_keyring false; or return 1
     __gnome_keyring_restart_secret_service; or return 1
 
     set -l locked (__gnome_keyring_login_keyring_locked); or return 1
@@ -110,37 +106,6 @@ function __gnome_keyring_kill_stuck_secret_tool --description 'internal: kill st
 
     __gnome_keyring_timeout 5s pkill -u "$username" -x secret-tool 2>/dev/null
     or true
-end
-
-function __gnome_keyring_check_problem_default_keyring --description 'internal: detect default.keyring when it is known to break unlock'
-    set -l quiet $argv[1]
-
-    if not test -e "$__gnome_keyring_default_keyring"
-        return 0
-    end
-
-    if test "$quiet" != true
-        printf "Problematic keyring file exists: %s\n" "$__gnome_keyring_default_keyring" >&2
-        echo "A stale or invalid default.keyring can keep the login keyring locked even when unlock exits successfully." >&2
-        echo "Run gnome-keyring-unlock or gnome-keyring-restart to delete it automatically." >&2
-    end
-
-    return 1
-end
-
-function __gnome_keyring_delete_problem_default_keyring --description 'internal: delete default.keyring when it is known to break unlock'
-    set -l quiet $argv[1]
-
-    if not test -e "$__gnome_keyring_default_keyring"
-        return 0
-    end
-
-    __gnome_keyring_require_commands rm; or return 1
-    rm -f "$__gnome_keyring_default_keyring"; or return 1
-
-    if test "$quiet" != true
-        printf "Deleted problematic keyring file: %s\n" "$__gnome_keyring_default_keyring"
-    end
 end
 
 function __gnome_keyring_start_secret_service --description 'internal: initialize GNOME keyring Secret Service'

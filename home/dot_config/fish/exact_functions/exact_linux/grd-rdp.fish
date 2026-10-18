@@ -118,6 +118,7 @@ function grd-rdp-set-credentials --description 'Set GNOME Remote Desktop RDP cre
     set -l view_only_status $status
     if test $view_only_status -ne 0
         __grd_rdp_report_status "grdctl rdp disable-view-only" $view_only_status
+        return $view_only_status
     end
 
     grd-rdp-restart; or return 1
