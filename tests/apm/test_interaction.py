@@ -181,6 +181,53 @@ __apm-link-skills-to-agents
         self.assertEqual(marker.read_text(), "Local skill\n")
         self.assertFalse((links / "local").is_symlink())
 
+    def test_root_links_are_only_migrated_when_owned_by_apm(self):
+        skills = self.root / "apm/.agents/skills"
+        (skills / "owned").mkdir(parents=True)
+        foreign = self.root / "plugin-skills"
+        (foreign / "plugin").mkdir(parents=True)
+        marker = foreign / "plugin/SKILL.md"
+        marker.write_text("Plugin skill\n")
+        agents = self.root / ".agents"
+        agents.mkdir()
+        link = agents / "skills"
+        for target, owned in (
+            (foreign, False),
+            (self.root / "missing-plugin-skills", False),
+            (skills, True),
+            (Path("../apm/.agents/skills"), True),
+        ):
+            with self.subTest(target=target):
+                if link.is_dir() and not link.is_symlink():
+                    shutil.rmtree(link)
+                else:
+                    link.unlink(missing_ok=True)
+                link.symlink_to(target, target_is_directory=True)
+                for _ in range(2):
+                    result = subprocess.run(
+                        [
+                            str(FISH),
+                            "--no-config",
+                            "-c",
+                            'source "$argv[1]"; set -g __apm_home "$HOME/apm"; __apm-link-skills-to-agents',
+                            str(SOURCE),
+                        ],
+                        env={**os.environ, "HOME": str(self.root)},
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+                    self.assertEqual(
+                        result.returncode, 0 if owned else 1, result.stderr
+                    )
+                    self.assertEqual(marker.read_text(), "Plugin skill\n")
+                    if owned:
+                        self.assertFalse(link.is_symlink())
+                        self.assertEqual((link / "owned").readlink(), skills / "owned")
+                    else:
+                        self.assertTrue(link.is_symlink())
+                        self.assertEqual(link.readlink(), target)
+
 
 if __name__ == "__main__":
     unittest.main()

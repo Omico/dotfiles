@@ -158,6 +158,12 @@ function __apm-link-skills-to-agents
 
     # Migrate from linking the whole skills directory to per-skill symlinks.
     if test -L "$agents_skills"
+        set -l link_target (path resolve -- "$agents_skills"); or return 1
+        set -l owned_target (path resolve -- "$apm_skills"); or return 1
+        if test "$link_target" != "$owned_target"
+            echo "Error: refusing to replace skill directory link owned by another installer: $agents_skills" >&2
+            return 1
+        end
         command rm "$agents_skills"
         or begin
             echo "Error: failed to remove directory symlink $agents_skills." >&2

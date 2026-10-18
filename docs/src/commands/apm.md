@@ -44,3 +44,5 @@ Update the APM CLI and all skills configured for the selected environment, inclu
 ```shell
 apm-update
 ```
+
+Skill discovery preserves links owned by other installers. A legacy root directory link is migrated only when it points to APM's own skills directory; another root link is left intact and reported as a conflict.
