@@ -22,6 +22,8 @@ zed-settings-apply
 
 The command accepts one JSONC object in the live file, including comments and trailing commas. It preserves live-only top-level keys, replaces managed top-level values completely, and writes canonical JSON atomically. Invalid encoding, invalid JSONC, symlinks, and non-regular files fail without replacing the target. Unchanged targets are not rewritten.
 
+Before replacement, the target is checked against its original contents. If a change is detected during preparation, the command fails and preserves the newer file; retry to merge its latest values. This check does not lock the editor.
+
 This command runs automatically from `chezmoi apply` on supported platforms.
 
 ## `zed-settings-pull`

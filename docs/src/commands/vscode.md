@@ -20,4 +20,6 @@ vscode-settings-apply
 
 Both outputs are prepared before either target is replaced, so invalid encoding or content, including raw NUL bytes, leaves the live files unchanged. If a later replacement fails, earlier replacements are rolled back. The command requires Fish, `iconv`, and `jq` 1.7 or newer with literal-number preservation; startup verifies the required `jq` behavior. Push does not invoke Python. Unchanged targets are not replaced, and comparison errors fail instead of forcing replacement.
 
+Targets are checked against their original contents before replacement. A detected change stops Apply so the command can be retried with the latest local values. If an editor changes an already replaced file before rollback, that file is preserved and its recovery backup is retained and reported. These checks do not lock editors or other writers.
+
 Also runs automatically from `chezmoi apply` on Unix when the function is available (`type -q`).

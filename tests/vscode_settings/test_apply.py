@@ -7,6 +7,7 @@ import pathlib
 import shutil
 import stat
 import subprocess
+import sys
 import tempfile
 import textwrap
 import unittest
@@ -49,7 +50,11 @@ class ApplyTests(unittest.TestCase):
         self.cursor_live.parent.mkdir(parents=True)
 
     def run_apply(
-        self, extra_env: Mapping[str, str] | None = None
+        self,
+        extra_env: Mapping[str, str] | None = None,
+        *,
+        extra_script: str = "",
+        command: str = "vscode-settings-apply",
     ) -> subprocess.CompletedProcess[str]:
         env = os.environ.copy()
         env.update(
@@ -68,10 +73,12 @@ class ApplyTests(unittest.TestCase):
                 "-c",
                 (
                     "set -g fish_platform linux; source $APPLY_FUNCTION; "
-                    "vscode-settings-apply"
+                    + extra_script
+                    + "\n"
+                    + command
                 ),
             ],
-            cwd=ROOT,
+            cwd=self.home,
             env=env,
             check=False,
             capture_output=True,
@@ -91,6 +98,145 @@ class ApplyTests(unittest.TestCase):
     def read_json(path: pathlib.Path) -> dict[str, object]:
         with path.open(encoding="utf-8") as settings_file:
             return json.load(settings_file)
+
+    def test_target_changes_after_merge_are_preserved(self) -> None:
+        (self.source_dir / "shared.json").write_text('{"managed": 1}')
+        (self.source_dir / "ignored.json").write_text('["local"]')
+        hook = """
+functions --copy __vscode_settings_build_merged __original_build
+function __vscode_settings_build_merged
+    __original_build $argv; or return $status
+    if test "$argv[5]" = "$RACE_TARGET"
+        switch "$RACE_ACTION"
+            case write create
+                printf '%s' '{"local":"new","addedWhileApplying":true}' > "$RACE_TARGET"
+            case delete
+                command rm "$RACE_TARGET"
+            case symlink
+                command rm "$RACE_TARGET"
+                command ln -s "$RACE_LINK" "$RACE_TARGET"
+        end
+    end
+end
+"""
+        linked = self.home / "linked.json"
+        linked.write_text('{"external": true}')
+        for target in (self.code_live, self.cursor_live):
+            for action in ("write", "create", "delete", "symlink"):
+                with self.subTest(target=target.name, action=action):
+                    for path in (self.code_live, self.cursor_live):
+                        path.unlink(missing_ok=True)
+                        path.write_text('{"local":"old"}')
+                    if action == "create":
+                        target.unlink()
+                    result = self.run_apply(
+                        {
+                            "RACE_TARGET": str(target),
+                            "RACE_ACTION": action,
+                            "RACE_LINK": str(linked),
+                        },
+                        extra_script=hook,
+                    )
+                    self.assert_apply_status(1, result)
+                    self.assertIn(
+                        "settings changed while preparing output", result.stderr
+                    )
+                    if action in ("write", "create"):
+                        self.assertEqual(
+                            self.read_json(target),
+                            {"local": "new", "addedWhileApplying": True},
+                        )
+                    elif action == "delete":
+                        self.assertFalse(target.exists())
+                    else:
+                        self.assertTrue(target.is_symlink())
+                        self.assertEqual(self.read_json(linked), {"external": True})
+                    other = (
+                        self.cursor_live if target == self.code_live else self.code_live
+                    )
+                    self.assertEqual(self.read_json(other), {"local": "old"})
+                    self.assertEqual(list(self.home.rglob("settings.json.tmp.*")), [])
+                    self.assertEqual(
+                        list(self.home.rglob("settings.json.backup.*")), []
+                    )
+
+    def test_late_conflict_rolls_back_without_overwriting_editor_changes(self) -> None:
+        (self.source_dir / "shared.json").write_text('{"managed": 1}')
+        shim_dir = self.home / "shim"
+        shim_dir.mkdir()
+        shim = shim_dir / "mv"
+        shim.write_text(
+            f"#!{sys.executable}\n"
+            "import os, subprocess, sys\nfrom pathlib import Path\n"
+            "result = subprocess.run([os.environ['REAL_MV'], *sys.argv[1:]])\n"
+            "if result.returncode == 0 and sys.argv[1].endswith('.publish') and sys.argv[2] == os.environ['CODE_TARGET']:\n"
+            "    Path(os.environ['CURSOR_TARGET']).write_text('{\"local\":\"new\"}')\n"
+            "    if os.environ['EDIT_REPLACED'] == 'yes':\n"
+            "        Path(os.environ['CODE_TARGET']).write_text('{\"editor\":true}')\n"
+            "sys.exit(result.returncode)\n"
+        )
+        shim.chmod(0o755)
+        for edit_replaced in (False, True):
+            with self.subTest(edit_replaced=edit_replaced):
+                self.code_live.write_text('{"local":"old"}')
+                self.cursor_live.write_text('{"local":"old"}')
+                result = self.run_apply(
+                    {
+                        "PATH": str(shim_dir) + os.pathsep + os.environ["PATH"],
+                        "REAL_MV": self.mv,
+                        "CODE_TARGET": str(self.code_live),
+                        "CURSOR_TARGET": str(self.cursor_live),
+                        "EDIT_REPLACED": "yes" if edit_replaced else "no",
+                    }
+                )
+                self.assert_apply_status(1, result)
+                self.assertEqual(self.read_json(self.cursor_live), {"local": "new"})
+                self.assertEqual(
+                    self.read_json(self.code_live),
+                    {"editor": True} if edit_replaced else {"local": "old"},
+                )
+                backups = list(self.home.rglob("settings.json.backup.*"))
+                self.assertEqual(len(backups), int(edit_replaced))
+                if backups:
+                    self.assertEqual(self.read_json(backups[0]), {"local": "old"})
+                    self.assertIn(
+                        "keeping current file and recovery backup", result.stderr
+                    )
+                self.assertEqual(list(self.home.rglob("settings.json.tmp.*")), [])
+
+    def test_zed_apply_uses_the_same_conflict_guard(self) -> None:
+        source = self.source_dir.parent / "zed"
+        source.mkdir()
+        (source / "settings.shared.json").write_text('{"managed": 1}')
+        (source / "settings.ignored.json").write_text('["local"]')
+        live = self.home / ".config/zed/settings.json"
+        live.parent.mkdir()
+        live.write_text('{"local":"old"}')
+        zed_function = APPLY_FUNCTION.with_name("zed-settings-apply.fish")
+        result = self.run_apply(
+            {"ZED_FUNCTION": str(zed_function)},
+            extra_script="""
+source "$ZED_FUNCTION"
+functions --copy __vscode_settings_build_merged __original_build
+function __vscode_settings_build_merged
+    __original_build $argv; or return $status
+    printf '%s' '{"local":"new","editor":true}' > "$HOME/.config/zed/settings.json"
+end
+""",
+            command="zed-settings-apply",
+        )
+        self.assert_apply_status(1, result)
+        self.assertEqual(self.read_json(live), {"local": "new", "editor": True})
+        self.assertEqual(list(self.home.rglob("settings.json.tmp.*")), [])
+
+    def test_missing_targets_do_not_remove_unrelated_sidecar_names(self) -> None:
+        (self.source_dir / "shared.json").write_text('{"managed": 1}')
+        markers = [self.home / name for name in (".original", ".missing", ".publish")]
+        for marker in markers:
+            marker.write_text("unrelated")
+        self.assert_apply_status(0, self.run_apply())
+        for marker in markers:
+            self.assertEqual(marker.read_text(), "unrelated")
 
     def test_shallow_merge_optional_layer_jsonc_and_idempotency(self) -> None:
         (self.source_dir / "shared.json").write_text(

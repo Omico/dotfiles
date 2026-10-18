@@ -25,7 +25,7 @@ function zed-settings-apply --description 'Merge portable Zed settings into the 
         "$tmp_path"
     or begin
         echo 'Error: failed to merge Zed settings.' >&2
-        command rm -f "$tmp_path"
+        __vscode_settings_cleanup_outputs "$tmp_path"
         return 1
     end
 
@@ -65,7 +65,7 @@ function zed-settings-pull --description 'Update portable Zed settings from the 
     or return 1
     set -l work_dir (mktemp -d)
     or begin
-        command rm -f "$tmp_path"
+        __vscode_settings_cleanup_outputs "$tmp_path"
         return 1
     end
 
@@ -74,14 +74,14 @@ function zed-settings-pull --description 'Update portable Zed settings from the 
 
     __vscode_settings_load_live_json "$live_path" >"$live_clean_path"
     or begin
-        command rm -f "$tmp_path"
+        __vscode_settings_cleanup_outputs "$tmp_path"
         command rm -rf "$work_dir"
         return 1
     end
 
     __vscode_settings_load_ignored_keys "$ignored_path" "" >"$ignored_clean_path"
     or begin
-        command rm -f "$tmp_path"
+        __vscode_settings_cleanup_outputs "$tmp_path"
         command rm -rf "$work_dir"
         return 1
     end
@@ -93,14 +93,14 @@ function zed-settings-pull --description 'Update portable Zed settings from the 
     command rm -rf "$work_dir"
     if test $status_jq -ne 0
         echo 'Error: failed to build portable Zed settings.' >&2
-        command rm -f "$tmp_path"
+        __vscode_settings_cleanup_outputs "$tmp_path"
         return 1
     end
 
     if test $dry_run -eq 1
         command diff -u "$source_path" "$tmp_path"
         set -l status_diff $status
-        command rm -f "$tmp_path"
+        __vscode_settings_cleanup_outputs "$tmp_path"
         if test $status_diff -gt 1
             echo 'Error: failed to compare portable Zed settings.' >&2
             return 1
@@ -119,6 +119,8 @@ function __zed_settings_load_merge_engine
             __vscode_settings_load_ignored_keys \
             __vscode_settings_load_live_json \
             __vscode_settings_prepare_output \
+            __vscode_settings_cleanup_outputs \
+            __vscode_settings_target_unchanged \
             __vscode_settings_write_targets
         return 0
     end
@@ -141,6 +143,8 @@ function __zed_settings_load_merge_engine
             __vscode_settings_load_ignored_keys \
             __vscode_settings_load_live_json \
             __vscode_settings_prepare_output \
+            __vscode_settings_cleanup_outputs \
+            __vscode_settings_target_unchanged \
             __vscode_settings_write_targets
         echo 'Error: JSONC merge engine did not provide the required functions.' >&2
         return 1

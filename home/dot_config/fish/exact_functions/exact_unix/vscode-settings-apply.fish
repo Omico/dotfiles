@@ -15,13 +15,13 @@ function vscode-settings-apply --description 'Merge vscode-settings into Code/Cu
     for app in code cursor
         set -l live_path (__vscode_settings_live_path $app)
         or begin
-            command rm -f $temp_paths
+            __vscode_settings_cleanup_outputs $temp_paths
             return 1
         end
 
         set -l tmp_path (__vscode_settings_prepare_output "$live_path")
         or begin
-            command rm -f $temp_paths
+            __vscode_settings_cleanup_outputs $temp_paths
             return 1
         end
         set -a temp_paths "$tmp_path"
@@ -35,7 +35,7 @@ function vscode-settings-apply --description 'Merge vscode-settings into Code/Cu
             "$tmp_path"
         or begin
             printf "Error: failed to merge %s settings.\n" $app >&2
-            command rm -f $temp_paths
+            __vscode_settings_cleanup_outputs $temp_paths
             return 1
         end
 
@@ -417,6 +417,15 @@ end
 
 # Transactional target writes
 
+function __vscode_settings_cleanup_outputs
+    set -l outputs
+    for output in $argv
+        test -n "$output"; and set -a outputs "$output"
+    end
+    set -q outputs[1]; or return 0
+    command rm -f -- $outputs $outputs.original $outputs.missing $outputs.publish
+end
+
 function __vscode_settings_prepare_output --argument-names live_path
     if test -L "$live_path"; or begin
             test -e "$live_path"
@@ -431,12 +440,40 @@ function __vscode_settings_prepare_output --argument-names live_path
     set -l tmp_path (mktemp "$live_path.tmp.XXXXXX"); or return 1
     if test -f "$live_path"
         command cp -p "$live_path" "$tmp_path"; or begin
-            command rm -f "$tmp_path"
+            __vscode_settings_cleanup_outputs "$tmp_path"
+            return 1
+        end
+        command cp -p "$tmp_path" "$tmp_path.original"; or begin
+            __vscode_settings_cleanup_outputs "$tmp_path"
+            return 1
+        end
+    else
+        printf '' >"$tmp_path.missing"; or begin
+            __vscode_settings_cleanup_outputs "$tmp_path"
             return 1
         end
     end
 
     echo "$tmp_path"
+end
+
+function __vscode_settings_target_unchanged --argument-names tmp_path live_path
+    if not test -L "$live_path"
+        if test -f "$tmp_path.original"; and test -f "$live_path"
+            command cmp -s "$tmp_path.original" "$live_path"
+            set -l compare_status $status
+            if test $compare_status -eq 0
+                return 0
+            else if test $compare_status -gt 1
+                printf "Error: failed to compare settings snapshot: %s\n" "$live_path" >&2
+                return 1
+            end
+        else if test -f "$tmp_path.missing"; and not test -e "$live_path"
+            return 0
+        end
+    end
+    printf "Error: settings changed while preparing output: %s. Retry the command.\n" "$live_path" >&2
+    return 1
 end
 
 function __vscode_settings_write_targets
@@ -458,17 +495,21 @@ function __vscode_settings_write_targets
     for index in (command seq (count $temp_paths))
         set -l tmp_path $temp_paths[$index]
         set -l live_path $live_paths[$index]
+        __vscode_settings_target_unchanged "$tmp_path" "$live_path"; or begin
+            __vscode_settings_cleanup_outputs $temp_paths $backup_paths
+            return 1
+        end
         if test -f "$live_path"
             command cmp -s "$tmp_path" "$live_path"
             set -l status_cmp $status
             if test $status_cmp -eq 0
-                command rm -f "$tmp_path"
+                __vscode_settings_cleanup_outputs "$tmp_path"
                 echo "Unchanged $live_path"
                 continue
             else if test $status_cmp -gt 1
                 printf "Error: failed to compare generated and live settings: %s\n" \
                     "$live_path" >&2
-                command rm -f $temp_paths $backup_paths
+                __vscode_settings_cleanup_outputs $temp_paths $backup_paths
                 return 1
             end
         end
@@ -477,11 +518,11 @@ function __vscode_settings_write_targets
         set -l backup_path ""
         if test -f "$live_path"
             set backup_path (mktemp "$live_path.backup.XXXXXX"); or begin
-                command rm -f $temp_paths $backup_paths
+                __vscode_settings_cleanup_outputs $temp_paths $backup_paths
                 return 1
             end
-            command cp -p "$live_path" "$backup_path"; or begin
-                command rm -f "$backup_path" $temp_paths $backup_paths
+            command cp -p "$tmp_path.original" "$backup_path"; or begin
+                __vscode_settings_cleanup_outputs "$backup_path" $temp_paths $backup_paths
                 return 1
             end
         end
@@ -494,7 +535,10 @@ function __vscode_settings_write_targets
             set -l index $changed_indices[$position]
             set -l tmp_path $temp_paths[$index]
             set -l live_path $live_paths[$index]
-            if command mv "$tmp_path" "$live_path"
+            if __vscode_settings_target_unchanged "$tmp_path" "$live_path"
+                and command cp -p "$tmp_path" "$tmp_path.publish"
+                and __vscode_settings_target_unchanged "$tmp_path" "$live_path"
+                and command mv "$tmp_path.publish" "$live_path"
                 set replaced_count (math $replaced_count + 1)
                 continue
             end
@@ -507,6 +551,12 @@ function __vscode_settings_write_targets
                     set -l rollback_index $changed_indices[$rollback_position]
                     set -l rollback_live_path $live_paths[$rollback_index]
                     set -l rollback_backup_path $backup_paths[$rollback_position]
+                    if test -L "$rollback_live_path"; or not test -f "$rollback_live_path"; or not command cmp -s "$temp_paths[$rollback_index]" "$rollback_live_path"
+                        printf "Error: settings changed after replacement; keeping current file and recovery backup: %s %s\n" \
+                            "$rollback_live_path" "$rollback_backup_path" >&2
+                        set rollback_failed 1
+                        continue
+                    end
                     if test -n "$rollback_backup_path"
                         command mv "$rollback_backup_path" "$rollback_live_path"; or begin
                             printf "Error: failed to restore %s from %s\n" \
@@ -530,13 +580,13 @@ function __vscode_settings_write_targets
                     test -n "$cleanup_backup_path"; and command rm -f "$cleanup_backup_path"
                 end
             end
-            command rm -f $temp_paths 2>/dev/null
+            __vscode_settings_cleanup_outputs $temp_paths 2>/dev/null
             test $rollback_failed -eq 0; or echo "Error: rollback was incomplete." >&2
             return 1
         end
     end
 
-    command rm -f $temp_paths $backup_paths 2>/dev/null
+    __vscode_settings_cleanup_outputs $temp_paths $backup_paths 2>/dev/null
     for index in $changed_indices
         echo "Updated $live_paths[$index]"
     end
