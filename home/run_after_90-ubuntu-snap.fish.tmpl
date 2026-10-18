@@ -4,7 +4,7 @@
 command -q snap; or exit 0
 
 echo "🐧 Updating Snap packages..."
-sudo snap refresh
+sudo snap refresh; or exit $status
 
 exit 0
 {{ end -}}

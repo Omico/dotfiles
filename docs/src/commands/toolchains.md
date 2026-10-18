@@ -32,6 +32,8 @@ Default channel is `stable`.
 
 Install the latest Node.js LTS with `fnm`, set it as default, remove other installed versions, and enable `pnpm` through `corepack` when needed.
 
+Stop at the first failed install, activation, removal, or Corepack setup step and return its error status to the caller.
+
 ## `gradle-or-gradlew`
 
 **Platforms:** All

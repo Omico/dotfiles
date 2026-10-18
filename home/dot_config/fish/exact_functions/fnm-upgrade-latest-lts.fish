@@ -15,7 +15,7 @@ function fnm-upgrade-latest-lts --description "Install LTS, set default, uninsta
             break
         end
         test $_attempt -eq 1; or break
-        fnm install --lts; or return 1
+        fnm install --lts; or return $status
         set installed (__fnm_installed_node_versions)
     end
 
@@ -24,22 +24,23 @@ function fnm-upgrade-latest-lts --description "Install LTS, set default, uninsta
         return 1
     end
 
-    fnm use "$latest_lts"; or return 1
-    fnm default "$latest_lts"; or return 1
+    fnm use "$latest_lts"; or return $status
+    fnm default "$latest_lts"; or return $status
 
     for v in $installed
         if test "$v" != "$latest_lts"
-            fnm uninstall "$v"; or printf "fnm: failed to uninstall %s\n" $v >&2
+            fnm uninstall "$v"; or return $status
         end
     end
 
     if not command -q pnpm
-        command -q corepack; or npm install -g corepack@latest
-        command -q corepack; and begin
-            corepack enable
-            corepack install -g pnpm@latest
+        if not command -q corepack
+            npm install -g corepack@latest; or return $status
         end
+        corepack enable; or return $status
+        corepack install -g pnpm@latest; or return $status
     end
+    return 0
 end
 
 function __fnm_installed_node_versions --description 'internal: installed Node semver list from fnm list'

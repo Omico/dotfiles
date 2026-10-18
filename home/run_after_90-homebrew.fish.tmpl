@@ -1,7 +1,7 @@
 {{ if eq .chezmoi.os "darwin" -}}
 #!/usr/bin/env fish
 
-brew-update
+brew-update; or exit $status
 
 exit 0
 {{ end -}}

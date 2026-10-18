@@ -1,11 +1,16 @@
 {{ if has .chezmoi.os (list "darwin" "linux") -}}
 #!/usr/bin/env fish
 
-rustup toolchain install stable >/dev/null 2>&1
-rustup update >/dev/null 2>&1
-command -q rustc; or exit 0
+rustup toolchain install stable; or exit $status
+fish_add_path --path "$HOME/.cargo/bin"
+rustup update; or exit $status
+command -q rustc; or begin
+    echo "Error: rustc is unavailable after updating Rust." >&2
+    exit 1
+end
 
-echo "Using Rust "(set_color cyan)(string split -f2 ' ' -- (rustc --version))(set_color normal)
+set -l rust_version (rustc --version); or exit $status
+echo "Using Rust "(set_color cyan)(string split -f2 ' ' -- "$rust_version")(set_color normal)
 
 exit 0
 {{ end -}}

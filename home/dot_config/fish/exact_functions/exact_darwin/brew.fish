@@ -18,13 +18,14 @@ end
 
 function brew-update --description "Update Homebrew packages"
     echo "🍺 Updating Homebrew packages..."
-    brew update
-    brew upgrade
-    brew cleanup
-    brew autoremove
+    brew update; or return $status
+    brew upgrade; or return $status
+    brew cleanup; or return $status
+    brew autoremove; or return $status
     if type -q mas
-        mas upgrade
+        mas upgrade; or return $status
     end
+    return 0
 end
 
 function brew-bump-omico --description "Bump omico/tap packages"
