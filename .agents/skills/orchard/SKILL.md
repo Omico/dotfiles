@@ -1,6 +1,6 @@
 ---
 name: orchard
-description: Use when adding or maintaining Orchard app packages, editing the Orchard macOS app manager, converting Homebrew casks to Orchard packages, updating download URLs or resolve callbacks, or answering questions about Orchard apps.
+description: "Use for Orchard app questions, package authoring and maintenance, Homebrew cask conversions, and manager, API, or completion changes."
 ---
 
 # Orchard
@@ -14,13 +14,6 @@ Project-specific source paths, sync steps, and verification commands belong in t
 - **Package format**: [references/app-package-format.md](references/app-package-format.md) for variables, callbacks, public API, templates, examples, and Homebrew Cask mapping.
 - **Development guidelines**: [references/development-guidelines.md](references/development-guidelines.md) for app package standards, main script standards, completions, and checklists.
 - **Architecture**: [references/development.md](references/development.md) for install flow, command behavior, dependencies, and maintainer conventions.
-
-## When to use this skill
-
-- User asks to add, update, or maintain an Orchard package.
-- User wants to convert a Homebrew cask to Orchard.
-- User asks to change an Orchard app definition.
-- Editing download URLs, resolve callbacks, post-install steps, the Orchard executable, or completions.
 
 ## Quick workflow
 

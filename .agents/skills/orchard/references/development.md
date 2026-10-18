@@ -199,7 +199,7 @@ end
 
 ## Adding a New App
 
-See the **orchard** skill **Quick workflow** for a concise checklist.
+See the `orchard` skill **Quick workflow** for a concise checklist.
 
 - **Create package file**: Add `apps/<app_id>.fish` under the Orchard config directory (`$XDG_CONFIG_HOME/orchard`, default `~/.config/orchard`).
 - **Required variables**: Set the four required variables. If the download URL is not fixed, define `orchard_resolve_download_url_callback` and set `orchard_app_download_url` inside it (you can leave the initial URL empty).
