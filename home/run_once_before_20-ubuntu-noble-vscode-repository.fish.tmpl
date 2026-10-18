@@ -1,8 +1,6 @@
 {{ if eq (index .chezmoi.osRelease "ubuntuCodename") "noble" -}}
 #!/usr/bin/env fish
 
-command -q code; and exit 0
-
 {{ includeTemplate "installer-workdir.fish" . }}
 curl -fsSL https://packages.microsoft.com/keys/microsoft.asc -o "$work/microsoft.asc"; or exit $status
 gpg --dearmor --output "$work/microsoft.gpg" "$work/microsoft.asc"; or exit $status

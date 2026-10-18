@@ -340,6 +340,95 @@ chezmoi_add_configs
         )
 
     @unittest.skipUnless(FISH, "fish is required")
+    def test_vscode_repository_is_configured_with_existing_code_and_retries(self):
+        mock_bin = self.root / "repository-bin"
+        mock_bin.mkdir()
+        system = self.root / "system"
+        system.mkdir()
+        bodies = {
+            "code": "exit 0\n",
+            "curl": 'test "$CURL_FAIL" != 1 || exit 7\nprintf "mock-key\\n" >"$4"\n',
+            "gpg": 'cp "$4" "$3"\n',
+            "dpkg": "echo amd64\n",
+            "sudo": """printf '%s\\n' "$*" >> "$MOCK_SYSTEM/calls"
+case "$1" in
+install)
+    target="$MOCK_SYSTEM$5"
+    mkdir -p "$(dirname "$target")"
+    cp "$4" "$target";;
+debconf-set-selections) cp "$2" "$MOCK_SYSTEM/code.seed";;
+*) exit 91;;
+esac
+""",
+        }
+        for name, body in bodies.items():
+            binary = mock_bin / name
+            binary.write_text("#!/bin/sh\n" + body)
+            binary.chmod(0o755)
+        script = (
+            self.source
+            / "home/run_once_before_20-ubuntu-noble-vscode-repository.fish.tmpl"
+        )
+        args = [
+            str(CHEZMOI),
+            "--source",
+            str(self.source),
+            "--destination",
+            str(self.destination),
+            "--config",
+            str(self.config),
+            "--persistent-state",
+            str(self.root / "state.boltdb"),
+            "--override-data",
+            '{"chezmoi":{"os":"linux","osRelease":{"ubuntuCodename":"noble"}}}',
+            "apply",
+            "--source-path",
+            str(script),
+        ]
+        env = {
+            **os.environ,
+            "HOME": str(self.destination),
+            "MOCK_SYSTEM": str(system),
+            "PATH": str(mock_bin)
+            + os.pathsep
+            + str(Path(str(FISH)).parent)
+            + ":/usr/bin:/bin",
+        }
+        result = subprocess.run(
+            args,
+            env={**env, "CURL_FAIL": "1"},
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse((system / "calls").exists())
+        result = subprocess.run(
+            args,
+            env={**env, "CURL_FAIL": "0"},
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        repository = (system / "etc/apt/sources.list.d/vscode.sources").read_text()
+        self.assertIn("URIs: https://packages.microsoft.com/repos/code\n", repository)
+        self.assertIn("Architectures: amd64\n", repository)
+        self.assertEqual(
+            (system / "usr/share/keyrings/microsoft.gpg").read_text(), "mock-key\n"
+        )
+        self.assertEqual(
+            (system / "code.seed").read_text(),
+            "code code/add-microsoft-repo boolean true\n",
+        )
+        calls = (system / "calls").read_text()
+        result = subprocess.run(
+            args, env=env, capture_output=True, text=True, check=False
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual((system / "calls").read_text(), calls)
+
+    @unittest.skipUnless(FISH, "fish is required")
     def test_package_list_changes_and_reverts_rerun_the_installer(self):
         log = self.root / "install-calls"
         mock_bin = self.root / "bin"
