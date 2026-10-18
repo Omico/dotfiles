@@ -4,7 +4,18 @@ on:
   push:
     branches: [main]
     paths:
-      - ".agents/skills/**/*.md"
+      - ".agents/skills/**"
+      - "AGENTS.md"
+      - ".markdownlint-cli2.yaml"
+      - ".github/workflows/docs.yml"
+      - "home/dot_agents/AGENTS.md"
+      - "docs/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".agents/skills/**"
+      - "AGENTS.md"
+      - ".markdownlint-cli2.yaml"
       - ".github/workflows/docs.yml"
       - "home/dot_agents/AGENTS.md"
       - "docs/**"
@@ -33,11 +44,13 @@ jobs:
         run: npm run docs:build
 
       - name: Upload artifact
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v5
         with:
           path: docs/.vitepress/dist
 
   deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     concurrency:
