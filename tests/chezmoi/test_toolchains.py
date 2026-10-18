@@ -11,6 +11,7 @@ import tarfile
 import tempfile
 import unittest
 import zipfile
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -263,6 +264,12 @@ class ShellToolchainTests(unittest.TestCase):
                     (self.root / "calls").read_text().splitlines(),
                     ["--disable-analytics", "--disable-analytics", "upgrade"],
                 )
+                downloads = (self.root / "downloads").read_text().splitlines()
+                self.assertEqual(len(downloads), 2)
+                self.assertEqual(len(set(downloads)), 2)
+                for destination in downloads:
+                    self.assertEqual(Path(destination).parent, self.root / "temp files")
+                self.assertEqual(list((self.root / "temp files").iterdir()), [])
 
     @unittest.skipUnless(shutil.which("jq"), "jq is required")
     def test_flutter_reports_corrupt_archives(self):
@@ -272,16 +279,80 @@ class ShellToolchainTests(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn("Failed to extract Flutter archive", result.stderr)
                 self.assertFalse((self.root / "calls").exists())
+                self.assertEqual(list((self.root / "temp files").iterdir()), [])
 
-    def run_flutter(self, platform, *, corrupt=False):
+    @unittest.skipUnless(shutil.which("jq"), "jq is required")
+    def test_flutter_parallel_installs_use_distinct_temporary_files(self):
+        temporary = self.root / "shared temp files"
+        workers = [ShellToolchainTests(), ShellToolchainTests()]
+        for worker in workers:
+            worker.setUp()
+            self.addCleanup(worker.doCleanups)
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            futures = [
+                pool.submit(worker.run_flutter, "darwin", temporary=temporary)
+                for worker in workers
+            ]
+            for future in futures:
+                result = future.result()
+                self.assertEqual(result.returncode, 0, result.stderr)
+        downloads = [
+            path
+            for worker in workers
+            for path in (worker.root / "downloads").read_text().splitlines()
+        ]
+        self.assertEqual(len(downloads), 4)
+        self.assertEqual(len(set(downloads)), 4)
+        self.assertTrue(all(Path(path).parent == temporary for path in downloads))
+        self.assertEqual(list(temporary.iterdir()), [])
+
+    @unittest.skipUnless(shutil.which("jq"), "jq is required")
+    def test_flutter_stops_when_temporary_file_creation_fails(self):
+        for allocation, kind in ((1, "manifest"), (2, "archive")):
+            with self.subTest(allocation=allocation):
+                result = self.run_flutter("darwin", fail_tempfile=allocation)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(
+                    f"Failed to create Flutter {kind} temporary file", result.stderr
+                )
+                downloads = self.root / "downloads"
+                self.assertEqual(
+                    len(downloads.read_text().splitlines())
+                    if downloads.exists()
+                    else 0,
+                    allocation - 1,
+                )
+                self.assertFalse((self.root / "calls").exists())
+                self.assertEqual(list((self.root / "temp files").iterdir()), [])
+
+    def run_flutter(
+        self, platform, *, corrupt=False, fail_tempfile=None, temporary=None
+    ):
         shutil.rmtree(self.root / "flutter", ignore_errors=True)
         (self.root / "calls").unlink(missing_ok=True)
+        (self.root / "downloads").unlink(missing_ok=True)
+        (self.root / "allocations").unlink(missing_ok=True)
+        temporary = temporary or self.root / "temp files"
+        temporary.mkdir(exist_ok=True)
+        self.env["TMPDIR"] = str(temporary)
         for command in ("jq", "tar", "xz", "unzip", "mktemp", "rm", "head"):
             binary = shutil.which(command)
             assert binary
             target = self.binaries / command
             if not target.exists():
                 target.symlink_to(binary)
+        if fail_tempfile is not None:
+            (self.binaries / "mktemp").unlink()
+            self.executable(
+                "mktemp",
+                f"#!{sys.executable}\n"
+                "import os, sys\nfrom pathlib import Path\n"
+                "counter = Path(os.environ['HOME']) / 'allocations'\n"
+                "count = int(counter.read_text()) + 1 if counter.exists() else 1\n"
+                "counter.write_text(str(count))\n"
+                f"if count == {fail_tempfile}: sys.exit(73)\n"
+                f"os.execv({shutil.which('mktemp')!r}, ['mktemp', *sys.argv[1:]])\n",
+            )
         self.executable("uname", "#!/bin/sh\necho arm64\n")
         archive = (
             "flutter_macos.zip" if platform == "darwin" else "flutter_linux.tar.xz"
@@ -321,8 +392,11 @@ class ShellToolchainTests(unittest.TestCase):
             f"#!{sys.executable}\n"
             "import os, shutil, sys\nfrom pathlib import Path\n"
             "args = sys.argv[1:]\n"
+            "destination = args[args.index('-o') + 1]\n"
+            "with (Path(os.environ['HOME']) / 'downloads').open('a') as log:\n"
+            "    log.write(destination + '\\n')\n"
             "source = 'manifest.json' if any(arg.endswith('.json') for arg in args) else 'bundle'\n"
-            "shutil.copyfile(Path(os.environ['HOME']) / source, args[args.index('-o') + 1])\n",
+            "shutil.copyfile(Path(os.environ['HOME']) / source, destination)\n",
         )
         return self.run_fish(
             "exact_unix/flutter-init.fish",

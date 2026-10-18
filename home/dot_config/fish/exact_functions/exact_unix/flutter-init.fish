@@ -68,7 +68,14 @@ function flutter-init -a channel
     end
 
     set -l manifest_url "https://storage.googleapis.com/flutter_infra_release/releases/releases_$platform.json"
-    set -l manifest_file (mktemp "/tmp/flutter-releases.XXXXXX.json")
+    set -l temp_dir /tmp
+    if test -n "$TMPDIR"
+        set temp_dir "$TMPDIR"
+    end
+    set -l manifest_file (mktemp "$temp_dir/flutter-releases.XXXXXX"); or begin
+        echo "Failed to create Flutter manifest temporary file." >&2
+        return 1
+    end
 
     echo "Fetching Flutter release manifest for $platform..."
     if not curl -fsSL "$manifest_url" -o "$manifest_file"
@@ -106,7 +113,10 @@ function flutter-init -a channel
     echo "  $url"
     echo
 
-    set -l tmp_archive (mktemp "/tmp/flutter-sdk.XXXXXX")
+    set -l tmp_archive (mktemp "$temp_dir/flutter-sdk.XXXXXX"); or begin
+        echo "Failed to create Flutter archive temporary file." >&2
+        return 1
+    end
 
     if not curl -fL "$url" -o "$tmp_archive"
         echo "Download failed." >&2

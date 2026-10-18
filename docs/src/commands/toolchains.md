@@ -28,6 +28,8 @@ Default channel is `stable`.
 
 Fresh installs extract the macOS ZIP with `unzip` and the Linux/WSL tar.xz with `tar`, then add `~/flutter/bin` to the current session's `PATH`.
 
+Downloads use unique temporary files in `$TMPDIR` (or `/tmp` when unset or empty). If a temporary file cannot be created, installation stops before downloading to it.
+
 ## `fnm-upgrade-latest-lts`
 
 **Platforms:** All
