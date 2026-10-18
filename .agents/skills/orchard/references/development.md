@@ -77,6 +77,10 @@ The script is organized in sections (see the header comment):
 - **Install by type**: **dmg** (mount → copy `.app` or install `.pkg` from the mounted volume → unmount), **zip** (extract → copy .app), **pkg** (run `installer -pkg ... -target /`).
 - **After-install callback**: Run `orchard_after_install_callback` if defined.
 
+### Homebrew migration failures
+
+`orchard migrate brew` returns the query error if `brew outdated` fails. During migration, it continues with other candidates after an uninstall or install failure, then returns a nonzero status if any candidate failed. Reporting packages without an Orchard definition does not clear that failure status. Migration does not restore an uninstalled cask when Orchard installation fails.
+
 ---
 
 ## App package format (`apps/<app_id>.fish`)

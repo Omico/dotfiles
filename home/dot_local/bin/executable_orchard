@@ -686,7 +686,7 @@ function _orchard_cmd_migrate_brew
     end
 
     echo "Checking for outdated Homebrew casks (this may take a while)..." >&2
-    set -l outdated (brew outdated --cask --greedy --quiet 2>/dev/null)
+    set -l outdated (brew outdated --cask --greedy --quiet); or return $status
     if test (count $outdated) -eq 0
         echo "No outdated Homebrew casks to migrate."
         return 0
@@ -721,6 +721,7 @@ function _orchard_cmd_migrate_brew
         return 0
     end
 
+    set -l migrate_status 0
     if test "$plan" = true
         echo "These Homebrew casks can be migrated to Orchard apps:"
         for cask_id in $candidates
@@ -728,6 +729,7 @@ function _orchard_cmd_migrate_brew
         end
     else
         _orchard_migrate_brew_apply $candidates
+        set migrate_status $status
     end
 
     if test (count $missing) -gt 0
@@ -738,14 +740,17 @@ function _orchard_cmd_migrate_brew
         end
         set_color normal
     end
+    return $migrate_status
 end
 
 function _orchard_migrate_brew_apply
+    set -l migrate_status 0
     for cask_id in $argv
         echo "Migrating Homebrew cask '$cask_id' to Orchard app '$cask_id'..."
         brew uninstall --cask "$cask_id"
         if test $status -ne 0
             echo "Uninstall failed for Homebrew cask '$cask_id'; skipping." >&2
+            set migrate_status 1
             continue
         end
 
@@ -753,8 +758,10 @@ function _orchard_migrate_brew_apply
         orchard install "$cask_id"
         if test $status -ne 0
             echo "Orchard install failed for app '$cask_id'." >&2
+            set migrate_status 1
         end
     end
+    return $migrate_status
 end
 
 function _orchard_cmd_migrate
