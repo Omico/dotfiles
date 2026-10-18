@@ -32,6 +32,7 @@
 
 ## Workspace changes
 
+- Avoid Git merges unless necessary.
 - Before starting or expanding a task, assess change size:
   - Existing changes, including untracked files.
   - Expected additions.
