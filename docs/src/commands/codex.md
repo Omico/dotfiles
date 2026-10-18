@@ -2,7 +2,9 @@
 
 ## `codex-settings-apply`
 
-**Platforms:** Unix (`linux`, `darwin`, `wsl`) · **Requires:** `uv`
+**Platforms:** Unix (`linux`, `darwin`, `wsl`)
+
+Use the existing `uv` wrapper to install uv on first use, then run the TOML merge helper. A separate uv installation is not required before `chezmoi apply`.
 
 Sync selected preferences with `$CODEX_HOME/config.toml` (default: `~/.codex/config.toml`). Providers, MCP configuration, credentials, project trust, and runtime state stay local.
 
