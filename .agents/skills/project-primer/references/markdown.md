@@ -10,7 +10,9 @@ Read this before editing Markdown files, skill files, repository docs, or long M
 - Prefer unordered bullets with bold labels over ordered lists in prose.
 - Refer to sections by name, not number.
 - Keep headings stable enough that links remain meaningful after reordering.
-- Do not hard-wrap Markdown prose or list items; keep each logical paragraph or bullet on one physical line unless Markdown syntax requires a line break.
+- Do not hard-wrap Markdown prose or list items.
+- Keep each logical paragraph or list item on one physical line.
+- Allow line breaks required by Markdown syntax.
 
 ## Comments and strings
 

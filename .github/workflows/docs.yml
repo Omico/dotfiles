@@ -6,6 +6,7 @@ on:
     paths:
       - ".agents/skills/**/*.md"
       - ".github/workflows/docs.yml"
+      - "home/dot_agents/AGENTS.md"
       - "docs/**"
   workflow_dispatch:
 

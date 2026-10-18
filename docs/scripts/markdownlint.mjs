@@ -11,6 +11,7 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const docsRoot = path.resolve(scriptDir, "..");
 const repoRoot = path.resolve(docsRoot, "..");
 const configPath = path.join(repoRoot, ".markdownlint-cli2.yaml");
+const agentInstructionsPath = "home/dot_agents/AGENTS.md";
 const cliPath = path.join(
   docsRoot,
   "node_modules",
@@ -59,7 +60,7 @@ async function walkMarkdownDir(dir, files) {
 }
 
 async function collectMarkdownFiles() {
-  const files = [];
+  const files = [agentInstructionsPath];
 
   for (const entry of await fs.readdir(repoRoot, { withFileTypes: true })) {
     if (entry.isFile() && entry.name.endsWith(".md")) {
@@ -179,6 +180,31 @@ async function checkHardWraps(files) {
 }
 
 // =============================================================================
+// Global agent instructions line length
+// =============================================================================
+
+async function checkAgentLineLength() {
+  const content = await fs.readFile(
+    path.join(repoRoot, agentInstructionsPath),
+    "utf8",
+  );
+  let status = 0;
+
+  for (const [index, line] of content.split(/\r?\n/).entries()) {
+    const length = [...line].length;
+    if (length >= 90) {
+      console.error(
+        `${agentInstructionsPath}:${index + 1}: line-length: ` +
+          `${length} characters; must be below 90, preferably 80 or fewer.`,
+      );
+      status = 1;
+    }
+  }
+
+  return status;
+}
+
+// =============================================================================
 // Main
 // =============================================================================
 
@@ -201,8 +227,9 @@ async function main() {
   const files = await collectMarkdownFiles();
   const lintStatus = runMarkdownlintCli2(files, argv);
   const hardWrapStatus = await checkHardWraps(files);
+  const lineLengthStatus = await checkAgentLineLength();
 
-  if (lintStatus !== 0 || hardWrapStatus !== 0) {
+  if (lintStatus !== 0 || hardWrapStatus !== 0 || lineLengthStatus !== 0) {
     console.error("markdownlint: failed");
     process.exitCode = 1;
     return;
