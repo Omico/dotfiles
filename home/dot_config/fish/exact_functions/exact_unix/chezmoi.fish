@@ -33,7 +33,6 @@ function chezmoi_add_configs --description 'Add local configuration files to che
         __chezmoi_add_files_by_extension "$ghostty_config_dir/include" ghostty; or return 1
     end
 
-    __chezmoi_forget_existing "$HOME/.config/starship.toml"; or return 1
     __chezmoi_add_existing "$HOME/.config/starship.toml"; or return 1
 
     if type -q zed-settings-pull
@@ -41,14 +40,16 @@ function chezmoi_add_configs --description 'Add local configuration files to che
     end
 end
 
-function __chezmoi_forget_existing --argument-names target
-    test -e "$target"; or return 0
-    chezmoi forget --force "$target"
-end
-
 function __chezmoi_add_existing --argument-names target
     test -e "$target"; or return 0
-    chezmoi add "$target"
+    set -l managed (chezmoi managed --include=files --path-style=absolute --nul-path-separator "$target" | string split0)
+    set -l managed_status $pipestatus[1]
+    test $managed_status -eq 0; or return $managed_status
+    if contains -- "$target" $managed
+        chezmoi re-add "$target"
+    else
+        chezmoi add "$target"
+    end
 end
 
 function __chezmoi_add_files_by_extension --argument-names dir extension
@@ -98,15 +99,25 @@ function __chezmoi_add_files_by_extension --argument-names dir extension
 
     test -d "$dir"; or return 0
 
-    set -l files
+    set -l existing_files
+    set -l new_files
     for file in "$dir"/*.$extension
         set -l source_path (chezmoi source-path "$file" 2>/dev/null)
         if test -n "$source_path"; and string match -q '*.tmpl' "$source_path"
             continue
         end
-        set -a files "$file"
+        if contains -- "$file" $managed_files
+            set -a existing_files "$file"
+        else
+            set -a new_files "$file"
+        end
     end
-    test (count $files) -gt 0; or return 0
 
-    chezmoi add $files
+    if test (count $existing_files) -gt 0
+        chezmoi re-add $existing_files; or return $status
+    end
+    if test (count $new_files) -gt 0
+        chezmoi add $new_files; or return $status
+    end
+    return 0
 end

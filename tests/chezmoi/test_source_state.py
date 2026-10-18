@@ -157,7 +157,20 @@ class SourceStateTests(unittest.TestCase):
             self.source / "home/dot_config/fish/exact_functions/exact_unix/changed.fish"
         )
         changed_source.write_text("# Previously applied\n")
+        existing_source = (
+            self.source / "home/dot_config/fish/exact_functions/existing.fish"
+        )
+        existing_source.write_text("# Original source\n")
+        starship_source = self.source / "home/dot_config/starship.toml"
+        starship_template = starship_source.with_suffix(".toml.tmpl")
+        starship_source.rename(starship_template)
+        starship_template.write_text('format = "source"\n')
         self.run_chezmoi("apply", "--exclude=scripts")
+        self.write_target(
+            ".config/fish/functions/existing.fish", "# Captured local change\n"
+        )
+        self.write_target(".config/fish/functions/new.fish", "# Captured new file\n")
+        self.write_target(".config/starship.toml", 'format = "local"\n')
         for target in fixtures.values():
             (self.destination / target).unlink()
         (self.destination / ".config/ghostty/config.ghostty").unlink()
@@ -220,6 +233,12 @@ chezmoi_add_configs
         self.assertEqual(
             changed_source.read_text(), "# Source changes not yet applied\n"
         )
+        self.assertEqual(existing_source.read_text(), "# Captured local change\n")
+        self.assertEqual(
+            (existing_source.parent / "new.fish").read_text(), "# Captured new file\n"
+        )
+        self.assertEqual(starship_template.read_text(), 'format = "source"\n')
+        self.assertFalse(starship_source.exists())
         after = sorted(
             str(path.relative_to(self.source))
             for path in self.source.rglob("exact_*")
