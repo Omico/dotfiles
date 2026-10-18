@@ -9,7 +9,7 @@ function gradle-or-gradlew
             set project_root $dir
             break
         end
-        if test -d "$dir/.git"
+        if test -e "$dir/.git"
             break
         end
         set dir (dirname "$dir")

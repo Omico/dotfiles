@@ -8,8 +8,8 @@ function update-jenv --description "Detect JDKs and add to jenv"
     set -l c_reset (set_color normal)
 
     if not test -d "$HOME/.jenv"
-        echo $c_red"  ✗ jEnv not installed."$c_reset
-        exit 1
+        printf '%s  ✗ jEnv not installed.%s\n' "$c_red" "$c_reset" >&2
+        return 1
     end
 
     rm -rf $HOME/.jenv/versions/*

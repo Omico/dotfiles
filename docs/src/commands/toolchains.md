@@ -26,6 +26,8 @@ flutter-init [stable|beta|dev]
 
 Default channel is `stable`.
 
+Fresh installs extract the macOS ZIP with `unzip` and the Linux/WSL tar.xz with `tar`, then add `~/flutter/bin` to the current session's `PATH`.
+
 ## `fnm-upgrade-latest-lts`
 
 **Platforms:** All
@@ -38,7 +40,7 @@ Stop at the first failed install, activation, removal, or Corepack setup step an
 
 **Platforms:** All
 
-Walk up from the current directory for an executable `gradlew` (stopping at a `.git` root). Run the wrapper when found; otherwise invoke `gradle`.
+Walk up from the current directory for an executable `gradlew`, stopping at a `.git` directory or file, including worktree and submodule roots. Run the wrapper when found; otherwise invoke `gradle`.
 
 ## `mise`
 
@@ -57,6 +59,8 @@ Ensure `~/.cargo/bin/rustup` exists (official install script on first use), then
 **Platforms:** macOS (`darwin`)
 
 Clear `~/.jenv/versions/*`, scan `/Library/Java/JavaVirtualMachines/*.jdk`, register each JDK with jenv, and rehash.
+
+If `~/.jenv` is missing, report the error and return a nonzero status without closing the calling shell.
 
 ## `uv`
 

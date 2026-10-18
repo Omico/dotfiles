@@ -32,7 +32,7 @@ function gitkraken --description "Open GitKraken (optionally with a project path
         return
     end
 
-    set -l absolute_path (realpath (eval echo "$project_path") 2>/dev/null)
+    set -l absolute_path (realpath -- "$project_path" 2>/dev/null)
     if test -z "$absolute_path" -o ! -d "$absolute_path"
         echo "gitkraken: error: directory not found: $project_path" >&2
         return 1

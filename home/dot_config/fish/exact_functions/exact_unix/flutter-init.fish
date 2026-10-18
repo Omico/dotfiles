@@ -22,15 +22,6 @@ function flutter-init -a channel
             return 1
     end
 
-    # Tool checks
-    for cmd in curl jq unzip
-        if not command -sq $cmd
-            echo "Required command not found: $cmd" >&2
-            echo "Please install it and try again." >&2
-            return 1
-        end
-    end
-
     # Detect platform via fish_platform (chezmoi-rendered 00-fish-platform.fish)
     if not set -q fish_platform
         echo "fish_platform is not set." >&2
@@ -46,6 +37,21 @@ function flutter-init -a channel
         case '*'
             echo "Unsupported platform: $fish_platform" >&2
             return 1
+    end
+
+    set -l extract_command unzip -q -o
+    set -l extract_destination -d "$HOME"
+    if test "$platform" = linux
+        set extract_command tar -xf
+        set extract_destination -C "$HOME"
+    end
+
+    for cmd in curl jq $extract_command[1]
+        if not command -sq $cmd
+            echo "Required command not found: $cmd" >&2
+            echo "Please install it and try again." >&2
+            return 1
+        end
     end
 
     # Detect architecture
@@ -100,22 +106,22 @@ function flutter-init -a channel
     echo "  $url"
     echo
 
-    set -l tmp_zip (mktemp "/tmp/flutter-sdk.XXXXXX.zip")
+    set -l tmp_archive (mktemp "/tmp/flutter-sdk.XXXXXX")
 
-    if not curl -fL "$url" -o "$tmp_zip"
+    if not curl -fL "$url" -o "$tmp_archive"
         echo "Download failed." >&2
-        rm -f "$tmp_zip"
+        rm -f "$tmp_archive"
         return 1
     end
 
     # Archives contain a top-level 'flutter' directory
-    if not unzip -q -o "$tmp_zip" -d "$HOME"
+    if not $extract_command "$tmp_archive" $extract_destination
         echo "Failed to extract Flutter archive." >&2
-        rm -f "$tmp_zip"
+        rm -f "$tmp_archive"
         return 1
     end
 
-    rm -f "$tmp_zip"
+    rm -f "$tmp_archive"
 
     fish_add_path_if_exists "$HOME/flutter/bin"
 

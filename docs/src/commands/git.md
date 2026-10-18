@@ -32,6 +32,8 @@ Initialize a repository in the current directory: `git init`, stage all files, c
 
 Open GitKraken, optionally with a project directory.
 
+Project paths are passed literally; quote paths containing spaces or shell metacharacters.
+
 ```shell
 gitkraken [project_path]
 ```
