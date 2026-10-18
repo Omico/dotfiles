@@ -1,0 +1,11 @@
+{{ if eq (index .chezmoi.osRelease "ubuntuCodename") "noble" -}}
+#!/usr/bin/env fish
+
+{{ if .packages.ubuntu.noble.apt -}}
+sudo apt update -o APT::Update::Error-Mode=any; or exit $status
+sudo apt install -y{{ template "package-arguments.fish" .packages.ubuntu.noble.apt }}; or exit $status
+
+sudo apt autoremove -y; or exit $status
+sudo apt clean; or exit $status
+{{ end -}}
+{{ end -}}

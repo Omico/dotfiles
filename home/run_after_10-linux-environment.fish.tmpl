@@ -13,7 +13,7 @@ command -q dbus-update-activation-environment; or exit 0
 test -f "$environment_file"; or exit 0
 
 source "$environment_file"; or exit $status
-{{ $environment := mergeOverwrite (dict) .environment.common (get .environment .chezmoi.os | default dict) -}}
+{{ $environment := mergeOverwrite (dict) .environments.common (get .environments .chezmoi.os | default dict) -}}
 set -l environment_keys{{ range $key, $value := $environment }} {{ $key }}{{ end }}
 dbus-update-activation-environment --systemd $environment_keys; or exit $status
 {{ end -}}

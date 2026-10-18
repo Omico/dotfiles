@@ -1,7 +1,7 @@
 {{ if eq .chezmoi.os "darwin" -}}
 #!/usr/bin/env fish
 
-for app in firefox google-chrome visual-studio-code
+for app in{{ template "package-arguments.fish" .packages.darwin.orchard }}
     orchard install $app; or exit $status
 end
 {{ end -}}

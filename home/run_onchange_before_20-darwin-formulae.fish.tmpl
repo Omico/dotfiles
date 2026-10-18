@@ -1,0 +1,9 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env fish
+
+{{ if .packages.darwin.bootstrap_formulae -}}
+brew install{{ template "package-arguments.fish" .packages.darwin.bootstrap_formulae }}; or exit $status
+{{ else -}}
+exit 0
+{{ end -}}
+{{ end -}}

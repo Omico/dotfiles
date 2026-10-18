@@ -1,6 +1,6 @@
 # Static, non-secret values shared by shells and desktop sessions.
 # Platform sections override common values. Keep runtime-derived values in Fish.
-[environment.common]
+[environments.common]
 # Shared telemetry opt-out
 DO_NOT_TRACK = "true"
 
@@ -20,7 +20,3 @@ PROMPTFOO_DISABLE_TELEMETRY = "1"
 
 # .NET CLI
 DOTNET_CLI_TELEMETRY_OPTOUT = "1"
-
-[environment.darwin]
-# Homebrew
-HOMEBREW_NO_ANALYTICS = "1"

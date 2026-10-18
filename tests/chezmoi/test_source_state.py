@@ -2,9 +2,11 @@
 
 import json
 import os
+import shlex
 import shutil
 import subprocess
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -29,7 +31,7 @@ class SourceStateTests(unittest.TestCase):
         self.config.parent.mkdir()
         self.config.write_text("")
 
-    def run_chezmoi(self, *args, platform="darwin"):
+    def run_chezmoi(self, *args, platform="darwin", codename="noble"):
         result = subprocess.run(
             [
                 str(CHEZMOI),
@@ -49,7 +51,7 @@ class SourceStateTests(unittest.TestCase):
                         "chezmoi": {
                             "os": platform,
                             "kernel": {"osrelease": "6.8.0-generic"},
-                            "osRelease": {"id": "ubuntu", "ubuntuCodename": "noble"},
+                            "osRelease": {"id": "ubuntu", "ubuntuCodename": codename},
                         }
                     }
                 ),
@@ -238,3 +240,156 @@ chezmoi_add_configs
             (self.destination / ".config/fish/conf.d/apm.fish").read_text(),
             "# Installer-owned\n",
         )
+
+    @unittest.skipUnless(FISH, "fish is required")
+    def test_package_templates_enforce_conditions_and_valid_names(self):
+        scripts = {
+            "run_onchange_before_20-darwin-formulae.fish.tmpl": "darwin",
+            "run_onchange_after_30-darwin-apps.fish.tmpl": "darwin",
+            "run_onchange_before_21-ubuntu-noble-apt.fish.tmpl": "noble",
+        }
+        for name, supported in scripts.items():
+            source = self.source / "home" / name
+            for platform in ("darwin", "linux", "windows"):
+                with self.subTest(script=name, platform=platform):
+                    rendered = self.run_chezmoi(
+                        "execute-template", "--file", str(source), platform=platform
+                    )
+                    self.assertEqual(
+                        bool(rendered.strip()),
+                        supported == "noble" or platform == supported,
+                    )
+                    if rendered.strip():
+                        result = subprocess.run(
+                            [str(FISH), "--no-config", "--no-execute"],
+                            input=rendered,
+                            capture_output=True,
+                            text=True,
+                            check=False,
+                        )
+                        self.assertEqual(result.returncode, 0, result.stderr)
+        apt_script = (
+            self.source / "home/run_onchange_before_21-ubuntu-noble-apt.fish.tmpl"
+        )
+        for codename in ("jammy", ""):
+            with self.subTest(codename=codename):
+                self.assertFalse(
+                    self.run_chezmoi(
+                        "execute-template",
+                        "--file",
+                        str(apt_script),
+                        platform="linux",
+                        codename=codename,
+                    ).strip()
+                )
+        manifest = self.source / "home/.chezmoidata/darwin.toml"
+        original = manifest.read_text()
+        manifest.write_text(original.replace('"aria2"', '"bad;package"'))
+        result = subprocess.run(
+            [
+                str(CHEZMOI),
+                "--source",
+                str(self.source),
+                "--config",
+                str(self.config),
+                "--override-data",
+                '{"chezmoi":{"os":"darwin"}}',
+                "execute-template",
+                "--file",
+                str(
+                    self.source
+                    / "home/run_onchange_before_20-darwin-formulae.fish.tmpl"
+                ),
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Invalid package name", result.stderr)
+        manifest.write_text(original.replace('["aria2", "jq", "starship", "yq"]', "[]"))
+        self.assertNotIn(
+            "brew install",
+            self.run_chezmoi(
+                "execute-template",
+                "--file",
+                str(
+                    self.source
+                    / "home/run_onchange_before_20-darwin-formulae.fish.tmpl"
+                ),
+            ),
+        )
+
+    @unittest.skipUnless(FISH, "fish is required")
+    def test_package_list_changes_and_reverts_rerun_the_installer(self):
+        log = self.root / "install-calls"
+        mock_bin = self.root / "bin"
+        mock_bin.mkdir()
+        sudo = mock_bin / "sudo"
+        sudo.write_text('#!/bin/sh\nprintf "%s\\n" "$*" >> "$INSTALL_CALLS"\n')
+        sudo.chmod(0o755)
+        script = self.source / "home/run_onchange_before_21-ubuntu-noble-apt.fish.tmpl"
+        args = [
+            str(CHEZMOI),
+            "--source",
+            str(self.source),
+            "--destination",
+            str(self.destination),
+            "--config",
+            str(self.config),
+            "--persistent-state",
+            str(self.root / "state.boltdb"),
+            "--override-data",
+            (
+                '{"chezmoi":{"os":"linux","kernel":{"osrelease":"6.8.0"},'
+                '"osRelease":{"id":"ubuntu","ubuntuCodename":"noble"}}}'
+            ),
+            "apply",
+            "--source-path",
+            str(script),
+        ]
+        env = {
+            **os.environ,
+            "HOME": str(self.destination),
+            "PATH": str(mock_bin)
+            + os.pathsep
+            + str(Path(str(FISH)).parent)
+            + os.pathsep
+            + "/usr/bin:/bin",
+            "INSTALL_CALLS": str(log),
+        }
+
+        def apply():
+            result = subprocess.run(
+                args, env=env, capture_output=True, text=True, check=False
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+
+        apply()
+        first_calls = log.read_text()
+        install = next(
+            line for line in first_calls.splitlines() if line.startswith("apt install")
+        )
+        self.assertIn("fcitx5-rime", shlex.split(install))
+        apply()
+        self.assertEqual(log.read_text(), first_calls)
+        manifest = self.source / "home/.chezmoidata/ubuntu.toml"
+        original = manifest.read_text()
+        manifest.write_text(original.replace('"zip",', '"zip",\n    "test-package",'))
+        apply()
+        self.assertIn("test-package", log.read_text())
+        changed_calls = log.read_text()
+        manifest.write_text(original)
+        apply()
+        self.assertEqual(log.read_text(), changed_calls + first_calls)
+        current_calls = log.read_text()
+        packages = tomllib.loads(original)["packages"]["ubuntu"]["noble"]["apt"]
+        empty = original
+        for package in packages:
+            empty = empty.replace(f'    "{package}",\n', "")
+        manifest.write_text(empty)
+        apply()
+        self.assertEqual(log.read_text(), current_calls)
+        manifest.write_text(original)
+        apply()
+        self.assertEqual(log.read_text(), current_calls + first_calls)

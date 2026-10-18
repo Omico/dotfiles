@@ -11,7 +11,7 @@
         <string>/bin/sh</string>
         <string>-ec</string>
         <string>
-{{- $environment := mergeOverwrite (dict) .environment.common (get .environment .chezmoi.os | default dict) }}
+{{- $environment := mergeOverwrite (dict) .environments.common (get .environments .chezmoi.os | default dict) }}
 {{- range $key, $value := $environment }}
 {{ printf "/bin/launchctl setenv '%s' '%s'" ($key | replace "'" "'\\''") ($value | replace "'" "'\\''") | html }}
 {{- end }}

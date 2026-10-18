@@ -4,7 +4,7 @@ This repository contains my personal dotfiles and automation setup, managed with
 
 ## Installation
 
-The installer bootstraps Git, Fish, and chezmoi, then runs `chezmoi apply`. Platform-specific `run_once_*` scripts install the remaining packages and configure the system. Dependencies run before file application; environment activation, application setup, and routine updates follow it. Failed setup scripts retry on the next apply; successful ones rerun only when their rendered content changes.
+The installer bootstraps Git, Fish, and chezmoi, then runs `chezmoi apply`. Platform-specific setup scripts install the remaining packages and configure the system. Dependencies run before file application; environment activation, application setup, and routine updates follow it. Failed setup scripts retry on the next apply. Platform package lists in `home/.chezmoidata/darwin.toml` and `home/.chezmoidata/ubuntu.toml` trigger their `run_onchange_*` installers when the rendered list changes; other one-time setup retains its existing execution rules. The full Homebrew environment remains in `Brewfile`.
 
 ::: code-group
 
