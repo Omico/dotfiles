@@ -5,6 +5,22 @@
 - Resolve relative instruction paths from the containing file's directory.
 - Start a new chat for independent work in another workspace.
 - Reuse a chat only for the same task or at the user's explicit direction.
+- Check change size before starting or expanding a task.
+- Assess existing changes, untracked files, and expected additions.
+- Divide scope into independently deliverable goals.
+- Keep each workspace's changes small enough to review.
+- If current changes are too large to review, split work.
+- Split work early if expected changes would hinder review.
+- Use separate chats for the resulting goals.
+- Run independent split goals in parallel.
+- Give each split goal its own worktree or working directory.
+- Chats sharing one working tree still share its diff.
+- Before parallel work, assign write ownership for shared files.
+- Set the integration order before parallel work.
+- Preserve existing changes when splitting work.
+- Keep the full task scope covered.
+- Keep existing permissions and specific authorizations.
+- Splitting work authorizes no commits, history rewrites, or remote writes.
 - Remote writes require explicit authorization for the action and target, regardless of tool.
 - Remote writes include pushes, remote branch or tag changes, PR or issue creation, PR merges, and releases.
 - General task requests do not authorize remote writes.
