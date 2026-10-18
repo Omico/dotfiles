@@ -130,6 +130,68 @@ class ShellToolchainTests(unittest.TestCase):
         self.assertTrue((self.root / ".git").is_dir())
         self.assertFalse((self.root / "calls").exists())
 
+    @unittest.skipUnless(shutil.which("git"), "git is required")
+    def test_stop_sync_preserves_ignored_paths_and_dry_run(self):
+        git = shutil.which("git")
+        assert git
+        (self.binaries / "git").symlink_to(git)
+        self.executable(
+            "xattr",
+            f"#!{sys.executable}\nimport json, os, sys\nfrom pathlib import Path\n"
+            "with (Path(os.environ['HOME']) / 'marked').open('a') as log:\n"
+            "    log.write(json.dumps(str(Path(sys.argv[-1]))) + '\\n')\n",
+        )
+        repo = (self.root / "project with spaces").resolve()
+        subprocess.run([git, "init", "-q", str(repo)], env=self.env, check=True)
+        (repo / ".gitignore").write_text("ignored*/\n*.cache\n")
+        names = ("ignored\nname", "ignored end\n", "ignored regular")
+        for name in names:
+            (repo / name).mkdir()
+            (repo / name / "data").write_text("ignored")
+        (repo / "odd\nname.cache").write_text("ignored")
+        (repo / "ignored").write_text("not ignored")
+        (repo / "odd").write_text("not ignored")
+        self.env["repo"] = str(repo)
+        result = self.run_fish(
+            "exact_darwin/stop-sync-gitignored.fish",
+            'stop-sync-gitignored --dry-run "$repo"',
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse((self.root / "marked").exists())
+        result = self.run_fish(
+            "exact_darwin/stop-sync-gitignored.fish", 'stop-sync-gitignored "$repo"'
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            {
+                json.loads(line)
+                for line in (self.root / "marked").read_text().splitlines()
+            },
+            {str(repo / name) for name in (*names, "odd\nname.cache")},
+        )
+
+    def test_stop_sync_propagates_git_query_failure_without_marking(self):
+        self.executable(
+            "git",
+            f"#!{sys.executable}\nimport os, sys\n"
+            "if 'rev-parse' in sys.argv:\n"
+            "    print(os.environ['HOME'])\n"
+            "elif os.environ['query_status'] != '0':\n"
+            "    sys.stdout.buffer.write(b'partial\\x00')\n"
+            "    sys.exit(19)\n",
+        )
+        self.executable("xattr", '#!/bin/sh\necho called > "$HOME/marked"\n')
+        for query_status in (19, 0):
+            self.env["query_status"] = str(query_status)
+            for option in ("", "--dry-run"):
+                result = self.run_fish(
+                    "exact_darwin/stop-sync-gitignored.fish",
+                    f'stop-sync-gitignored {option} "$HOME"',
+                )
+                self.assertEqual(result.returncode, query_status, result.stderr)
+                self.assertEqual("No ignored paths" in result.stdout, query_status == 0)
+                self.assertFalse((self.root / "marked").exists())
+
     def test_gcl_preserves_scp_paths_and_host_overrides(self):
         self.executable(
             "git",

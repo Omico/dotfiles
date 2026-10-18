@@ -42,12 +42,14 @@ function stop-sync-gitignored --description "Mark gitignored paths with the File
     end
 
     set -l ignored_paths (
-        command git -C "$repo_root" status --ignored --porcelain=v1 -z \
-        | string split0 \
-        | string match -r '^!! .+' \
-        | string replace -r '^!! ' '' \
-        | string replace -r '/$' ''
+        command git -C "$repo_root" ls-files --others --ignored --exclude-standard --directory -z \
+        | string split0
     )
+    set -l query_status $pipestatus[1]
+    if test $query_status -ne 0
+        echo "Failed to list ignored paths in $repo_root" >&2
+        return $query_status
+    end
 
     if not set -q ignored_paths[1]
         echo "No ignored paths found in $repo_root"

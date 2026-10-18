@@ -50,6 +50,8 @@ gitkraken [project_path]
 
 Mark gitignored paths with the `com.apple.fileprovider.ignore#P` extended attribute so iCloud File Provider stops syncing them.
 
+Ignored filenames retain embedded newlines. If Git cannot list ignored paths, return its error status without marking anything; `--dry-run` follows the same failure rule.
+
 ```shell
 stop-sync-gitignored [--dry-run] [path]
 ```
