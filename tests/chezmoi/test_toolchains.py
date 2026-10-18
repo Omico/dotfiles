@@ -88,6 +88,48 @@ class ShellToolchainTests(unittest.TestCase):
                 self.assertEqual(result.returncode, expected, result.stderr)
                 self.assertEqual((self.root / "calls").read_text().splitlines(), calls)
 
+    def test_gi_stops_at_each_failed_step(self):
+        prelude = (
+            "function git\n"
+            ' echo $argv[1] >> "$HOME/calls"\n'
+            ' if test "$argv[1]" = "$failed_step"; return 7; end\n'
+            ' if test "$argv[1]" = rev-parse; echo $initial_branch; end\n'
+            " return 0\nend\n"
+        )
+        steps = ["init", "add", "commit", "rev-parse", "branch"]
+        for failed_step in (*steps, ""):
+            with self.subTest(failed_step=failed_step):
+                (self.root / "calls").unlink(missing_ok=True)
+                self.env.update(failed_step=failed_step, initial_branch="master")
+                result = self.run_fish("gi.fish", prelude + "gi", cwd=self.root)
+                self.assertEqual(
+                    result.returncode, 7 if failed_step else 0, result.stderr
+                )
+                expected = (
+                    steps[: steps.index(failed_step) + 1] if failed_step else steps
+                )
+                self.assertEqual(
+                    (self.root / "calls").read_text().splitlines(), expected
+                )
+        (self.root / "calls").unlink()
+        self.env["initial_branch"] = "main"
+        result = self.run_fish("gi.fish", prelude + "gi", cwd=self.root)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual((self.root / "calls").read_text().splitlines(), steps[:-1])
+
+    def test_gi_preserves_existing_git_when_removal_fails(self):
+        (self.root / ".git").mkdir()
+        result = self.run_fish(
+            "gi.fish",
+            "function rm; return 9; end\n"
+            'function git; echo called > "$HOME/calls"; end\ngi',
+            cwd=self.root,
+            input_text="y\n",
+        )
+        self.assertEqual(result.returncode, 9, result.stderr)
+        self.assertTrue((self.root / ".git").is_dir())
+        self.assertFalse((self.root / "calls").exists())
+
     def test_gcl_preserves_scp_paths_and_host_overrides(self):
         self.executable(
             "git",

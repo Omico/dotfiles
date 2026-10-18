@@ -28,6 +28,8 @@ set -g gcl_remote_host_base_dirs \
 
 Initialize a repository in the current directory: `git init`, stage all files, create an initial commit, and rename `master` to `main` when needed. Prompts before deleting an existing `.git` directory.
 
+Stop at the first failed removal, initialization, staging, commit, or branch operation and return its error status. Earlier successful steps are retained.
+
 ## `gitkraken`
 
 **Platforms:** macOS (`darwin`)

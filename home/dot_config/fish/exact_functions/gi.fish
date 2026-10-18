@@ -13,23 +13,25 @@ function gi --description "Initialize a new git repo with initial commit and ren
         switch $reply
             case y Y
                 echo "🗑️  Removing existing .git directory..."
-                rm -rf .git
+                rm -rf .git; or return $status
             case '*'
                 return 1
         end
     end
 
     echo "✨ Initializing new Git repository..."
-    git init
+    git init; or return $status
 
     echo "➕ Staging all files..."
-    git add .
+    git add .; or return $status
 
     echo "📝 Creating initial commit..."
-    git commit -m "Initial commit"
+    git commit -m "Initial commit"; or return $status
 
-    if git rev-parse --abbrev-ref HEAD 2>/dev/null | grep -q '^master$'
+    set -l branch (git rev-parse --abbrev-ref HEAD); or return $status
+    if test "$branch" = master
         echo "🔀 Renaming branch 'master' to 'main'..."
-        git branch -M main
+        git branch -M main; or return $status
     end
+    return 0
 end
