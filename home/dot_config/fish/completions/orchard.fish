@@ -46,7 +46,7 @@ complete -c orchard -c executable_orchard -n '__fish_seen_subcommand_from valida
 #   - <app_id>
 # - options:
 #   - --force
-complete -c orchard -c executable_orchard -n '__fish_seen_subcommand_from install' -l force -d 'Force re-download'
+complete -c orchard -c executable_orchard -n '__fish_seen_subcommand_from install' -l force -d 'Reinstall even if already installed'
 complete -c orchard -c executable_orchard -n '__fish_seen_subcommand_from install' -xa '(__orchard_app_ids)'
 
 # After migrate:
