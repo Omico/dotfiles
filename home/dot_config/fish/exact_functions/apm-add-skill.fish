@@ -32,28 +32,40 @@ Usage: apm-add-skill [--global] <package> [<package> ...]
 
     set -l add_args $pkgs
     set -q _flag_global; and set add_args --global $pkgs
-    __apm-add-to-source $add_args; or return $status
-
-    __apm-merge-source-config; or begin
-        set -l merge_status $status
-        __apm-remove-dependencies "$source_path" $pkgs
-        __apm-merge-source-config
-        return $merge_status
+    set -l snapshot_dir (command mktemp -d "$HOME/apm-add.XXXXXXXXXX"); or return 1
+    set -l config_paths "$source_path" "$__apm_home/apm.yml"
+    for config_path in $config_paths
+        if test -e "$config_path"
+            command cp -p "$config_path" "$snapshot_dir/"(path basename "$config_path"); or begin
+                command rm -rf "$snapshot_dir"
+                return 1
+            end
+        end
     end
 
-    __apm-run-global-apm install; or begin
-        set -l install_status $status
-        __apm-remove-dependencies "$source_path" $pkgs
-        __apm-merge-source-config
-        return $install_status
+    __apm-add-to-source $add_args
+    and __apm-merge-source-config
+    and __apm-run-global-apm install
+    and __apm-link-skills-to-agents
+    set -l add_status $status
+    if test $add_status -ne 0
+        set -l restore_failed false
+        for config_path in $config_paths
+            set -l snapshot "$snapshot_dir/"(path basename "$config_path")
+            if test -e "$snapshot"
+                command cp -p "$snapshot" "$config_path"; or set restore_failed true
+            else
+                command rm -f "$config_path"; or set restore_failed true
+            end
+        end
+        if test "$restore_failed" = true
+            printf 'Error: configuration rollback failed; snapshots remain in %s.\n' "$snapshot_dir" >&2
+        else
+            command rm -rf "$snapshot_dir"
+        end
+        return $add_status
     end
-
-    __apm-link-skills-to-agents; or begin
-        set -l link_status $status
-        __apm-remove-dependencies "$source_path" $pkgs
-        __apm-merge-source-config
-        return $link_status
-    end
+    command rm -rf "$snapshot_dir"; or return 1
 
     set -l target_path "$__apm_home/"(path basename "$source_path")
     command cp -f "$source_path" "$target_path"; or return 1

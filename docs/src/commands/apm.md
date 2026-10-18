@@ -33,6 +33,8 @@ apm-add-skill --global <package> [<package> ...]
 
 For tracked additions specific to one environment, edit `home/dot_apm/apm.external.yml` or `home/dot_apm/apm.internal.yml` in the chezmoi source directory.
 
+If adding, merging, installing, or linking fails, the command restores the previous source and runtime configuration, including dependencies that were already present. This does not undo package installation or link changes already made by APM. If configuration restoration fails, the command reports the retained snapshot directory for manual recovery.
+
 ## `apm-update`
 
 Update the APM CLI and all skills configured for the selected environment, including local additions:

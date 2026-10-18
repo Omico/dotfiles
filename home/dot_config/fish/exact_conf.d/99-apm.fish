@@ -112,17 +112,6 @@ function __apm-add-dependencies --argument-names source_path
     or return 1
 end
 
-function __apm-remove-dependencies --argument-names source_path
-    set -l removals $argv[2..-1]
-    test (count $removals) -gt 0; or return 0
-    test -e "$source_path"; or return 0
-
-    for pkg in $removals
-        yq -i "del(.dependencies.apm[] | select(. == \"$pkg\"))" "$source_path"
-        or return 1
-    end
-end
-
 function __apm-merge-source-config
     __apm-require-yq; or return $status
 
