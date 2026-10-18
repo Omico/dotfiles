@@ -10,7 +10,6 @@ Repository rule router. Load first, then open only the focused references needed
 ## Use
 
 - Read the route table and choose the smallest matching reference.
-- After changing Python files, run `uv run --locked ruff check .`, `uv run --locked ruff format --check .`, and `uv run --locked basedpyright` from the repository root; fix all reported issues before completing the task.
 
 ## Stop Rule
 
@@ -18,6 +17,7 @@ Stop when the current reference gives enough guidance. Load another reference on
 
 ## Routes
 
+- **Python**: Before changing Python files, read [python](references/python.md) and run its checks after the change.
 - **Stored text**: Read [english-only](references/english-only.md) before editing non-Markdown comments, descriptions, command output, or user-facing strings.
 - **Markdown**: Read [markdown](references/markdown.md) before editing `.md` files, skills, docs, or Markdown-like comments.
 - **Agent docs**: Read [agent-docs](references/agent-docs.md) before editing `.agents/`, `docs/`, the docs generator, or docs CI.

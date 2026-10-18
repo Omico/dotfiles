@@ -1,6 +1,6 @@
 ---
 name: fish-shell
-description: Foundational guidance for writing, reviewing, and maintaining Fish shell code. Use for fish scripts, functions, completions, and shell tooling when choosing fish-native idioms for output streams, text/list handling, command status, control flow, function structure, file layout, formatting, or verification.
+description: "Use when writing, reviewing, or maintaining Fish scripts, functions, completions, or shell tooling; covers idioms, structure, formatting, and verification."
 ---
 
 # Fish Shell

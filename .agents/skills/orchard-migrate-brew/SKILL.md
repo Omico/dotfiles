@@ -5,77 +5,39 @@ description: "Use for Homebrew-to-Orchard migration or cask package authoring, i
 
 # Orchard: migrate from Homebrew
 
-## Overview
+Use the `orchard` skill for package format, helpers, conventions, and quality checks. Its `references/app-package-format.md` owns cask mapping. Existing package edits without migration context belong to `orchard`; unrelated shell tooling belongs to `fish-shell`.
 
-This skill guides **`orchard migrate brew`** flows for macOS GUI apps that are currently installed via Homebrew casks and should be managed by Orchard instead. It covers both **global dry-run plans** and **targeted cask handling**, including authoring new `home/dot_config/exact_orchard/exact_apps/<app_id>.fish` packages when no Orchard package exists yet.
+## Boundaries
 
-Use the `orchard` skill for package format, helpers, and quality checks. Read its `references/app-package-format.md` for cask mapping.
-
----
-
-## When not to use
-
-- Editing an existing Orchard package without any Homebrew migration context — use the `orchard` skill only
-- General fish scripting or shell tooling that is unrelated to Orchard or Homebrew casks
-
----
+- Run `orchard migrate brew --plan` and `orchard migrate brew` in the user's real environment when Homebrew state must be accurate.
+- Obtain explicit user confirmation before migration or any `brew` command that removes or modifies casks. A requested read-only plan does not authorize migration.
+- Keep comments and user-visible strings in Orchard scripts in English.
+- Give concise summaries; show full logs only when requested.
 
 ## Select the workflow
 
-- **Inputs**
-  - Empty or very short message after invoking this skill → treat as a request for a **global migration review** (dry-run plan first)
-  - One or more explicit cask names, or a request to **author Orchard packages** → treat as a **targeted cask / package-authoring** request
+- An empty or very short invocation requests a global migration review, starting with a dry-run plan.
+- Explicit cask names or a package-authoring request select targeted cask handling.
 
----
+## Global migration
 
-## Global migration workflow (no specific casks)
+- Run `orchard migrate brew --plan` and summarize outdated casks with an existing Orchard package and those that still need one.
+- If none can migrate, report that there is nothing to do and stop without a confirmation question.
+- If some can migrate, ask whether to uninstall those Homebrew casks and reinstall them through Orchard, within the confirmation boundary above.
+- After confirmation, run `orchard migrate brew` and summarize successes and failures.
+- If the user declines, leave casks unchanged and offer to author packages for specific missing casks.
 
-- Run `orchard migrate brew --plan` under the shared safety requirements below
-- Summarize for the user:
-  - Outdated casks that **can** migrate because an Orchard package already exists
-  - Outdated casks that **cannot** migrate yet because no Orchard package exists
-- If **no** outdated casks can migrate, explain that there is nothing to do and stop without asking for confirmation
-- If some casks **can** migrate:
-  - Apply the shared confirmation requirement: ask whether to uninstall those Homebrew casks and reinstall them via Orchard
-  - If the user confirms:
-    - Run `orchard migrate brew`
-    - Show a concise summary of what migrated and any failures
-  - If the user declines:
-    - Do not run the real migration
-    - Offer to help author Orchard packages for specific casks that are still missing Orchard packages
+## Targeted casks and package authoring
 
----
+- Parse the cask names and check `home/dot_config/exact_orchard/exact_apps/<cask>.fish` for each.
+- If a package exists, explain the migration plan for that context or suggest `orchard install <app_id>` when migration is unnecessary.
+- If no package exists:
+  - Use `brew info --cask <cask>` when local brew is available. Otherwise, read the cask file through the GitHub API in `Homebrew/homebrew-cask`.
+  - Extract the homepage, download URL, and install details; ask for missing information, including special install behavior.
+  - Follow `orchard` and its package-format reference to draft and write `home/dot_config/exact_orchard/exact_apps/<cask>.fish`. The package-authoring request authorizes this source write without extra confirmation.
 
-## Targeted cask / package-authoring workflow
+## Completion
 
-- Parse cask names from the user’s message
-- For each cask:
-  - Check whether `home/dot_config/exact_orchard/exact_apps/<cask>.fish` already exists
-  - If a package exists:
-    - Explain what `orchard migrate brew --plan` would show for that context, or suggest using `orchard install <app_id>` directly if migration is unnecessary
-  - If no package exists:
-    - Enter Orchard package authoring mode:
-      - Ask for any missing details (homepage, download URL, special install behavior)
-      - Prefer `brew info --cask <cask>` when local `brew` is available; otherwise use the GitHub API to read the cask file from `Homebrew/homebrew-cask` and extract homepage, download URL, and install details
-      - Follow the `orchard` skill and **`app-package-format`** reference to draft `home/dot_config/exact_orchard/exact_apps/<cask>.fish`
-    - Write the Orchard app package directly to `home/dot_config/exact_orchard/exact_apps/<cask>.fish` based on the user’s request, without asking for extra confirmation
-
----
-
-## Safety and conventions
-
-- **Never** run `brew` commands that remove or modify casks without explicit user confirmation
-- Keep comments and user-visible strings in Orchard-related scripts in **English** (follow workspace rules)
-- Run `orchard migrate brew --plan` and `orchard migrate brew` only in the user’s real environment when their Homebrew state must be accurate
-- Prefer concise summaries over full command output unless the user explicitly asks for detailed logs
-
----
-
-## Checklist before finishing
-
-- **Migration safety**
-  - Keep plans within the requested scope and migrations within the explicitly confirmed scope
-- **Package quality**
-  - New or edited packages follow the `orchard` skill and **development-guidelines** checklist
-- **User reminders**
-  - After any package change, remind the user to run `chezmoi apply`, then `orchard list` and `orchard install <app_id>` as appropriate
+- Keep plans within the requested scope and migration within the explicitly confirmed scope.
+- Complete the `orchard` development-guidelines checklist for new or edited packages.
+- After any package change, remind the user to run `chezmoi apply`, then `orchard list` and `orchard install <app_id>` as appropriate.

@@ -9,21 +9,15 @@ Orchard is a lightweight manager for macOS apps installed via dmg, zip, or pkg a
 
 Project-specific source paths, sync steps, and verification commands belong in the active repository's project primer. Load that primer before changing local files, then use this skill for the Orchard domain rules.
 
-## References
+## Select the references
 
-- **Package format**: [references/app-package-format.md](references/app-package-format.md) for variables, callbacks, public API, templates, examples, and Homebrew Cask mapping.
-- **Development guidelines**: [references/development-guidelines.md](references/development-guidelines.md) for app package standards, main script standards, completions, and checklists.
-- **Architecture**: [references/development.md](references/development.md) for install flow, command behavior, dependencies, and maintainer conventions.
+- **Any source change**: Read [development-guidelines.md](references/development-guidelines.md) for the applicable package, executable, or completion standards and completion checklist.
+- **Package fields, callbacks, or Homebrew cask conversions**: Read [app-package-format.md](references/app-package-format.md) for the contract, minimal template, candidate discovery, and cask mapping. Candidate discovery only considers casks with `auto_updates true`.
+- **GitHub URL helpers or CLI integration callbacks**: Read [public-api.md](references/public-api.md) for `orchard_fetch_*`, `orchard_cli_wrapper`, and `orchard_cli_symlink`.
+- **Package examples**: Read [package-examples.md](references/package-examples.md) when a fixed URL, redirect, bundle override, DMG installer, or custom API example is needed.
+- **Executable or completion changes**: Read [development.md](references/development.md) for command behavior, architecture, install and validation flows, recovery, and dependencies.
 
-## Quick workflow
-
-- **App packages**: Read [development-guidelines — App package standards](references/development-guidelines.md#app-package-standards), then use [app-package-format.md](references/app-package-format.md) for templates, public API helpers such as `orchard_fetch_github_release_asset_url`, and examples.
-- **Main script or completions**: Follow [development-guidelines — Main script standards](references/development-guidelines.md#main-script-standards) and [development.md](references/development.md).
-- **Homebrew Cask conversions**: Use this skill's package format reference for candidate discovery and cask-to-package mapping.
-
-## Finding casks to convert to orchard
-
-Only consider casks with **`auto_updates true`** (GUI apps with their own updater). See [app-package-format.md — Finding casks to convert](references/app-package-format.md#finding-casks-to-convert) for the candidate command and steps. For each candidate, run `brew info --cask <cask_name>` and map the cask to an Orchard package using that reference.
+Load only the references needed for the current task.
 
 ## Checklist before finishing
 

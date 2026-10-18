@@ -2,8 +2,6 @@
 
 Each package is defined as `apps/<app_id>.fish` under the Orchard config directory (`$XDG_CONFIG_HOME/orchard`, default `~/.config/orchard`). At runtime, Orchard reads those packages for `orchard list`, `orchard validate`, and `orchard install <app_id>`.
 
-**Standards and checklists:** [development-guidelines.md](development-guidelines.md). **Architecture and workflow:** [development.md](development.md).
-
 Apply this format when creating or editing app `.fish` files.
 
 ---
@@ -47,6 +45,11 @@ All callback names use the `_callback` suffix. Lifecycle: `orchard_<phase>_insta
 | `orchard_resolve_download_url_callback`      | Called once during `orchard install` (before download). Must set `orchard_app_download_url`. Leave URL empty in the app file when using this. |
 | `orchard_resolve_installed_version_callback` | Used by `orchard list` to show the installed version. Must echo the version string. Else read from Info.plist.                                |
 
+- **URL resolver success**: Set `orchard_app_download_url` and return 0. Helpers may print a URL to stdout.
+- Without an installed-version callback, read `CFBundleShortVersionString` from the app's `Info.plist`.
+- **URL resolver failure**: Write an error to stderr and return 1; leave no partial or invalid URL.
+- Prefer `orchard_fetch_github_release_asset_url` for GitHub assets; use `orchard_fetch_github_api` with jq or curl with parsing for custom APIs and HTML.
+
 Define in the app's `.fish` file as needed:
 
 ```fish
@@ -61,28 +64,6 @@ end
 
 ---
 
-## Public API
-
-| Function                                 | Description                                                                                                                                                                                                                                                              |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `orchard_fetch_github_api`               | GET GitHub API path; prints response body to stdout. Arg: `path` (e.g. `repos/owner/repo/releases/latest`). Returns 0 on HTTP 200, 1 otherwise (writes error to stderr).                                                                                                 |
-| `orchard_fetch_github_release_asset_url` | Gets the first asset in the latest release whose name matches the regex; prints its `browser_download_url`. Args: `repo` (owner/repo), `pattern` (jq `test()` regex; use single quotes so `$` is literal, escape dots as `\.`). Returns 0 and URL if found, 1 otherwise. |
-
-**Example (resolve DMG by arch):**
-
-```fish
-function orchard_resolve_download_url_callback
-    set -l pattern 'MyApp_.*_aarch64\.dmg$'
-    if test (uname -m) != arm64
-        set pattern 'MyApp_.*_x64\.dmg$'
-    end
-    set -g orchard_app_download_url (orchard_fetch_github_release_asset_url "owner/repo" "$pattern")
-    return $status
-end
-```
-
----
-
 ## Template
 
 ```fish
@@ -90,65 +71,6 @@ set -g orchard_app_id <app_id>
 set -g orchard_app_display_name "<display name>"
 set -g orchard_app_download_url "<direct URL>"
 set -g orchard_app_download_type dmg
-```
-
----
-
-## Examples
-
-**Required only (DMG):**
-
-```fish
-set -g orchard_app_id anythingllm
-set -g orchard_app_display_name "AnythingLLM"
-set -g orchard_app_download_url "https://cdn.anythingllm.com/latest/AnythingLLMDesktop-Silicon.dmg"
-set -g orchard_app_download_type dmg
-```
-
-**Redirect URL (DMG):**
-
-```fish
-set -g orchard_app_id slack
-set -g orchard_app_display_name Slack
-set -g orchard_app_download_url "https://slack.com/api/desktop.latestRelease?arch=universal&variant=dmg&redirect=true"
-set -g orchard_app_download_type dmg
-```
-
-**When .app name must be set:**
-
-```fish
-set -g orchard_app_id myapp
-set -g orchard_app_display_name "My App"
-set -g orchard_app_bundle_name "MyApp Desktop.app"
-set -g orchard_app_download_url "https://example.com/MyApp.dmg"
-set -g orchard_app_download_type dmg
-```
-
-**When a DMG contains a PKG installer:**
-
-```fish
-set -g orchard_app_id example-suite
-set -g orchard_app_display_name "Example Suite"
-set -g orchard_app_bundle_name "Example.app"
-set -g orchard_app_pkg_name "Example Installer.pkg"
-set -g orchard_app_download_url "https://example.com/ExampleSuite.dmg"
-set -g orchard_app_download_type dmg
-```
-
-**Resolve URL from custom API (e.g. Antigravity uses zip + API):**
-
-```fish
-set -g orchard_app_id antigravity
-set -g orchard_app_display_name Antigravity
-set -g orchard_app_download_type zip
-
-function orchard_resolve_download_url_callback
-    set -l json (curl -sL "https://example.com/api/latest" 2>/dev/null)
-    set -l url (echo "$json" | jq -r '.url')
-    test -z "$url"; and return 1
-    set -g orchard_app_download_url "$url"
-    return 0
-end
 ```
 
 ---
@@ -188,5 +110,6 @@ For each candidate, run **`brew info --cask <cask_name>`** to confirm it uses a 
 - **Set by Orchard (do not set in the app file unless overriding):**
   - When loading an app: `orchard_app_bundle_path` defaults to `/Applications/$orchard_app_bundle_name` if unset.
   - During `orchard install` only: `_orchard_app_download_url_hash` and `_orchard_app_archive_cache_path` (after `orchard_resolve_download_url_callback` if defined).
+- Never set `_orchard_*` internal variables in app packages.
 - **Resolve callback**: Runs only during `orchard install`, not during `orchard list`.
 - After adding or editing, run the repository-specific sync step so `orchard list` sees the app; validate with `orchard validate <app_id>` and optionally install with `orchard install <app_id>`.

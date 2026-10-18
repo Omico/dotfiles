@@ -23,11 +23,7 @@ These are chezmoi source paths. `chezmoi apply` maps them into `$HOME`:
 
 ## Repository Rules
 
-Map paths from that skill into this chezmoi source tree:
-
-- `apps/<app_id>.fish` → `home/dot_config/exact_orchard/exact_apps/<app_id>.fish`
-- Orchard executable source → `home/dot_local/bin/executable_orchard`
-- Fish completion source → `home/dot_config/fish/completions/orchard.fish`
+Use the Source Map above when translating the `orchard` skill's runtime paths into chezmoi sources.
 
 For cask-conversion candidate checks, run commands from the repository root and compare against `home/dot_config/exact_orchard/exact_apps/*.fish`.
 
