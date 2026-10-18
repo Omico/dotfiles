@@ -35,6 +35,8 @@ brew-restore
 
 :::
 
+The macOS settings script stops at the first failed required command and returns its error status. Earlier successful changes are retained.
+
 ### Rime configuration
 
 Chezmoi writes the custom YAML files directly to `~/Library/Rime/` on macOS and `~/.local/share/fcitx5/rime/` on Linux, matching the Fcitx5 package installed on Ubuntu. The macOS-only `squirrel.custom.yaml` is excluded from Linux. Edit the shared sources under `rime/`, then run `chezmoi apply`. The user directories retain upstream dictionaries, generated files, and local data; they are not exact directories.

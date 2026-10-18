@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # This script is heavily based on https://github.com/mathiasbynens/dotfiles/blob/main/.macos
 
 # Close any open System Preferences panes, to prevent them from overriding
