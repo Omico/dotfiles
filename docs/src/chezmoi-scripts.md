@@ -26,12 +26,16 @@ Start at the band's lowest number. Splitting a script preserves its priority: in
 
 - **Frequency:** No condition runs on every apply; `once` runs content without a successful record; `onchange` runs new or changed rendered content. Renaming alone does not rerun successful `once` content, nor does reverting to previously successful content. See [chezmoi script behavior](https://www.chezmoi.io/user-guide/use-scripts-to-perform-actions/).
 - **Recovery:** Scripts must tolerate retries and repeated execution. Consumers check required state even when prerequisite scripts are skipped.
-- **Updates:** Homebrew, Node.js, Rust, APT, and Snap updates return a nonzero status when an update step fails, so `chezmoi apply` reports the failure. Node.js and Snap updates are skipped when their tools are absent.
+- **Updates:** Homebrew, Node.js, Python, Rust, APT, and Snap updates return a nonzero status when an update step fails, so `chezmoi apply` reports the failure. Node.js and Snap updates are skipped when their tools are absent.
 - **Templates:** Empty or whitespace-only output skips execution. Templates are evaluated before scripts run; check state created during the same apply at runtime. Include inputs that should trigger `onchange` in rendered content.
 
 ## Package installation
 
 `home/.chezmoidata/darwin.toml` owns the macOS bootstrap formulae and initial Orchard app selection. `home/.chezmoidata/ubuntu.toml` owns the Ubuntu Noble APT list. Their `run_onchange_` scripts render these lists into commands, so changing the relevant list reruns its installer, including when reverting to a previously used list. Removing a list entry does not uninstall the package. Empty lists skip installation. The complete Homebrew environment remains in `Brewfile`; routine update scripts retain their existing behavior.
+
+`run_onchange_after_30-python.fish.tmpl` installs uv-managed Python 3.11 and 3.13 on macOS and Linux, sets 3.13 as the default interpreter, and installs The Fuck through `uv tool install`. Each failed step stops the script; successful steps can be retried. Project test dependencies remain in `pyproject.toml` and `uv.lock`.
+
+`run_after_90-python.fish.tmpl` runs on every apply on macOS and Linux. It updates the standalone uv binary first so its Python download metadata is current, upgrades all uv-managed Python versions to their latest available patch releases, then upgrades all uv-managed tools while retaining their interpreter and version requirements. A failed step stops the script and returns its status.
 
 ## Managed directories
 

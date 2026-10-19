@@ -16,12 +16,29 @@ CHEZMOI = shutil.which("chezmoi")
 
 @unittest.skipUnless(FISH and CHEZMOI, "fish and chezmoi are required")
 class UpdateTests(unittest.TestCase):
-    def run_update(self, name, failed_command="", missing=(), *, bootstrap_rust=False):
+    def run_update(
+        self,
+        name,
+        failed_command="",
+        missing=(),
+        *,
+        bootstrap_rust=False,
+        platform="darwin",
+    ):
         with tempfile.TemporaryDirectory(prefix="chezmoi-update-") as directory:
             root = Path(directory)
             binaries = root / "bin"
             binaries.mkdir()
-            for command in ("brew", "mas", "fnm", "rustup", "rustc", "snap", "sudo"):
+            for command in (
+                "brew",
+                "mas",
+                "fnm",
+                "rustup",
+                "rustc",
+                "snap",
+                "sudo",
+                "uv",
+            ):
                 if command in missing:
                     continue
                 binary = binaries / command
@@ -55,7 +72,7 @@ class UpdateTests(unittest.TestCase):
                         str(config),
                         "--override-data",
                         json.dumps(
-                            {"chezmoi": {"os": "darwin", "osRelease": {"id": "ubuntu"}}}
+                            {"chezmoi": {"os": platform, "osRelease": {"id": "ubuntu"}}}
                         ),
                         "execute-template",
                         "--file",
@@ -95,6 +112,47 @@ class UpdateTests(unittest.TestCase):
             )
             calls = root / "calls"
             return result, calls.read_text().splitlines() if calls.exists() else []
+
+    def test_python_setup_stops_at_each_failed_step(self):
+        steps = [
+            "uv python install 3.11",
+            "uv python install 3.13 --default",
+            "uv tool install --python 3.11 thefuck",
+        ]
+        for index, step in enumerate(steps):
+            with self.subTest(step=step):
+                result, calls = self.run_update(
+                    "run_onchange_after_30-python.fish.tmpl", step
+                )
+                self.assertEqual(result.returncode, 7, result.stderr)
+                self.assertEqual(calls, steps[: index + 1])
+        result, calls = self.run_update("run_onchange_after_30-python.fish.tmpl")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(calls, steps)
+
+    def test_python_maintenance_stops_at_each_failed_step(self):
+        steps = [
+            "uv self update",
+            "uv python upgrade",
+            "uv tool upgrade --all",
+        ]
+        for index, step in enumerate(steps):
+            with self.subTest(step=step):
+                result, calls = self.run_update("run_after_90-python.fish.tmpl", step)
+                self.assertEqual(result.returncode, 7, result.stderr)
+                self.assertEqual(calls, steps[: index + 1])
+        result, calls = self.run_update("run_after_90-python.fish.tmpl")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(calls, steps)
+
+    def test_python_maintenance_platform_scope(self):
+        for platform in ("linux", "windows"):
+            with self.subTest(platform=platform):
+                result, calls = self.run_update(
+                    "run_after_90-python.fish.tmpl", platform=platform
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(bool(calls), platform == "linux")
 
     def test_homebrew_stops_at_each_failed_step(self):
         steps = [

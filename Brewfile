@@ -94,8 +94,6 @@ brew "ncurses"
 brew "ollama"
 # Drop-in replacement for Terraform. Infrastructure as Code Tool
 brew "opentofu"
-# 7-Zip (high compression file archiver) implementation
-brew "p7zip"
 # Pinentry for GPG on Mac
 brew "pinentry-mac"
 # Command-line shell and scripting language
@@ -104,24 +102,18 @@ brew "powershell"
 brew "promptfoo"
 # Protocol buffers (Google's data interchange format)
 brew "protobuf"
-# Simple powerful testing with Python
-brew "pytest"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.11"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.13"
 # Ruby version manager
 brew "rbenv"
 # Repository tool for Android development
 brew "repo"
 # Search tool like grep and The Silver Searcher
 brew "ripgrep"
+# 7-Zip file archiver
+brew "sevenzip"
 # Autoformat shell script source code
 brew "shfmt"
 # SOund eXchange: universal sound sample translator
 brew "sox"
-# Toolkit to help you get started with Spec-Driven Development
-brew "specify"
 # Cross-shell prompt for astronauts
 brew "starship"
 # User interface to the TELNET protocol
@@ -130,8 +122,6 @@ brew "telnet"
 brew "tesseract"
 # Enables extra languages support for Tesseract
 brew "tesseract-lang"
-# Programmatically correct mistyped console commands
-brew "thefuck"
 # Official tldr client written in Rust
 brew "tlrc"
 # Markup-based typesetting system

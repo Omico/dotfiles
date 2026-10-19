@@ -8,6 +8,9 @@ DO_NOT_TRACK = "true"
 EDITOR = "code"
 LC_ALL = "en_US.UTF-8"
 
+# Use uv-managed Python installations for Python development.
+UV_MANAGED_PYTHON = "true"
+
 # GitHub CLI
 GH_TELEMETRY = "false"
 

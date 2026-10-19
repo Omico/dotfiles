@@ -21,7 +21,6 @@ apt = [
     "openjdk-17-jdk",
     "openjdk-21-jdk",
     "openssh-server",
-    "python3-pip",
     "qemu-kvm",
     "ripgrep",
     "rsync",

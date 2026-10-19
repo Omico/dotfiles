@@ -69,3 +69,11 @@ If `~/.jenv` is missing, report the error and return a nonzero status without cl
 **Platforms:** Unix (`linux`, `darwin`, `wsl`)
 
 Ensure `~/.local/bin/uv` exists (official install script on first use), then forward arguments to uv.
+
+Python development uses uv-managed interpreters (`UV_MANAGED_PYTHON=true`). On macOS and Linux, chezmoi installs Python 3.11 and 3.13, exposes 3.13 as the default `python` and `python3`, and installs The Fuck as an isolated uv tool. Homebrew continues to manage Python dependencies required by its other packages.
+
+The Fuck uses Python 3.11 because it imports `distutils`, which is unavailable in Python 3.12 and later.
+
+Each `chezmoi apply` on macOS and Linux updates the standalone uv binary, upgrades all uv-managed Python versions to their latest patch releases, and upgrades all installed uv tools while preserving their interpreter and version requirements. The update stops at the first failed step and reports its exit status.
+
+Keep Python test tools in each project's development dependencies. In this repository, run `uv run --locked pytest`; do not install pytest globally.

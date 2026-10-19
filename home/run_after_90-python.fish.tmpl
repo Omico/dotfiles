@@ -1,0 +1,7 @@
+{{ if or (eq .chezmoi.os "darwin") (eq .chezmoi.os "linux") -}}
+#!/usr/bin/env fish
+
+uv self update; or exit $status
+uv python upgrade; or exit $status
+uv tool upgrade --all; or exit $status
+{{ end -}}
