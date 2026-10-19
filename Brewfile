@@ -12,8 +12,6 @@ brew "aria2"
 brew "ast-grep"
 # User-friendly launcher for Bazel
 brew "bazelisk"
-# Toolchain of the web
-brew "biome"
 # Manage your dotfiles across multiple diverse machines, securely
 brew "chezmoi"
 # Statistics utility to count lines of code
@@ -88,8 +86,6 @@ brew "mas"
 brew "minikube"
 # Matroska media files manipulation tools
 brew "mkvtoolnix"
-# Text-based UI library
-brew "ncurses"
 # Create, run, and share large language models (LLMs)
 brew "ollama"
 # Drop-in replacement for Terraform. Infrastructure as Code Tool
@@ -98,8 +94,6 @@ brew "opentofu"
 brew "pinentry-mac"
 # Command-line shell and scripting language
 brew "powershell"
-# Test your LLM app locally
-brew "promptfoo"
 # Protocol buffers (Google's data interchange format)
 brew "protobuf"
 # Ruby version manager
@@ -108,7 +102,7 @@ brew "rbenv"
 brew "repo"
 # Search tool like grep and The Silver Searcher
 brew "ripgrep"
-# 7-Zip file archiver
+# 7-Zip is a file archiver with a high compression ratio
 brew "sevenzip"
 # Autoformat shell script source code
 brew "shfmt"
@@ -128,8 +122,6 @@ brew "tlrc"
 brew "typst"
 # Extraction utility for .zip compressed archives
 brew "unzip"
-# Extremely fast Python package installer and resolver, written in Rust
-brew "uv"
 # Generate WireGuard profile from Cloudflare Warp account
 brew "wgcf"
 # Internet file retriever
@@ -148,6 +140,8 @@ brew "zip"
 brew "anomalyco/tap/opencode", trusted: true
 # Persistent memory for AI coding agents. Agent-agnostic, single binary, zero dependencies.
 brew "gentleman-programming/tap/engram", trusted: true
+# Tool for diffing APKs, AABs, AARs, and JARs
+brew "jakewharton/repo/diffuse", trusted: true
 # AI companion and VTuber application
 cask "airi"
 # Command-line tools for building and debugging Android apps
@@ -182,8 +176,6 @@ cask "sketchup"
 cask "snipaste"
 # Rime input method engine
 cask "squirrel-app"
-# Cloud video conferencing
-cask "tencent-meeting"
 # Google Chromium, sans integration with Google
 cask "ungoogled-chromium"
 # Connect to Windows
@@ -201,8 +193,8 @@ mas "Compressor", id: 424390742
 mas "Developer", id: 640199958
 mas "Final Cut Pro", id: 424389933
 mas "iMovie", id: 408981434
-mas "Keynote", id: 409183694
 mas "Keynote", id: 361285480
+mas "Keynote", id: 409183694
 mas "Logic Pro", id: 634148309
 mas "MainStage", id: 634159523
 mas "Motion", id: 434290957
