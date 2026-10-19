@@ -37,6 +37,22 @@ Start at the band's lowest number. Splitting a script preserves its priority: in
 
 `run_after_90-python.fish.tmpl` runs on every apply on macOS and Linux. It updates the standalone uv binary first so its Python download metadata is current, upgrades all uv-managed Python versions to their latest available patch releases, then upgrades all uv-managed tools while retaining their interpreter and version requirements. A failed step stops the script and returns its status.
 
+## Android Fish completions
+
+`run_onchange_after_95-android-completions.fish.tmpl` runs on macOS and Linux during `chezmoi apply` when its rendered content changes. It includes hashes of the installed Android CLI version and the generator source. Priority `95` places generation after the `90`-series package updates and Python maintenance. If Android CLI is absent, it skips generation.
+
+The Python standard-library generator runs through uv with the managed Python 3.13 installed by the Python setup script. It ignores the caller's Python project and disables interpreter downloads. It reads the full CLI help tree, joins wrapped descriptions, generates standard Fish completion definitions, syntax-checks them, and atomically installs `~/.config/fish/completions/android.fish`. Failures preserve the previous file. The generated file stays local through `.chezmoiignore.tmpl`; each machine uses its installed CLI. Opening a terminal and completing commands never runs Python or invokes Android CLI, including version queries.
+
+Install or upgrade Android CLI, then run `chezmoi apply`. Changes made outside chezmoi are detected only at apply time. Templates render before scripts execute: if the same apply upgrades Android CLI after template evaluation, run apply again to detect the new version. Only chezmoi decides whether regeneration is needed; invoking the generator directly always rebuilds the file.
+
+To rebuild a deleted or manually changed output without changing the CLI version, run:
+
+```shell
+uv run --quiet --no-project --managed-python --no-python-downloads --python 3.13 --script ~/.local/libexec/android-fish-completions.py
+```
+
+After generating, new Fish shells load the result automatically. Reload it in an existing shell with `source ~/.config/fish/completions/android.fish`.
+
 ## Managed directories
 
 Fish startup snippets and functions, Ghostty configuration, and Orchard packages use `exact_` source directories. Chezmoi removes unmanaged entries in those directories during file application, and includes those removals in `diff` and dry-run output. Nested directories that need the same policy also carry `exact_`; the policy is not recursive by itself. Keep installer-owned files such as Fish's `conf.d/apm.fish` in `.chezmoiignore.tmpl`. Other configuration directories retain their existing ownership.

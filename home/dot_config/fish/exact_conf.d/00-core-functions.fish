@@ -8,17 +8,6 @@ function fish_add_path_if_exists
     end
 end
 
-function fish_add_android_sdk_root
-    set -l android_sdk_root $argv[1]
-    test -z "$android_sdk_root"; and return
-    if test -d "$android_sdk_root"
-        set -gx ANDROID_SDK_ROOT "$android_sdk_root"
-        # For legacy reasons, some tools expect ANDROID_HOME to be set
-        set -gx ANDROID_HOME "$ANDROID_SDK_ROOT"
-        fish_add_path_if_exists "$android_sdk_root/platform-tools"
-    end
-end
-
 function __fish_load_config_dir
     set -l dir $argv[1]
     test -z "$dir"; and return

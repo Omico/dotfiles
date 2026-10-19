@@ -1,0 +1,21 @@
+{{ if or (eq .chezmoi.os "darwin") (eq .chezmoi.os "linux") -}}
+#!/usr/bin/env fish
+
+# Refresh after package and Python maintenance when either input changes.
+# Generator SHA-256: {{ include "dot_local/libexec/android-fish-completions.py" | sha256sum }}
+{{ with lookPath "android" -}}
+# CLI version SHA-256: {{ output . "--version" | sha256sum }}
+{{ else -}}
+# Android CLI: not installed
+{{ end -}}
+
+command -q android; or exit 0
+if not command -q uv
+    echo 'uv is required to generate Android completions.' >&2
+    exit 127
+end
+set -l generator "$HOME/.local/libexec/android-fish-completions.py"
+set -l target "$__fish_config_dir/completions/android.fish"
+command uv run --quiet --no-project --managed-python --no-python-downloads --python 3.13 --script "$generator" --android (command -s android) --output "$target"
+or exit $status
+{{ end -}}

@@ -104,6 +104,20 @@ class SourceStateTests(unittest.TestCase):
         self.assertTrue(all(path.read_text() == "local\n" for path in preserved))
         self.run_chezmoi("verify", "--exclude=scripts")
 
+    def test_android_generated_completions_stay_local_on_both_platforms(self):
+        target = self.write_target(
+            ".config/fish/completions/android.fish", "# Locally generated\n"
+        )
+        for platform in ("darwin", "linux"):
+            with self.subTest(platform=platform):
+                self.run_chezmoi("apply", "--exclude=scripts", platform=platform)
+                self.assertEqual(target.read_text(), "# Locally generated\n")
+                self.assertTrue(
+                    (
+                        self.destination / ".local/libexec/android-fish-completions.py"
+                    ).is_file()
+                )
+
     def test_rime_changes_update_platform_user_directory(self):
         name = "default.custom.yaml"
         source = self.source / "rime" / name
