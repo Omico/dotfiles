@@ -68,6 +68,8 @@ brew "jenkins-lts", restart_service: :changed
 brew "jenv"
 # Lightweight and flexible command-line JSON processor
 brew "jq"
+# Handy way to save and run project-specific commands
+brew "just"
 # Environment diagnostics for Kotlin Multiplatform Mobile app development
 brew "kdoctor"
 # Statically typed programming language for the JVM
@@ -145,7 +147,7 @@ brew "wgcf"
 # Internet file retriever
 brew "wget"
 # Port of OpenAI's Whisper model in C/C++
-brew "whisper-cpp"
+brew "whisper.cpp"
 # Generate your Xcode project from a spec file and your folder structure
 brew "xcodegen"
 # Tool for managing your YubiKey configuration
@@ -174,6 +176,8 @@ cask "font-fira-mono-nerd-font"
 cask "font-meslo-lg-nerd-font"
 # Cross-platform Git credential storage for multiple hosting providers
 cask "git-credential-manager"
+# Homebrew's official GUI
+cask "homebrew-app"
 # Helper application for the Keka file archiver
 cask "kekaexternalhelper"
 # Open-source cross-platform alternative to AirDrop
@@ -209,8 +213,8 @@ mas "Compressor", id: 424390742
 mas "Developer", id: 640199958
 mas "Final Cut Pro", id: 424389933
 mas "iMovie", id: 408981434
-mas "Keynote", id: 361285480
 mas "Keynote", id: 409183694
+mas "Keynote", id: 361285480
 mas "Logic Pro", id: 634148309
 mas "MainStage", id: 634159523
 mas "Motion", id: 434290957
