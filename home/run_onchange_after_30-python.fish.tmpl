@@ -2,7 +2,7 @@
 #!/usr/bin/env fish
 
 uv python install 3.11; or exit $status
-uv python install 3.13 --default; or exit $status
+uv python install 3.13 --default --preview-features python-install-default; or exit $status
 # The Fuck still imports distutils, which was removed in Python 3.12.
 uv tool install --python 3.11 thefuck; or exit $status
 {{ end -}}

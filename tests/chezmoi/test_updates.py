@@ -116,7 +116,7 @@ class UpdateTests(unittest.TestCase):
     def test_python_setup_stops_at_each_failed_step(self):
         steps = [
             "uv python install 3.11",
-            "uv python install 3.13 --default",
+            "uv python install 3.13 --default --preview-features python-install-default",
             "uv tool install --python 3.11 thefuck",
         ]
         for index, step in enumerate(steps):
