@@ -6,3 +6,6 @@ orchard = ["firefox", "google-chrome", "visual-studio-code"]
 [environments.darwin]
 # Homebrew
 HOMEBREW_NO_ANALYTICS = "1"
+
+# Enable Diffuse's JNA access while remaining compatible with older JDKs.
+DIFFUSE_OPTS = "-XX:+IgnoreUnrecognizedVMOptions --enable-native-access=ALL-UNNAMED"
