@@ -68,6 +68,10 @@ class ShellToolchainTests(unittest.TestCase):
             'commit) exit "$commit_status";;\n'
             "*) exit 99;;\nesac\n",
         )
+        self.executable(
+            "git",
+            '#!/bin/sh\necho "$3" >> "$HOME/calls"\nexit "$diff_status"\n',
+        )
         for brew, diff, add, commit, expected, calls in (
             (7, 1, 0, 0, 7, ["export"]),
             (0, 128, 0, 0, 128, ["export", "diff"]),
@@ -87,6 +91,42 @@ class ShellToolchainTests(unittest.TestCase):
                 result = self.run_fish("exact_darwin/brew.fish", "brew-backup")
                 self.assertEqual(result.returncode, expected, result.stderr)
                 self.assertEqual((self.root / "calls").read_text().splitlines(), calls)
+
+    @unittest.skipUnless(shutil.which("git"), "git is required")
+    def test_brew_backup_handles_real_git_diff_without_chezmoi_warning(self):
+        git = shutil.which("git")
+        assert git
+        (self.binaries / "git").symlink_to(git)
+        repo = self.root / ".local/share/chezmoi"
+        repo.mkdir(parents=True)
+        brewfile = repo / "Brewfile"
+        brewfile.write_text('brew "uv"\n')
+        for args in (("init",), ("add", "Brewfile")):
+            subprocess.run(
+                [git, "-C", str(repo), *args],
+                env=self.env,
+                capture_output=True,
+                check=True,
+            )
+        self.executable("brew", "#!/bin/sh\nexit 0\n")
+        self.executable(
+            "chezmoi",
+            '#!/bin/sh\nif [ "$3" = diff ]; then\n'
+            ' echo "chezmoi: git: exit status 1" >&2\n exit 1\nfi\n'
+            'echo "$3" >> "$HOME/calls"\n',
+        )
+        for changed in (False, True):
+            with self.subTest(changed=changed):
+                (self.root / "calls").unlink(missing_ok=True)
+                brewfile.write_text('brew "uv"\n' + ('brew "git"\n' if changed else ""))
+                result = self.run_fish("exact_darwin/brew.fish", "brew-backup")
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(result.stderr, "")
+                calls = self.root / "calls"
+                if changed:
+                    self.assertEqual(calls.read_text().splitlines(), ["add", "commit"])
+                else:
+                    self.assertFalse(calls.exists())
 
     def test_gi_stops_at_each_failed_step(self):
         prelude = (

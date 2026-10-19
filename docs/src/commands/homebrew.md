@@ -10,6 +10,8 @@ Dump taps, formulae, casks, and Mac App Store apps to the repo `Brewfile`, then 
 
 Stop if export, diff inspection, staging, or commit fails, and return the failed step's status. An unchanged export succeeds without creating a commit.
 
+Inspect changes directly with Git so its normal diff status does not produce a chezmoi error message.
+
 ## `brew-restore`
 
 Install packages from the chezmoi `Brewfile`.

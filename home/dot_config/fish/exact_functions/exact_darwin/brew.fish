@@ -4,7 +4,7 @@ function brew-backup --description "Backup Homebrew bundle to Brewfile"
     set -l brewfile "$HOME/.local/share/chezmoi/Brewfile"
     echo "Backing up Brewfile..."
     brew bundle dump --taps --brews --casks --mas --force --file="$brewfile"; or return $status
-    chezmoi git -- diff --quiet "$brewfile"
+    command git -C "$HOME/.local/share/chezmoi" diff --quiet -- "$brewfile"
     set -l diff_status $status
     switch $diff_status
         case 0
