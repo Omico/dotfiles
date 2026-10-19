@@ -140,8 +140,6 @@ brew "typst"
 brew "unzip"
 # Extremely fast Python package installer and resolver, written in Rust
 brew "uv"
-# Tool for creating isolated virtual python environments
-brew "virtualenv"
 # Generate WireGuard profile from Cloudflare Warp account
 brew "wgcf"
 # Internet file retriever
