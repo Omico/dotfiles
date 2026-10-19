@@ -12,5 +12,11 @@ end
 set -l rust_version (rustc --version); or exit $status
 echo "Using Rust "(set_color cyan)(string split -f2 ' ' -- "$rust_version")(set_color normal)
 
+if not command -q sccache
+    # Disable the configured wrapper while bootstrapping sccache itself.
+    env RUSTC_WRAPPER= RUSTC_WORKSPACE_WRAPPER= cargo install sccache; or exit $status
+end
+sccache --version; or exit $status
+
 exit 0
 {{ end -}}
