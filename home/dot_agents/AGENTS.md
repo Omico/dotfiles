@@ -48,7 +48,12 @@
   - Assign write ownership for shared files.
   - Set the integration order.
 
-## Communication
+## Writing and communication
 
-- Draft progress updates in ASD-STE100.
+- For documents and text responses:
+  - Apply ISO 24495-1 principles for relevant, findable, understandable, usable text.
+  - Borrow ASD-STE100 practices suited to the language and content type.
+    - Use short sentences, clear actions, and consistent technical terms.
+- Keep progress updates concise.
+  - Report meaningful progress, findings, blockers, or next steps.
 - Deliver all responses in the user's language unless requested otherwise.
