@@ -1,5 +1,4 @@
 tap "android/tap", trusted: { formulae: ["android-cli"] }
-tap "anomalyco/tap"
 tap "gentleman-programming/tap", trusted: { casks: ["engram"] }
 tap "homebrew/core"
 tap "jakewharton/repo", trusted: true
@@ -87,8 +86,6 @@ brew "mas"
 brew "minikube"
 # Matroska media files manipulation tools
 brew "mkvtoolnix"
-# Create, run, and share large language models (LLMs)
-brew "ollama"
 # Drop-in replacement for Terraform. Infrastructure as Code Tool
 brew "opentofu"
 # Pinentry for GPG on Mac
@@ -131,14 +128,10 @@ brew "wget"
 brew "whisper.cpp"
 # Generate your Xcode project from a spec file and your folder structure
 brew "xcodegen"
-# Tool for managing your YubiKey configuration
-brew "ykman"
 # Process YAML, JSON, XML, CSV and properties documents from the CLI
 brew "yq"
 # Compression and file packaging/archive utility
 brew "zip"
-# The AI coding agent built for the terminal.
-brew "anomalyco/tap/opencode", trusted: true
 # Persistent memory for AI coding agents. Agent-agnostic, single binary, zero dependencies.
 brew "gentleman-programming/tap/engram", trusted: true
 # Tool for diffing APKs, AABs, AARs, and JARs

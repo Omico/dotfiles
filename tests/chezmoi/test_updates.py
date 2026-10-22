@@ -119,6 +119,7 @@ class UpdateTests(unittest.TestCase):
             "uv python install 3.11",
             "uv python install 3.13 --default --preview-features python-install-default",
             "uv tool install --python 3.11 thefuck",
+            "uv tool install --python 3.13 --managed-python yubikey-manager",
         ]
         for index, step in enumerate(steps):
             with self.subTest(step=step):
@@ -130,6 +131,16 @@ class UpdateTests(unittest.TestCase):
         result, calls = self.run_update("run_onchange_after_30-python.fish.tmpl")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(calls, steps)
+
+    def test_yubikey_manager_setup_is_macos_only(self):
+        for platform in ("linux", "windows"):
+            with self.subTest(platform=platform):
+                result, calls = self.run_update(
+                    "run_onchange_after_30-python.fish.tmpl", platform=platform
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertFalse(any("yubikey-manager" in call for call in calls))
+                self.assertEqual(bool(calls), platform == "linux")
 
     def test_python_maintenance_stops_at_each_failed_step(self):
         steps = [
