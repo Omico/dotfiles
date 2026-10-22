@@ -35,6 +35,7 @@ class UpdateTests(unittest.TestCase):
                 "fnm",
                 "rustup",
                 "rustc",
+                "sccache",
                 "snap",
                 "sudo",
                 "uv",
@@ -174,7 +175,12 @@ class UpdateTests(unittest.TestCase):
         self.assertEqual(calls, steps[:-1])
 
     def test_rust_stops_on_install_update_and_version_failure(self):
-        steps = ["rustup toolchain install stable", "rustup update", "rustc --version"]
+        steps = [
+            "rustup toolchain install stable",
+            "rustup update",
+            "rustc --version",
+            "sccache --version",
+        ]
         for index, step in enumerate(steps):
             with self.subTest(step=step):
                 result, calls = self.run_update("run_after_90-rust.fish.tmpl", step)
@@ -202,7 +208,12 @@ class UpdateTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(
             calls,
-            ["rustup toolchain install stable", "rustup update", "rustc --version"],
+            [
+                "rustup toolchain install stable",
+                "rustup update",
+                "rustc --version",
+                "sccache --version",
+            ],
         )
 
     def test_all_scripts_return_zero_on_success(self):
