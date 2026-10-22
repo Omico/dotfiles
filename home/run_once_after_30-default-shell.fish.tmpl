@@ -3,8 +3,32 @@
 
 set -l fish_path (command -s fish); or exit $status
 set -l user (id -un); or exit $status
-if test -f /etc/shells; and not contains -- "$fish_path" (cat /etc/shells)
+{{ if eq .chezmoi.os "darwin" -}}
+set -l account (dscl . -read "/Users/$user" UserShell); or exit $status
+set -l login_shell (string replace --filter --regex '^UserShell: (/.+)$' '$1' -- $account)
+{{ else -}}
+set -l account (getent passwd "$user"); or exit $status
+set -l account_fields (string split : -- "$account")
+if test (count $account_fields) -ne 7; or test "$account_fields[1]" != "$user"
+    echo "Failed to resolve the account's login shell." >&2
+    exit 1
+end
+set -l login_shell "$account_fields[7]"
+# An empty passwd shell field defaults to /bin/sh.
+test -n "$login_shell"; or set login_shell /bin/sh
+{{ end -}}
+if test (count $login_shell) -ne 1; or test -z "$login_shell"
+    echo "Failed to resolve the account's login shell." >&2
+    exit 1
+end
+
+set -l shells (cat /etc/shells); or exit $status
+if not contains -- "$fish_path" $shells
     printf '%s\n' "$fish_path" | sudo tee -a /etc/shells; or exit $status
 end
-sudo chsh -s "$fish_path" "$user"; or exit $status
+if test "$login_shell" != "$fish_path"
+    sudo chsh -s "$fish_path" "$user"; or exit $status
+end
+
+exit 0
 {{ end -}}

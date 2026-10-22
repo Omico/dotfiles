@@ -26,6 +26,7 @@ Start at the band's lowest number. Splitting a script preserves its priority: in
 
 - **Frequency:** No condition runs on every apply; `once` runs content without a successful record; `onchange` runs new or changed rendered content. Renaming alone does not rerun successful `once` content, nor does reverting to previously successful content. See [chezmoi script behavior](https://www.chezmoi.io/user-guide/use-scripts-to-perform-actions/).
 - **Recovery:** Scripts must tolerate retries and repeated execution. Consumers check required state even when prerequisite scripts are skipped.
+- **Default shell:** The setup script reads the account's login shell with `dscl` on macOS or `getent` on Linux. It registers Fish in `/etc/shells` when missing and calls `chsh` only when the account uses another shell. Account lookup and shell registry failures stop setup so chezmoi can retry.
 - **Updates:** Homebrew, Node.js, Python, Rust, APT, and Snap updates return a nonzero status when an update step fails, so `chezmoi apply` reports the failure. Node.js and Snap updates are skipped when their tools are absent.
 - **Templates:** Empty or whitespace-only output skips execution. Templates are evaluated before scripts run; check state created during the same apply at runtime. Include inputs that should trigger `onchange` in rendered content.
 
