@@ -1,0 +1,22 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env fish
+
+set -l target /etc/pam.d/sudo_local
+set -l original "$target"
+test -e "$original"; or set original /etc/pam.d/sudo_local.template
+set -l pam_lines (cat "$original"); or exit $status
+if set -q pam_lines[1]; and string match -qr '^\s*auth\s+sufficient\s+pam_tid\.so(\s|$)' -- $pam_lines
+    exit 0
+end
+if set -q pam_lines[1]; and string match -qr '^\s*auth(\s|$)' -- $pam_lines
+    echo "sudo_local contains custom authentication rules. Enable Touch ID manually while preserving their order, then run chezmoi apply again." >&2
+    exit 1
+end
+
+{{ includeTemplate "installer-workdir.fish" . }}
+# Keep all existing rules and comments, including the original file's bytes.
+printf 'auth       sufficient     pam_tid.so\n' >"$work/sudo_local"; or exit $status
+cat "$original" >>"$work/sudo_local"; or exit $status
+# BSD install's safe-copy mode replaces the file atomically.
+sudo install -S -o root -g wheel -m 0644 "$work/sudo_local" "$target"; or exit $status
+{{ end -}}

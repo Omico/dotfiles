@@ -21,9 +21,6 @@ open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
 #   Terminal — Applications > Utilities > Terminal
 #   Ghostty — Applications > Ghostty
 
-# Configure macOS settings
-/bin/bash -c "$HOME/.local/share/chezmoi/macos"
-
 # Install Homebrew packages
 brew-restore
 ```
@@ -34,8 +31,6 @@ brew-restore
 ```
 
 :::
-
-The macOS settings script stops at the first failed required command and returns its error status. Earlier successful changes are retained.
 
 ### Rime configuration
 

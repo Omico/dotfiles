@@ -26,6 +26,7 @@ class SourceStateTests(unittest.TestCase):
         self.destination.mkdir()
         shutil.copytree(ROOT / "home", self.source / "home")
         shutil.copytree(ROOT / "rime", self.source / "rime")
+        shutil.copytree(ROOT / "macos", self.source / "macos")
         (self.source / ".chezmoiroot").write_text("home\n")
         self.config = self.root / "config/chezmoi.toml"
         self.config.parent.mkdir()

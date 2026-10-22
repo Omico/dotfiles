@@ -1,0 +1,34 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env fish
+# Settings helper SHA-256: {{ include (joinPath .chezmoi.sourceDir "../macos/close-system-settings.applescript") | sha256sum }}
+
+set -l user_id (id -u); or exit $status
+if launchctl print "gui/$user_id" >/dev/null 2>&1
+    osascript {{ joinPath .chezmoi.sourceDir "../macos/close-system-settings.applescript" | replace "\\" "\\\\" | replace "'" "\\'" | squote }}; or exit $status
+end
+
+# Finder
+defaults write com.apple.finder QuitMenuItem -bool true; or exit $status
+defaults write com.apple.finder AppleShowAllFiles -bool true; or exit $status
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true; or exit $status
+defaults write com.apple.finder ShowStatusBar -bool true; or exit $status
+defaults write com.apple.finder ShowPathbar -bool true; or exit $status
+defaults write com.apple.finder _FXSortFoldersFirst -bool true; or exit $status
+defaults write com.apple.finder FXDefaultSearchScope -string SCcf; or exit $status
+defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false; or exit $status
+defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true; or exit $status
+defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true; or exit $status
+
+# Dock
+defaults write com.apple.dock tilesize -int 48; or exit $status
+defaults write com.apple.dock autohide -bool true; or exit $status
+defaults write com.apple.dock show-recents -bool false; or exit $status
+
+# Automatic updates
+defaults write com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true; or exit $status
+defaults write com.apple.commerce AutoUpdate -bool true; or exit $status
+
+# Mouse
+defaults write -g com.apple.mouse.linear 1; or exit $status
+defaults write -g com.apple.mouse.scaling 1; or exit $status
+{{ end -}}

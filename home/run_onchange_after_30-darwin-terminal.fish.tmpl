@@ -1,0 +1,14 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env fish
+# Theme SHA-256: {{ include (joinPath .chezmoi.sourceDir "../macos/My.terminal") | sha256sum }}
+# Importer SHA-256: {{ include (joinPath .chezmoi.sourceDir "../macos/terminal-theme.applescript") | sha256sum }}
+
+set -l user_id (id -u); or exit $status
+if not launchctl print "gui/$user_id" >/dev/null 2>&1
+    echo "Terminal theme setup requires a graphical login. Run chezmoi apply after logging in." >&2
+    exit 1
+end
+
+set -l resources {{ joinPath .chezmoi.sourceDir "../macos" | replace "\\" "\\\\" | replace "'" "\\'" | squote }}
+osascript "$resources/terminal-theme.applescript" "$resources/My.terminal"; or exit $status
+{{ end -}}
