@@ -34,10 +34,6 @@ function chezmoi_add_configs --description 'Add local configuration files to che
     end
 
     __chezmoi_add_existing "$HOME/.config/starship.toml"; or return 1
-
-    if type -q zed-settings-pull
-        zed-settings-pull; or return $status
-    end
 end
 
 function __chezmoi_add_existing --argument-names target

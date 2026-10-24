@@ -5,7 +5,6 @@ requires-python = ">=3.11"
 
 [dependency-groups]
 dev = [
-    # 1.40.x CLI checks exclude hidden skill scripts even with explicit include paths.
     "basedpyright==1.38.2",
     "pytest>=9.1.1",
     "ruff>=0.16.10",
@@ -19,7 +18,7 @@ package = false
 extend-exclude = ["docs/src/agent-skills"]
 
 [tool.basedpyright]
-include = ["app-settings", ".agents/skills/app-settings/scripts", "tests"]
+include = ["app-settings", "tests"]
 exclude = ["**/node_modules", "**/__pycache__", "**/.venv"]
 pythonVersion = "3.11"
 typeCheckingMode = "standard"

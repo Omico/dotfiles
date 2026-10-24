@@ -1,4 +1,4 @@
 interface:
   display_name: "Application Settings"
-  short_description: "Sync shared Codex, Code/Cursor, and Zed settings"
-  default_prompt: "Use $app-settings to pull selected portable application settings into the repository."
+  short_description: "Manage application preferences applied by chezmoi"
+  default_prompt: "Use $app-settings to edit managed application preferences and maintain their automatic chezmoi Apply scripts."

@@ -1,9 +1,8 @@
 #!/usr/bin/env fish
 
-function vscode-settings-apply --description 'Merge vscode-settings into Code/Cursor User settings'
+function __app_settings_apply_vscode --argument-names source_dir platform
     __vscode_settings_check_runtime; or return 1
 
-    set -l source_dir "$HOME/.local/share/chezmoi/app-settings/vscode-based"
     set -l shared_path "$source_dir/shared.json"
     if test -L "$shared_path"; or not test -f "$shared_path"
         echo "Error: shared settings is not a regular file: $shared_path" >&2
@@ -13,7 +12,7 @@ function vscode-settings-apply --description 'Merge vscode-settings into Code/Cu
     set -l prepared_targets
     set -l temp_paths
     for app in code cursor
-        set -l live_path (__vscode_settings_live_path $app)
+        set -l live_path (__vscode_settings_live_path $app "$platform")
         or begin
             __vscode_settings_cleanup_outputs $temp_paths
             return 1
@@ -48,11 +47,6 @@ end
 # Runtime and platform helpers
 
 function __vscode_settings_check_runtime
-    if not set -q fish_platform
-        echo "Error: fish_platform is not set. Run chezmoi apply, then open a new Fish shell." >&2
-        return 1
-    end
-
     command -q jq; or begin
         echo "Error: jq is required to merge vscode-settings." >&2
         return 1
@@ -81,30 +75,25 @@ function __vscode_settings_check_runtime
     end
 end
 
-function __vscode_settings_live_path --argument-names app
-    switch $fish_platform
-        case darwin
-            switch $app
-                case code
-                    echo "$HOME/Library/Application Support/Code/User/settings.json"
-                case cursor
-                    echo "$HOME/Library/Application Support/Cursor/User/settings.json"
-                case '*'
-                    printf "Error: unknown vscode-settings app: %s\n" $app >&2
-                    return 1
-            end
-        case linux wsl
-            switch $app
-                case code
-                    echo "$HOME/.config/Code/User/settings.json"
-                case cursor
-                    echo "$HOME/.config/Cursor/User/settings.json"
-                case '*'
-                    printf "Error: unknown vscode-settings app: %s\n" $app >&2
-                    return 1
-            end
+function __vscode_settings_live_path --argument-names app platform
+    set -l app_name
+    switch $app
+        case code
+            set app_name Code
+        case cursor
+            set app_name Cursor
         case '*'
-            printf "Error: vscode-settings-apply does not support fish_platform=%s\n" $fish_platform >&2
+            printf "Error: unknown vscode-settings app: %s\n" $app >&2
+            return 1
+    end
+
+    switch $platform
+        case darwin
+            echo "$HOME/Library/Application Support/$app_name/User/settings.json"
+        case linux wsl
+            echo "$HOME/.config/$app_name/User/settings.json"
+        case '*'
+            printf "Error: Code/Cursor settings Apply does not support platform=%s\n" $platform >&2
             return 1
     end
 end
@@ -589,5 +578,41 @@ function __vscode_settings_write_targets
     __vscode_settings_cleanup_outputs $temp_paths $backup_paths 2>/dev/null
     for index in $changed_indices
         echo "Updated $live_paths[$index]"
+    end
+end
+
+function __app_settings_apply_zed --argument-names source_dir
+    __vscode_settings_check_runtime; or return 1
+
+    set -l shared_path "$source_dir/settings.shared.json"
+    set -l ignored_path "$source_dir/settings.ignored.json"
+    set -l live_path "$HOME/.config/zed/settings.json"
+
+    __zed_settings_require_regular_file "$shared_path" 'shared settings'; or return 1
+    __zed_settings_require_regular_file "$ignored_path" 'ignored keys'; or return 1
+
+    set -l tmp_path (__vscode_settings_prepare_output "$live_path")
+    or return 1
+
+    __vscode_settings_build_merged \
+        "$shared_path" \
+        "" \
+        "$ignored_path" \
+        "" \
+        "$live_path" \
+        "$tmp_path"
+    or begin
+        echo 'Error: failed to merge Zed settings.' >&2
+        __vscode_settings_cleanup_outputs "$tmp_path"
+        return 1
+    end
+
+    __vscode_settings_write_targets "$tmp_path" "$live_path"
+end
+
+function __zed_settings_require_regular_file --argument-names input_path description
+    if test -L "$input_path"; or not test -f "$input_path"
+        printf 'Error: %s is not a regular file: %s\n' "$description" "$input_path" >&2
+        return 1
     end
 end

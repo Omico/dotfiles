@@ -12,25 +12,18 @@ Open a new Fish shell, or run [`fish-reload`](./shell) in an existing session, s
 
 Source definitions live under [`home/dot_config/fish/exact_functions/`](https://github.com/Omico/dotfiles/tree/HEAD/home/dot_config/fish/exact_functions) in the chezmoi source tree.
 
-## Managed application settings
-
-Codex, Code/Cursor, and Zed settings layers live in the repository's top-level `app-settings/` directory, under `codex/`, `vscode-based/`, and `zed/`. Commands read these files directly from `~/.local/share/chezmoi/app-settings/`; chezmoi does not install intermediate copies. Pull updates the repository files, and Apply merges them into each application's live settings.
-
 ## Browse by topic
 
 | Topic | Platforms | Summary |
 | --- | --- | --- |
 | [APM](./apm) | All | APM CLI and agent skill packages |
 | [Cloudflare WARP](./cloudflare-warp) | macOS | WARP install and Tailscale split tunneling |
-| [Codex](./codex) | Unix | Selected Codex preferences with local state preservation |
 | [Git](./git) | Mixed | Clone, init, reset, GitKraken, iCloud sync |
 | [GNOME](./gnome) | Linux | Login keyring and Remote Desktop |
 | [Homebrew](./homebrew) | macOS | Brewfile backup, restore, upgrades |
 | [MLflow](./mlflow) | macOS | Local tracking server via launchd |
 | [Shell](./shell) | Mixed | Reload Fish and sync configs to chezmoi |
 | [Toolchains](./toolchains) | Mixed | Node.js, Bun, mise, Python (uv), Rust, Flutter, Java, Gradle |
-| [VS Code](./vscode) | Unix | Shared Code/Cursor User settings merge |
 | [Xcode](./xcode) | macOS | Switch Xcode versions and open downloads |
-| [Zed](./zed) | Unix | Portable Zed settings backup and restore |
 
 Platform-specific functions load only when `fish_platform` matches (set at `chezmoi apply` time). Each command page lists its supported platforms.

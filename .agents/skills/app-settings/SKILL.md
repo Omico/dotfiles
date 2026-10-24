@@ -1,44 +1,34 @@
 ---
 name: app-settings
-description: Sync or edit app-settings for Codex, VS Code/Cursor, and Zed; use for Pull from live settings, Apply to apps, or shared and local setting ownership.
-compatibility: Code/Cursor Pull requires Bun 1.3.11 or newer; the first run needs npm registry access to cache its pinned inline dependency.
+description: Edit managed Codex, Code/Cursor, and Zed preferences in app-settings, or maintain their automatic chezmoi Apply scripts.
 ---
 
 # Application settings
 
-Maintain the repository's top-level `app-settings/`. Commands read these sources directly from `~/.local/share/chezmoi/app-settings/`; applications keep their existing live configuration paths.
+Maintain the repository's top-level `app-settings/` as the source of managed preferences. Platform-gated `home/run_after_90-*-settings.fish.tmpl` scripts apply these preferences during `chezmoi apply`. Applications keep their existing live configuration paths.
 
-## Select the operation
+## Operation and scope
 
-- **Pull**: import live preferences into repository sources. An ambiguous “update settings/config” request defaults to Pull.
-- **Apply**: merge repository preferences into live settings. A dry run or status check only reports differences.
-- **Edit**: change selected source values or ignored/preserved fields without importing unrelated live preferences.
-- For “sync” without a direction, resolve the direction before changing files. Keep Pull and Apply separate unless the user explicitly requests both.
-
-## Select the scope
-
-Select the requested applications and operation before writing. “All app-settings” selects all current application directories; each retains its own import and write contract.
-
-- **Pull or Apply for Code/Cursor**: the existing write commands operate on both applications. Pull reads both live files and rewrites three managed layers; Apply processes both live files. A Code-only or Cursor-only request requires authorization for the pair before either write. Explain the affected files and clarify that scope; if the user retains the single-app scope, stop without writing. Read-only checks do not expand write authorization.
-- **Edit for Code/Cursor**: edit the requested application's source settings directly. Follow [source ownership](references/vscode-based.md#source-edits) to preserve the other application's effective settings when changing shared layers. Complete source-only edits within that ownership; live Apply requires its own scope.
-- **Other applications**: follow their own routes. A request for one application does not authorize applying another.
+- Edit requested source values directly. Live preferences are not imported into the repository.
+- Finish source edits without applying live settings unless the user requested Apply.
+- For Apply, use the matching chezmoi lifecycle script. Code and Cursor share one script and are applied together; a single-app request does not authorize writing the other application.
+- Read-only validation does not authorize live writes.
 
 ## Routes
 
-- **Code/Cursor Pull**: read [vscode-pull.md](references/vscode-pull.md) for the paired import command, prerequisites, and recovery behavior.
-- **Code/Cursor Apply or source edits**: read [vscode-based.md](references/vscode-based.md).
-- **Codex Pull, checks, Apply, or source edits**: read [codex.md](references/codex.md).
-- **Zed Pull, Apply, or source edits**: read [zed.md](references/zed.md).
+- **Code/Cursor**: read [vscode-based.md](references/vscode-based.md) for source ownership and merge behavior.
+- **Codex**: read [codex.md](references/codex.md) for selected TOML fields and machine overrides.
+- **Zed**: read [zed.md](references/zed.md) for portable settings and ignored integrations.
 
-For a new directory under `app-settings/`, identify its live target, source owner, local exclusions, and existing import/write command before synchronizing it. Add its route when adopting support; JSON layout alone does not establish merge semantics.
+For a new application, identify its live target, source owner, local exclusions, and lifecycle script before adopting it.
 
 ## Boundaries
 
-Keep credentials, machine integrations, runtime state, and local overrides in each application's designated local files. Own only user settings selected by the application route; keybindings, snippets, extensions, installation, and project configuration require their own scope. Change command implementations only when requested.
+Keep credentials, machine integrations, runtime state, and local overrides in each application's designated local files. Own only the selected user settings; keybindings, snippets, extensions, installation, and project configuration require their own scope.
 
 ## Completion
 
 - Parse touched managed files with their native format and check ignored/preserved ownership against the application route.
-- After Pull, review the source diff and retain curated edits where needed. After Edit, finish without applying live settings unless Apply was requested.
-- For Apply, use the application's existing command and report its result.
-- If parser, Pull command, or merge behavior changes, run the affected existing tests from the repository root with `uv run --locked python -m unittest discover -s tests/vscode_settings` or `-s tests/codex_settings`. For Code/Cursor Pull changes, also run `node --test tests/vscode_settings/test_pull.test.mjs` (requires Node.js 22 or newer). For Zed command changes, verify Pull and Apply in a temporary HOME.
+- For Fish merge changes, run `uv run --locked python -m unittest discover -s tests/vscode_settings` and `uv run --locked python -m unittest discover -s tests/zed_settings` from the repository root.
+- For Codex merge changes, run `uv run --locked python -m unittest discover -s tests/codex_settings`.
+- For lifecycle changes, run `uv run --locked python -m unittest discover -s tests/chezmoi -p test_app_settings.py`. Keep validation writes in a temporary HOME.

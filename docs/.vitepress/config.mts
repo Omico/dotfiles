@@ -15,6 +15,7 @@ export default defineConfig({
     nav: [
       { text: "Home", link: "/" },
       { text: "Commands", link: "/commands/" },
+      { text: "Application settings", link: "/app-settings/" },
       ...generatedNav,
     ],
     sidebar: {

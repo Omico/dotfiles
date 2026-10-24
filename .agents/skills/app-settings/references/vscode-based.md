@@ -1,37 +1,26 @@
 # Layout and apply
 
-Read when choosing source paths, ignored-file shape, merge semantics, or **Push** into live settings.
+Read when choosing source paths, ignored-file shape, merge semantics, or automatic Apply into live settings.
 
 ## Source paths
 
-Settings layers stay in the repository. Commands read them directly; there is no chezmoi deployment step for these files.
-
-| Repository source | Command input |
-| --- | --- |
-| `app-settings/vscode-based/shared.json` | `~/.local/share/chezmoi/app-settings/vscode-based/shared.json` |
-| `app-settings/vscode-based/code.json` | `~/.local/share/chezmoi/app-settings/vscode-based/code.json` |
-| `app-settings/vscode-based/cursor.json` | `~/.local/share/chezmoi/app-settings/vscode-based/cursor.json` |
-| `app-settings/vscode-based/ignored.json` | `~/.local/share/chezmoi/app-settings/vscode-based/ignored.json` |
-| `app-settings/vscode-based/code.ignored.json` | `~/.local/share/chezmoi/app-settings/vscode-based/code.ignored.json` |
-| `app-settings/vscode-based/cursor.ignored.json` | `~/.local/share/chezmoi/app-settings/vscode-based/cursor.ignored.json` |
+Settings layers stay under `app-settings/vscode-based/` in the repository. Lifecycle scripts read them directly; there is no deployment step for these files. `shared.json` is required, and `code.json` and `cursor.json` are optional application layers.
 
 Ignored files are JSON arrays of top-level setting key strings. Missing ignored files mean `[]`.
 
 ## Apply pipeline
 
-`vscode-settings-apply` always processes both Code and Cursor; it has no single-app selector. For a single-app Apply request, follow Select the scope in `SKILL.md` before invoking it. This restriction applies to live writes, not source edits.
+`home/run_after_90-vscode-settings.fish.tmpl` processes both Code and Cursor together. Apply authorization must cover both; a source edit can target one app while preserving the other app's effective values.
 
-**Push** path — `vscode-settings-apply` (Unix Fish function):
+Apply uses the private Fish helpers in `app-settings/apply.fish`:
 
 1. `managed = shallow_override(shared, app_unique)`; a missing app layer is `{}`
 2. Drop keys from `ignored.json ∪ <app>.ignored.json`
 3. `out = shallow_override(live, managed′)`; managed top-level values replace live values completely, while ignored keys keep live values
 
-The command accepts full JSONC in existing live settings and prepares both outputs before replacing either live file. Missing live files start from `{}`, but an existing empty or comment-only file is invalid because it contains no root document. A parse or merge failure leaves both applications unchanged. Managed and ignored layer files remain strict JSON; optional files may be missing, but an existing non-regular path is an error.
+Apply accepts full JSONC in existing live settings and prepares both outputs before replacing either live file. Missing live files start from `{}`, but an existing empty or comment-only file is invalid because it contains no root document. A parse or merge failure leaves both applications unchanged. Managed and ignored layer files remain strict JSON; optional files may be missing, but an existing non-regular path is an error.
 
-Push depends on Fish, `iconv`, and `jq` 1.7 or newer with literal-number preservation. Startup verifies the required `jq` behavior. Fish validates UTF-8 and rejects raw NUL bytes before capturing file content; its normalizer then removes JSONC comments and trailing commas without touching string content, rejects non-standard or out-of-range JSON numbers, and lets `jq` validate one root document and perform shallow map operations without routing JSON through YAML semantics.
-
-Pull uses Bun with the pinned inline import `jsonc-parser@3.3.1` in `scripts/pull-vscode-based.mjs`; run `bun run --install=force scripts/pull-vscode-based.mjs` from the skill directory. Bun caches the dependency without a manifest or separate install step. See [Pull](vscode-pull.md) for prerequisites and input checks.
+Apply depends on Fish, `iconv`, and `jq` 1.7 or newer with literal-number preservation. Startup verifies the required `jq` behavior. Fish validates UTF-8 and rejects raw NUL bytes before capturing file content; its normalizer then removes JSONC comments and trailing commas without touching string content, rejects non-standard or out-of-range JSON numbers, and lets `jq` validate one root document and perform shallow map operations without routing JSON through YAML semantics.
 
 Live targets:
 
@@ -40,11 +29,11 @@ Live targets:
 | darwin | `~/Library/Application Support/Code/User/settings.json` | `~/Library/Application Support/Cursor/User/settings.json` |
 | linux / wsl | `~/.config/Code/User/settings.json` | `~/.config/Cursor/User/settings.json` |
 
-Hook: `home/run_after_90-app-settings.fish.tmpl` runs `vscode-settings-apply` on Unix when the function exists and propagates a failed apply status.
+The lifecycle script resolves sources relative to `.chezmoi.sourceDir` and propagates Apply failures. It does not depend on installed settings functions.
 
 ## Fish implementation layout
 
-Keep Push self-contained in `vscode-settings-apply.fish`. The public function appears first as a small orchestration layer; private Fish-native helpers follow in runtime/platform, input parsing, merge preparation, and transactional-write sections. Pull uses a self-contained Bun script; Python runs the existing CLI integration tests.
+`app-settings/apply.fish` owns the Code/Cursor and Zed Apply helpers plus their shared JSONC parsing and transactional writes. Python integration tests run these helpers with isolated live files.
 
 ## Layer rules
 

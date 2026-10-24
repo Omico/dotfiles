@@ -38,6 +38,10 @@ Start at the band's lowest number. Splitting a script preserves its priority: in
 
 `run_after_90-python.fish.tmpl` runs on every apply on macOS and Linux. It updates the standalone uv binary first so its Python download metadata is current, upgrades all uv-managed Python versions to their latest available patch releases, then upgrades all uv-managed tools while retaining their interpreter and version requirements. A failed step stops the script and returns its status.
 
+## Application settings
+
+`run_after_90-codex-settings.fish.tmpl`, `run_after_90-vscode-settings.fish.tmpl`, and `run_after_90-zed-settings.fish.tmpl` apply [managed application preferences](./app-settings) on macOS and Linux, including WSL. Each resolves its source files from the repository and propagates failures. Code and Cursor remain one transactional pair. The scripts run on every apply; live settings are not imported back into the repository.
+
 ## macOS configuration
 
 The former root `macos` script is now part of `chezmoi apply`, split into three macOS-only scripts. Each uses `onchange` so unchanged successful setup does not repeat. Changing the script or its hashed helper inputs reruns that setup; manually changing a system preference does not trigger it.

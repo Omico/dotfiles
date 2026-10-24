@@ -14,9 +14,7 @@ import unittest
 from collections.abc import Mapping
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-APPLY_FUNCTION = (
-    ROOT / "home/dot_config/fish/exact_functions/exact_unix/vscode-settings-apply.fish"
-)
+APPLY_FUNCTION = ROOT / "app-settings/apply.fish"
 
 
 def require_tool(name: str) -> str:
@@ -37,9 +35,7 @@ class ApplyTests(unittest.TestCase):
         cls.mv = require_tool("mv")
 
     def setUp(self) -> None:
-        self.temp_dir = tempfile.TemporaryDirectory(
-            prefix="vscode-settings-apply-tests."
-        )
+        self.temp_dir = tempfile.TemporaryDirectory(prefix="vscode-settings-tests.")
         self.addCleanup(self.temp_dir.cleanup)
         self.home = pathlib.Path(self.temp_dir.name)
         self.source_dir = self.home / ".local/share/chezmoi/app-settings/vscode-based"
@@ -54,7 +50,7 @@ class ApplyTests(unittest.TestCase):
         extra_env: Mapping[str, str] | None = None,
         *,
         extra_script: str = "",
-        command: str = "vscode-settings-apply",
+        command: str = '__app_settings_apply_vscode "$HOME/.local/share/chezmoi/app-settings/vscode-based" linux',
     ) -> subprocess.CompletedProcess[str]:
         env = os.environ.copy()
         env.update(
@@ -71,12 +67,7 @@ class ApplyTests(unittest.TestCase):
                 self.fish,
                 "--no-config",
                 "-c",
-                (
-                    "set -g fish_platform linux; source $APPLY_FUNCTION; "
-                    + extra_script
-                    + "\n"
-                    + command
-                ),
+                ("source $APPLY_FUNCTION; " + extra_script + "\n" + command),
             ],
             cwd=self.home,
             env=env,
@@ -212,18 +203,15 @@ end
         live = self.home / ".config/zed/settings.json"
         live.parent.mkdir()
         live.write_text('{"local":"old"}')
-        zed_function = APPLY_FUNCTION.with_name("zed-settings-apply.fish")
         result = self.run_apply(
-            {"ZED_FUNCTION": str(zed_function)},
             extra_script="""
-source "$ZED_FUNCTION"
 functions --copy __vscode_settings_build_merged __original_build
 function __vscode_settings_build_merged
     __original_build $argv; or return $status
     printf '%s' '{"local":"new","editor":true}' > "$HOME/.config/zed/settings.json"
 end
 """,
-            command="zed-settings-apply",
+            command='__app_settings_apply_zed "$HOME/.local/share/chezmoi/app-settings/zed"',
         )
         self.assert_apply_status(1, result)
         self.assertEqual(self.read_json(live), {"local": "new", "editor": True})

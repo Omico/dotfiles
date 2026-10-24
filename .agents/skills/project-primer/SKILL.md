@@ -25,5 +25,5 @@ Stop when the current reference gives enough guidance. Load another reference on
 - **Commands docs**: Read [commands-docs](references/commands-docs.md) when adding, renaming, or removing Fish autoload commands or editing `docs/src/commands/`.
 - **Orchard**: Read [orchard](references/orchard.md) before editing Orchard app packages, its executable, or its completion.
 - **APM**: Read [apm](references/apm.md) before editing APM source under `home/dot_apm/` or APM Fish helpers.
-- **Application settings**: Use the `app-settings` skill before Pull, Apply, or editing sources under `app-settings/`.
+- **Application settings**: Use the `app-settings` skill before editing managed application preferences or their lifecycle scripts.
 - **Commits**: Read [git](references/git.md) before preparing a commit.
