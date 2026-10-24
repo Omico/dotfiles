@@ -1,0 +1,26 @@
+{{ if has .chezmoi.os (list "darwin" "linux") -}}
+#!/usr/bin/env fish
+# Installer: {{ include (joinPath .chezmoi.sourceDir "../rime/install.rb") | sha256sum }}
+
+{{ if eq .chezmoi.os "darwin" -}}
+brew install --cask squirrel-app; or exit $status
+
+set -l rime_dir "$HOME/Library/Rime"
+set -l install_choices 1
+{{ else -}}
+set -l rime_dir "$HOME/.local/share/fcitx5/rime"
+set -l install_choices 3 1
+{{ end -}}
+set -l installer_dir "$HOME/Git/Mark24Code/rime-auto-deploy"
+if not test -d "$installer_dir"
+    git clone --depth=1 --branch latest https://github.com/Mark24Code/rime-auto-deploy.git "$installer_dir"; or exit $status
+end
+
+cd "$installer_dir"; or exit $status
+printf '%s\n' $install_choices | ruby {{ joinPath .chezmoi.sourceDir "../rime/install.rb" | quote }}; or exit $status
+
+test -f "$rime_dir/rime_ice.schema.yaml"; or begin
+    echo "Rime auto deploy did not install Rime Ice." >&2
+    exit 1
+end
+{{ end -}}
