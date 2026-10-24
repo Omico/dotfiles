@@ -1,6 +1,7 @@
 {
   "diff_view_style": "split",
   "restore_on_startup": "launchpad",
+  "show_whitespaces": "boundary",
   "features": {
     "edit_predictions": {
       "provider": "none"
@@ -34,7 +35,8 @@
   },
   "languages": {
     "Markdown": {
-      "remove_trailing_whitespace_on_save": true
+      "remove_trailing_whitespace_on_save": true,
+      "soft_wrap": "editor_width"
     },
     "Shell Script": {
       "tab_size": 2,
@@ -53,6 +55,7 @@
     "dock": "right"
   },
   "collaboration_panel": {
+    "button": false,
     "dock": "right"
   },
   "git_panel": {
