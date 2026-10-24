@@ -9,6 +9,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
+if __package__:
+    from .support import render_script
+else:
+    from support import render_script
+
 ROOT = Path(__file__).resolve().parents[2]
 FISH = shutil.which("fish")
 CHEZMOI = shutil.which("chezmoi")
@@ -37,31 +42,11 @@ class AppSettingsTests(unittest.TestCase):
         (self.home / "uv-stub").chmod(0o755)
 
     def run_hook(self, app, *, platform="linux", run_status=0, install_status=0):
-        render = subprocess.run(
-            [
-                str(CHEZMOI),
-                "--source",
-                str(ROOT),
-                "--config",
-                str(self.config),
-                "--override-data",
-                json.dumps(
-                    {
-                        "chezmoi": {
-                            "os": platform,
-                            "sourceDir": str(self.repository / "home"),
-                        }
-                    }
-                ),
-                "execute-template",
-                "--file",
-                str(ROOT / f"home/run_after_90-{app}-settings.fish.tmpl"),
-            ],
-            capture_output=True,
-            text=True,
-            check=False,
+        script = render_script(
+            ROOT / f"home/run_after_90-{app}-settings.fish.tmpl",
+            self.config,
+            {"chezmoi": {"os": platform, "sourceDir": str(self.repository / "home")}},
         )
-        self.assertEqual(render.returncode, 0, render.stderr)
         prelude = "\n".join(
             "source " + shlex.quote(str(ROOT / path))
             for path in (
@@ -78,7 +63,7 @@ function __uv_install
 end
 """
         return subprocess.run(
-            [str(FISH), "--no-config", "-c", prelude + render.stdout],
+            [str(FISH), "--no-config", "-c", prelude + script],
             env={
                 **os.environ,
                 "HOME": str(self.home),

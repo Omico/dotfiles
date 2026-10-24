@@ -1,6 +1,5 @@
 """Verify rendered update scripts propagate failures to chezmoi."""
 
-import json
 import os
 import shlex
 import shutil
@@ -8,6 +7,11 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+
+if __package__:
+    from .support import render_script
+else:
+    from support import render_script
 
 ROOT = Path(__file__).resolve().parents[2]
 FISH = shutil.which("fish")
@@ -64,27 +68,11 @@ class UpdateTests(unittest.TestCase):
             if source.suffix == ".tmpl":
                 config = root / "chezmoi.toml"
                 config.write_text("")
-                render = subprocess.run(
-                    [
-                        str(CHEZMOI),
-                        "--source",
-                        str(ROOT),
-                        "--config",
-                        str(config),
-                        "--override-data",
-                        json.dumps(
-                            {"chezmoi": {"os": platform, "osRelease": {"id": "ubuntu"}}}
-                        ),
-                        "execute-template",
-                        "--file",
-                        str(source),
-                    ],
-                    capture_output=True,
-                    text=True,
-                    check=False,
+                script = render_script(
+                    source,
+                    config,
+                    {"chezmoi": {"os": platform, "osRelease": {"id": "ubuntu"}}},
                 )
-                self.assertEqual(render.returncode, 0, render.stderr)
-                script = render.stdout
             prelude = ""
             if "homebrew" in name:
                 prelude = (

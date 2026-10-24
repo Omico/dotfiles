@@ -1,6 +1,5 @@
 """Verify login shell setup without changing the host account or shell registry."""
 
-import json
 import os
 import shlex
 import shutil
@@ -8,6 +7,11 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+
+if __package__:
+    from .support import render_script
+else:
+    from support import render_script
 
 ROOT = Path(__file__).resolve().parents[2]
 FISH = shutil.which("fish")
@@ -68,26 +72,14 @@ esac
                 )
             config = root / "chezmoi.toml"
             config.write_text("")
-            render = subprocess.run(
-                [
-                    str(CHEZMOI),
-                    "--source",
-                    str(ROOT),
-                    "--config",
-                    str(config),
-                    "--override-data",
-                    json.dumps({"chezmoi": {"os": platform}}),
-                    "execute-template",
-                    "--file",
-                    str(ROOT / "home/run_once_after_30-default-shell.fish.tmpl"),
-                ],
-                capture_output=True,
-                text=True,
-                check=True,
+            script = render_script(
+                ROOT / "home/run_once_after_30-default-shell.fish.tmpl",
+                config,
+                {"chezmoi": {"os": platform}},
             )
             result = subprocess.run(
                 [str(FISH), "--no-config"],
-                input=render.stdout,
+                input=script,
                 env={
                     **os.environ,
                     "HOME": directory,
