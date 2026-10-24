@@ -7,6 +7,7 @@ import select
 import shlex
 import shutil
 import subprocess
+import sys
 import tempfile
 import termios
 import time
@@ -68,6 +69,7 @@ test (count $paths) -eq 3
             ) as process:
                 output = b""
                 sent = 0
+                probing = False
                 deadline = time.monotonic() + 10
                 try:
                     while process.poll() is None:
@@ -75,15 +77,23 @@ test (count $paths) -eq 3
                             self.fail(f"Terminal timed out: {output!r}")
                         if select.select([master], [], [], 0.05)[0]:
                             output += os.read(master, 65536)
-                        # Wait for Fish's line editor before sending each answer.
-                        ready = not termios.tcgetattr(master)[3] & termios.ICANON
+                        # Modes can change before the reader is ready for SIGINT.
+                        # Wait for it to render ordinary input, then erase that
+                        # input before sending the answer or cancellation key.
+                        marker = f"__apm_ready_{sent}__".encode()
                         if (
                             sent < len(answers)
                             and output.count(b"Selection:") > sent
-                            and ready
+                            and not termios.tcgetattr(master)[3]
+                            & (termios.ICANON | termios.ECHO)
+                            and not probing
                         ):
-                            os.write(master, answers[sent])
+                            os.write(master, marker)
+                            probing = True
+                        if probing and marker in output:
+                            os.write(master, b"\x15" + answers[sent])
                             sent += 1
+                            probing = False
                     return process.returncode, output
                 finally:
                     if process.poll() is None:
@@ -126,6 +136,29 @@ test (count $paths) -eq 3
                 status, output = self.run_terminal(self.selection_script(), [answer])
                 self.assertNotEqual(status, 0, output)
                 self.assertFalse(self.selector.exists())
+
+    def test_terminal_waits_for_reader_after_modes_change(self):
+        # Expose the old readiness condition while the actual reader is absent.
+        probe = """import signal, termios, time
+signal.signal(signal.SIGINT, signal.SIG_IGN)
+modes = termios.tcgetattr(0)
+modes[3] &= ~(termios.ICANON | termios.ECHO)
+termios.tcsetattr(0, termios.TCSANOW, modes)
+time.sleep(0.2)
+"""
+        script = (
+            "printf 'Selection: '\n"
+            + shlex.quote(sys.executable)
+            + " -c "
+            + shlex.quote(probe)
+            + "\nor exit $status\n"
+            + "printf 'reader-started'\n"
+            + "read --local --prompt-str '' selection; or exit 1\n"
+            + "exit 0\n"
+        )
+        status, output = self.run_terminal(script, [b"\x03"])
+        self.assertEqual(status, 1, output)
+        self.assertIn(b"reader-started", output)
 
     def test_link_ownership_and_repeat_run(self):
         apm = self.root / "apm"
