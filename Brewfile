@@ -164,8 +164,6 @@ cask "microsoft-office"
 cask "motrix@beta"
 # Peer to peer Bitorrent client
 cask "qbittorrent"
-# 3D modeling software used to create and manipulate 3D models
-cask "sketchup"
 # Snip or pin screenshots
 cask "snipaste"
 # Rime input method engine
