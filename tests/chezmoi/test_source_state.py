@@ -27,6 +27,7 @@ class SourceStateTests(unittest.TestCase):
         shutil.copytree(ROOT / "home", self.source / "home")
         shutil.copytree(ROOT / "rime", self.source / "rime")
         shutil.copytree(ROOT / "macos", self.source / "macos")
+        shutil.copytree(ROOT / "scripts", self.source / "scripts")
         (self.source / ".chezmoiroot").write_text("home\n")
         self.config = self.root / "config/chezmoi.toml"
         self.config.parent.mkdir()
@@ -113,11 +114,6 @@ class SourceStateTests(unittest.TestCase):
             with self.subTest(platform=platform):
                 self.run_chezmoi("apply", "--exclude=scripts", platform=platform)
                 self.assertEqual(target.read_text(), "# Locally generated\n")
-                self.assertTrue(
-                    (
-                        self.destination / ".local/libexec/android-fish-completions.py"
-                    ).is_file()
-                )
 
     def test_rime_changes_update_platform_user_directory(self):
         name = "default.custom.yaml"

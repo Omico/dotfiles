@@ -267,7 +267,15 @@ def render(commands: dict[str, Command]) -> str:
             else:
                 rule += " -x"
                 if kind == "directory":
-                    rule += " -a '(__fish_complete_directories)'"
+                    candidates = "(__fish_complete_directories)"
+                    if not flag.startswith("--"):
+                        prefix = quote("^" + re.escape(flag))
+                        candidates = (
+                            "(__fish_complete_directories "
+                            f"(string replace --regex -- {prefix} '' "
+                            "(commandline --current-token)))"
+                        )
+                    rule += " -a " + quote(candidates)
         lines.append(rule)
     return "\n".join(lines) + "\n"
 

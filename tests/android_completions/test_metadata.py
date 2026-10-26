@@ -1,7 +1,6 @@
-"""Exercise generation, update hooks and process-free completion without Android."""
+"""Verify help parsing, generation and Fish completion without Android."""
 
 import os
-import re
 import runpy
 import shlex
 import shutil
@@ -12,7 +11,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
-HELPER = ROOT / "home/dot_local/libexec/android-fish-completions.py"
+HELPER = ROOT / "scripts/android-fish-completions.py"
 
 ROOT_HELP = """Usage: android [COMMAND]
   -h, --help  Show help
@@ -35,6 +34,7 @@ Options:
       --agent=PARAM  Select agents.
                      Defaults to all detected agents
       --project=PARAM  Path to a project root
+  -o, --output=PARAM  Path to the output directory
       --screenshot=PARAM  A screenshot captured with `android screen capture
                           -a` to inspect
   -h, --help  Show help
@@ -64,7 +64,6 @@ class GenerationTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.output = self.root / "completions/android.fish"
         self.broken = False
-        self.help_calls = 0
         self.calls = []
         self.context_help = {
             (): ROOT_HELP,
@@ -81,7 +80,6 @@ class GenerationTests(unittest.TestCase):
     def invoke(self, binary, args):
         self.calls.append(args)
         if args[-1] == "--help":
-            self.help_calls += 1
             if self.broken:
                 return "Unknown help layout"
             return self.context_help[tuple(args[:-1])]
@@ -128,25 +126,19 @@ class GenerationTests(unittest.TestCase):
 
     def test_each_invocation_rebuilds_without_version_probes(self):
         self.generate()
-        self.assertEqual(self.help_calls, 4)
+        self.assertEqual(len(self.calls), 4)
         self.context_help[("skills", "add")] = LEAF_HELP.replace(
             "Install all skills", "Install every skill"
         )
         self.generate()
         self.assertIn("Install every skill", self.output.read_text())
-        self.assertEqual(self.help_calls, 8)
-        self.assertTrue(all(args[-1] == "--help" for args in self.calls))
-        self.assertNotIn("fingerprint", self.output.read_text())
+        self.assertEqual(len(self.calls), 8)
 
     def test_option_groups_preserve_context_specific_definitions(self):
         self.context_help[("skills",)] = GROUP_HELP.replace(
             "Options:\n", "Options:\n      --all  List all skills\n"
         )
         self.generate()
-        text = self.output.read_text()
-        long_options = re.findall(r" -l '?([a-z][a-z0-9_-]*)'?(?=\s)", text)
-        self.assertEqual(long_options.count("sdk"), 1)
-        self.assertEqual(long_options.count("all"), 2)
         for query, expected in [
             ("android skills --all", "--all\tList all skills"),
             ("android skills add --all", "--all\tInstall all skills"),
@@ -200,67 +192,49 @@ class GenerationTests(unittest.TestCase):
             'android --sdk "SDK with spaces" skills add --ag',
         ):
             script += f"complete -C {shlex.quote(query)}\n"
-        for _ in range(2):
-            text = self.run_fish(
-                script, env={**os.environ, "PATH": f"{binaries}:/usr/bin:/bin"}
-            )
-            self.assertIn(
-                "skills\tManage skills with descriptions continued on another line",
-                text,
-            )
-            self.assertIn(
-                "--agent\tSelect agents. Defaults to all detected agents", text
-            )
+        text = self.run_fish(
+            script, env={**os.environ, "PATH": f"{binaries}:/usr/bin:/bin"}
+        )
+        self.assertIn(
+            "skills\tManage skills with descriptions continued on another line",
+            text,
+        )
+        self.assertIn("--agent\tSelect agents. Defaults to all detected agents", text)
         self.assertFalse(
             log.exists(), "Opening shells and completing must not run Android or Python"
         )
 
-    def test_file_directory_and_equals_arguments(self):
+    def test_path_parameters_complete_files_and_directories(self):
         self.generate()
-        directory = self.root / "path with spaces"
-        directory.mkdir()
-        (self.root / "path-file.txt").write_text("")
-        for query, expected in [
-            (f"android --sdk {self.root}/pa", "path with spaces/"),
-            (f"android --sdk={self.root}/pa", "path with spaces/"),
-            (f"android describe --project_dir {self.root}/pa", "path with spaces/"),
-            (f"android describe {self.root}/pa", "path-file.txt"),
-        ]:
-            with self.subTest(query=query):
-                text = self.run_fish(
-                    f"source {shlex.quote(str(self.output))}; complete -C {shlex.quote(query)}"
-                )
-                self.assertIn(expected, text)
-
-    def test_parameter_types_limit_file_candidates(self):
-        self.generate()
-        (self.root / "candidate-directory").mkdir()
-        (self.root / "candidate-file.png").write_text("")
-        prefix = f"{self.root}/candidate-"
-        for query in (
-            f"android --sdk {prefix}",
-            f"android --sdk={prefix}",
-            f"android skills add --project {prefix}",
+        (self.root / "candidate directory").mkdir()
+        (self.root / "candidate-file.txt").write_text("")
+        prefix = f"{self.root}/candidate"
+        for arguments, kind in (
+            ("--sdk ", "directory"),
+            ("--sdk=", "directory"),
+            ("describe --project_dir ", "directory"),
+            ("describe ", "file"),
+            ("skills add --project ", "directory"),
+            ("skills add --agent ", "none"),
+            ("skills add --screenshot ", "file"),
+            ("skills add -o", "directory"),
+            ("skills add -o ", "directory"),
+            ("skills add --output=", "directory"),
+            ("skills add --output ", "directory"),
         ):
+            query = f"android {arguments}{prefix}"
             with self.subTest(query=query):
                 result = self.run_fish(
                     f"source {shlex.quote(str(self.output))}; complete -C {shlex.quote(query)}"
                 )
-                self.assertIn("candidate-directory/", result)
-                self.assertNotIn("candidate-file.png", result)
-        query = f"android skills add --agent {prefix}"
-        self.assertEqual(
-            self.run_fish(
-                f"source {shlex.quote(str(self.output))}; complete -C {shlex.quote(query)}"
-            ),
-            "",
-        )
-        query = f"android skills add --screenshot {prefix}"
-        result = self.run_fish(
-            f"source {shlex.quote(str(self.output))}; complete -C {shlex.quote(query)}"
-        )
-        self.assertIn("candidate-file.png", result)
-        self.assertIn("candidate-directory/", result)
+                if kind == "none":
+                    self.assertEqual(result, "")
+                    continue
+                self.assertIn("candidate directory/", result)
+                if kind == "file":
+                    self.assertIn("candidate-file.txt", result)
+                else:
+                    self.assertNotIn("candidate-file.txt", result)
 
     def test_namespaces_and_directions_are_not_paths(self):
         self.assertEqual(

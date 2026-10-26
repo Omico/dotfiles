@@ -48,7 +48,7 @@ class OnchangeTests(unittest.TestCase):
         shutil.copy(
             ROOT / "home/.chezmoiignore.tmpl", self.source / ".chezmoiignore.tmpl"
         )
-        self.helper = self.source / "dot_local/libexec/android-fish-completions.py"
+        self.helper = self.root / "scripts/android-fish-completions.py"
         self.helper.parent.mkdir(parents=True)
         self.helper.write_text(
             "import os, pathlib, sys\n"
@@ -112,6 +112,26 @@ class OnchangeTests(unittest.TestCase):
 
     def test_macos_version_and_generator_changes(self):
         self.check_changes("darwin")
+
+    def test_repository_source_root_with_special_characters(self):
+        repository = self.root / "repository 'with \\ spaces"
+        repository.mkdir()
+        (repository / ".chezmoiroot").write_text("home\n")
+        self.source.rename(repository / "home")
+        self.helper.parent.rename(repository / "scripts")
+        self.source = repository
+        self.helper = repository / "scripts/android-fish-completions.py"
+        self.check_changes("linux")
+
+    def test_cli_found_only_after_fish_startup_is_refreshed(self):
+        local_bin = self.destination / ".local/bin"
+        local_bin.mkdir(parents=True)
+        shutil.move(self.binaries / "android", local_bin / "android")
+        conf = self.source / "dot_config/fish/conf.d"
+        conf.mkdir(parents=True)
+        for name in ("00-core-functions.fish", "10-common.fish"):
+            shutil.copy(ROOT / "home/dot_config/fish/exact_conf.d" / name, conf / name)
+        self.check_changes("linux")
 
     def test_failure_is_retried_and_existing_file_is_preserved(self):
         self.assertEqual(self.apply().returncode, 0)

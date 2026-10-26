@@ -54,14 +54,14 @@ The former root `macos` script is now part of `chezmoi apply`, split into three 
 
 `run_onchange_after_95-android-completions.fish.tmpl` runs on macOS and Linux during `chezmoi apply` when its rendered content changes. It includes hashes of the installed Android CLI version and the generator source. Priority `95` places generation after the `90`-series package updates and Python maintenance. If Android CLI is absent, it skips generation.
 
-The Python standard-library generator runs through uv with the managed Python 3.13 installed by the Python setup script. It ignores the caller's Python project and disables interpreter downloads. It reads the full CLI help tree, joins wrapped descriptions, generates standard Fish completion definitions, syntax-checks them, and atomically installs `~/.config/fish/completions/android.fish`. Failures preserve the previous file. The generated file stays local through `.chezmoiignore.tmpl`; each machine uses its installed CLI. Opening a terminal and completing commands never runs Python or invokes Android CLI, including version queries.
+The generator is `scripts/android-fish-completions.py`. The update script locates it through `CHEZMOI_SOURCE_DIR` and runs it with uv-managed Python 3.13, independently of the caller's Python project and with interpreter downloads disabled. It reads the full CLI help tree, joins wrapped descriptions, syntax-checks the generated Fish definitions, and atomically installs `~/.config/fish/completions/android.fish`. Failures preserve the previous file. The generated file stays local through `.chezmoiignore.tmpl`; each machine uses its installed CLI. Opening a terminal and completing commands never runs Python or invokes Android CLI, including version queries.
 
 Install or upgrade Android CLI, then run `chezmoi apply`. Changes made outside chezmoi are detected only at apply time. Templates render before scripts execute: if the same apply upgrades Android CLI after template evaluation, run apply again to detect the new version. Only chezmoi decides whether regeneration is needed; invoking the generator directly always rebuilds the file.
 
 To rebuild a deleted or manually changed output without changing the CLI version, run:
 
 ```shell
-uv run --quiet --no-project --managed-python --no-python-downloads --python 3.13 --script ~/.local/libexec/android-fish-completions.py
+uv run --quiet --no-project --managed-python --no-python-downloads --python 3.13 --script "$(chezmoi source-path)/../scripts/android-fish-completions.py"
 ```
 
 After generating, new Fish shells load the result automatically. Reload it in an existing shell with `source ~/.config/fish/completions/android.fish`.
