@@ -2,6 +2,16 @@
 
 Install or upgrade language runtimes and build tools from the shell.
 
+## `android`
+
+**Platforms:** Unix (`linux`, `darwin`, `wsl`)
+
+Ensure `~/.local/bin/android` exists, then forward arguments to Android CLI. Like `uv`, this wrapper uses `__ensure_binary_and_forward` and runs the [official installer](https://github.com/android/skills/blob/main/devtools/android-cli/SKILL.md#installation) only when the binary is missing. Installation supports ARM64 and x86-64. Applying the wrapper does not install or upgrade the CLI.
+
+The installer downloads the latest CLI and initializes it. It does not pin a version or verify a published checksum. The wrapper adds `~/.local/bin` to the installer's process PATH to prevent profile edits. Existing Homebrew installations require a separate ordinary uninstall, without `--zap`. The wrapper runs no SDK install, update, or removal commands of its own.
+
+After first use, apply the [Android completion script](../chezmoi-scripts#android-fish-completions) to generate Fish completions.
+
 ## `bun`
 
 **Platforms:** Unix (`linux`, `darwin`, `wsl`)

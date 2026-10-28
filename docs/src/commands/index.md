@@ -23,7 +23,7 @@ Source definitions live under [`home/dot_config/fish/exact_functions/`](https://
 | [Homebrew](./homebrew) | macOS | Brewfile backup, restore, upgrades |
 | [MLflow](./mlflow) | macOS | Local tracking server via launchd |
 | [Shell](./shell) | Mixed | Reload Fish and sync configs to chezmoi |
-| [Toolchains](./toolchains) | Mixed | Node.js, Bun, mise, Python (uv), Rust, Flutter, Java, Gradle |
+| [Toolchains](./toolchains) | Mixed | Android CLI, Node.js, Bun, mise, Python (uv), Rust, Flutter, Java, Gradle |
 | [Xcode](./xcode) | macOS | Switch Xcode versions and open downloads |
 
 Platform-specific functions load only when `fish_platform` matches (set at `chezmoi apply` time). Each command page lists its supported platforms.

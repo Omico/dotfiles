@@ -1,4 +1,3 @@
-tap "android/tap", trusted: { formulae: ["android-cli"] }
 tap "gentleman-programming/tap", trusted: { casks: ["engram"] }
 tap "homebrew/core"
 tap "jakewharton/repo", trusted: true
@@ -138,8 +137,6 @@ brew "gentleman-programming/tap/engram", trusted: true
 brew "jakewharton/repo/diffuse", trusted: true
 # AI companion and VTuber application
 cask "airi"
-# Command-line interface for Android app development with AI agents
-cask "android-cli"
 # Allows connection to a computer remotely
 cask "anydesk"
 # Private desktop AI chat application

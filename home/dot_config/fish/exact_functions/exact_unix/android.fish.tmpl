@@ -1,0 +1,25 @@
+#!/usr/bin/env fish
+
+function android --description 'Ensure Android CLI is installed, then run android with given arguments'
+    __ensure_binary_and_forward \
+        --bin "$HOME/.local/bin/android" \
+        --name 'Android CLI' \
+        --install __android_install \
+        -- $argv
+end
+
+function __android_install --description 'internal: install Android CLI'
+{{- $supportedOS := or (eq .chezmoi.os "darwin") (eq .chezmoi.os "linux") }}
+{{- $architectures := dict "amd64" "x86_64" "arm64" "arm64" }}
+{{- $arch := get $architectures .chezmoi.arch }}
+{{- if and $supportedOS $arch }}
+    set -l url 'https://dl.google.com/android/cli/latest/{{ .chezmoi.os }}_{{ $arch }}/install.sh'
+    set -l installer "$(curl -fsSL "$url")"; or return $status
+    # The managed Fish configuration owns PATH; prevent upstream profile edits.
+    set -lx PATH "$HOME/.local/bin" $PATH
+    bash -c "$installer"
+{{- else }}
+    echo 'Android CLI installation requires macOS or Linux on ARM64 or x86-64.' >&2
+    return 1
+{{- end }}
+end
