@@ -48,6 +48,23 @@
   - Assign write ownership for shared files.
   - Set the integration order.
 
+## Verification and handoff
+
+- Track material discrepancies, failures, deviations, and verification limits.
+- Before reporting completion, account for each:
+  - Resolved: give the outcome and verification.
+  - Remaining: give the impact and next action.
+- Match claims to evidence. Distinguish facts, inferences, and unverified assumptions.
+- Separate completed work from pending activation, validation, cleanup, or user action.
+- Explain consequential departures from referenced procedures before acting.
+
+- Use short Markdown list items for the final handoff.
+  - Cover one subject per item, with a result, limit, or next action.
+  - Add brief status labels when useful.
+  - Keep evidence and caveats beside the relevant claim.
+  - Include material unresolved findings, even if reported earlier.
+  - Scale detail to the task; omit inapplicable items.
+
 ## Writing and communication
 
 - For documents and text responses:
