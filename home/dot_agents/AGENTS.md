@@ -30,6 +30,14 @@
 - Start a new chat for independent work in another workspace.
 - Reuse a chat only for the same task or at the user's explicit direction.
 
+## Problem solving
+
+- Define user-observable success before choosing a solution.
+- For reported failures, collect evidence along the actual failure path.
+- When a failure cannot be reproduced, state the resulting verification gap.
+- Test the smallest direct change first.
+  - Reassess necessity when adding abstractions or accumulating exceptions.
+
 ## Workspace changes
 
 - Avoid Git merges unless necessary.
@@ -55,7 +63,9 @@
   - Resolved: give the outcome and verification.
   - Remaining: give the impact and next action.
 - Match claims to evidence. Distinguish facts, inferences, and unverified assumptions.
-- Separate completed work from pending activation, validation, cleanup, or user action.
+- Report implementation completion, checks, and outcome verification separately.
+  - Claim resolution only with evidence for the original outcome.
+  - Identify pending activation, validation, cleanup, or user action.
 - Explain consequential departures from referenced procedures before acting.
 
 - Use short Markdown list items for the final handoff.
