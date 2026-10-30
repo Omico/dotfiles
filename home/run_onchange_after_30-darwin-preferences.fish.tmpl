@@ -29,6 +29,7 @@ defaults write com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true; or exi
 defaults write com.apple.commerce AutoUpdate -bool true; or exit $status
 
 # Mouse
+defaults write -g com.apple.swipescrolldirection -bool false; or exit $status
 defaults write -g com.apple.mouse.linear 1; or exit $status
 defaults write -g com.apple.mouse.scaling 1; or exit $status
 {{ end -}}

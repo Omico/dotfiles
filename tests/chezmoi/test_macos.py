@@ -33,6 +33,7 @@ PREFERENCES = [
     "com.apple.dock show-recents -bool false",
     "com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true",
     "com.apple.commerce AutoUpdate -bool true",
+    "-g com.apple.swipescrolldirection -bool false",
     "-g com.apple.mouse.linear 1",
     "-g com.apple.mouse.scaling 1",
 ]
@@ -176,6 +177,30 @@ class MacosTests(unittest.TestCase):
         result = self.run_setup("preferences")
         self.assertEqual(result.returncode, 7, result.stderr)
         self.assertFalse(any(call[0] == "defaults" for call in self.calls()))
+
+    def test_fresh_apply_disables_natural_scrolling_and_skips_unchanged_setup(self):
+        args = (
+            "apply",
+            "--source-path",
+            str(self.home_source / SCRIPTS["preferences"]),
+        )
+        result = self.chezmoi(*args)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn(
+            [
+                "defaults",
+                "write",
+                "-g",
+                "com.apple.swipescrolldirection",
+                "-bool",
+                "false",
+            ],
+            self.calls(),
+        )
+        self.clear_calls()
+        result = self.chezmoi(*args)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.calls(), [])
 
     def test_touch_id_preserves_existing_bytes_and_is_idempotent(self):
         target = self.pam / "sudo_local"
