@@ -5,6 +5,7 @@ apt = [
     "code",
     "cpu-checker",
     "curl",
+    "cursor",
     "fcitx5-rime",
     "fish",
     "fontconfig",

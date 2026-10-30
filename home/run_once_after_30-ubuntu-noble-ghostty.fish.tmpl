@@ -1,0 +1,6 @@
+{{ if eq (index .chezmoi.osRelease "ubuntuCodename") "noble" -}}
+#!/usr/bin/env fish
+
+command -q ghostty; and exit 0
+sudo snap install ghostty --classic; or exit $status
+{{ end -}}

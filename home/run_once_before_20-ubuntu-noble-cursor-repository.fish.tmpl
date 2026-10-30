@@ -1,0 +1,11 @@
+{{ if eq (index .chezmoi.osRelease "ubuntuCodename") "noble" -}}
+#!/usr/bin/env fish
+
+{{ includeTemplate "installer-workdir.fish" . }}
+curl -fsSL https://downloads.cursor.com/keys/anysphere.asc -o "$work/cursor.asc"; or exit $status
+gpg --dearmor --output "$work/cursor.gpg" "$work/cursor.asc"; or exit $status
+sudo install -m 0644 "$work/cursor.gpg" /usr/share/keyrings/cursor.gpg; or exit $status
+set -l architecture (dpkg --print-architecture); or exit $status
+printf 'Types: deb\nURIs: https://downloads.cursor.com/aptrepo\nSuites: stable\nComponents: main\nArchitectures: %s\nSigned-By: /usr/share/keyrings/cursor.gpg\n' "$architecture" >"$work/cursor.sources"; or exit $status
+sudo install -m 0644 "$work/cursor.sources" /etc/apt/sources.list.d/cursor.sources; or exit $status
+{{ end -}}

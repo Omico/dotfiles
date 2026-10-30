@@ -1,7 +1,16 @@
 # Bootstrap dependencies; the full Homebrew environment remains in Brewfile.
 [packages.darwin]
-bootstrap_formulae = ["aria2", "jq", "starship", "yq"]
-orchard = ["firefox", "google-chrome", "ollama-app", "visual-studio-code"]
+bootstrap_formulae = ["aria2", "fnm", "jq", "starship", "yq"]
+orchard = [
+    "chatgpt",
+    "cursor",
+    "firefox",
+    "ghostty",
+    "google-chrome",
+    "ollama-app",
+    "visual-studio-code",
+    "zed",
+]
 
 [environments.darwin]
 # Homebrew

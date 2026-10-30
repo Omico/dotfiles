@@ -1,0 +1,10 @@
+{{ if eq (index .chezmoi.osRelease "ubuntuCodename") "noble" -}}
+#!/usr/bin/env fish
+
+command -q zed; and exit 0
+test -x "$HOME/.local/bin/zed"; and exit 0
+
+{{ includeTemplate "installer-workdir.fish" . }}
+curl -fsSL https://zed.dev/install.sh -o "$work/zed-install.sh"; or exit $status
+sh "$work/zed-install.sh"; or exit $status
+{{ end -}}

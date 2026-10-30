@@ -1,0 +1,19 @@
+{{ if eq (index .chezmoi.osRelease "ubuntuCodename") "noble" -}}
+#!/usr/bin/env fish
+
+command -q chatgpt; and exit 0
+set -l architecture (dpkg --print-architecture); or exit $status
+switch "$architecture"
+    case amd64 arm64
+    case '*'
+        echo "ChatGPT desktop requires amd64 or arm64." >&2
+        exit 1
+end
+
+{{ includeTemplate "installer-workdir.fish" . }}
+curl -fsSL "https://persistent.oaistatic.com/codex-app-prod/linux/deb/latest/chatgpt_$architecture.deb" -o "$work/chatgpt.deb"; or exit $status
+# APT's sandbox user must be able to read the local package.
+chmod 755 "$work"; or exit $status
+chmod 644 "$work/chatgpt.deb"; or exit $status
+sudo apt install -y "$work/chatgpt.deb"; or exit $status
+{{ end -}}

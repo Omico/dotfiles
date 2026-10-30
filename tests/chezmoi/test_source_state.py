@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 import shlex
 import shutil
 import subprocess
@@ -337,7 +338,13 @@ chezmoi_add_configs
         )
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("Invalid package name", result.stderr)
-        manifest.write_text(original.replace('["aria2", "jq", "starship", "yq"]', "[]"))
+        manifest.write_text(
+            re.sub(
+                r"(?m)^bootstrap_formulae = \[.*\]$",
+                "bootstrap_formulae = []",
+                original,
+            )
+        )
         self.assertNotIn(
             "brew install",
             self.run_chezmoi(
