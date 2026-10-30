@@ -26,6 +26,12 @@ test "$vmm_present" = 1; and set dock_autohide false
 defaults write com.apple.dock tilesize -int 48; or exit $status
 defaults write com.apple.dock autohide -bool $dock_autohide; or exit $status
 defaults write com.apple.dock show-recents -bool false; or exit $status
+if pgrep -u "$user_id" -x Dock >/dev/null
+    pkill -u "$user_id" -x Dock; or exit $status
+else
+    set -l dock_status $status
+    test $dock_status -eq 1; or exit $dock_status
+end
 
 # Automatic updates
 defaults write com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true; or exit $status

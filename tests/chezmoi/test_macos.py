@@ -74,7 +74,16 @@ class MacosTests(unittest.TestCase):
             binary = shutil.which(name)
             assert binary
             (self.binaries / name).symlink_to(binary)
-        for name in ("id", "launchctl", "defaults", "osascript", "sudo", "sysctl"):
+        for name in (
+            "id",
+            "launchctl",
+            "defaults",
+            "osascript",
+            "sudo",
+            "sysctl",
+            "pgrep",
+            "pkill",
+        ):
             binary = self.binaries / name
             binary.write_text(
                 f"#!{sys.executable}\n"
@@ -83,8 +92,11 @@ class MacosTests(unittest.TestCase):
                 "with (Path(os.environ['HOME']) / 'calls').open('a') as log:\n"
                 "    log.write(json.dumps([name, *args]) + '\\n')\n"
                 "if os.environ.get('FAIL_STEP') in (name, ' '.join([name, *args])):\n"
-                "    sys.exit(7)\n"
+                "    sys.exit(int(os.environ.get('FAIL_CODE', '7')))\n"
                 "if name == 'id': print('501')\n"
+                "elif name in ('pgrep', 'pkill'):\n"
+                "    assert args == ['-u', '501', '-x', 'Dock']\n"
+                "    if name == 'pgrep': sys.exit(0 if os.environ['GUI_ACTIVE'] == '1' else 1)\n"
                 "elif name == 'sysctl':\n"
                 "    assert args == ['-n', 'kern.hv_vmm_present']\n"
                 "    print(os.environ.get('VMM_PRESENT', '0'))\n"
@@ -175,6 +187,7 @@ class MacosTests(unittest.TestCase):
         result = self.run_setup("preferences")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertFalse(any(call[0] == "osascript" for call in self.calls()))
+        self.assertFalse(any(call[0] == "pkill" for call in self.calls()))
         self.clear_calls()
         self.env.update(GUI_ACTIVE="1", FAIL_STEP="osascript")
         result = self.run_setup("preferences")
@@ -195,6 +208,46 @@ class MacosTests(unittest.TestCase):
         result = self.run_setup("preferences")
         self.assertEqual(result.returncode, 7, result.stderr)
         self.assertFalse(any("com.apple.dock" in call for call in self.calls()))
+
+    def test_dock_restarts_after_preferences_and_propagates_failure(self):
+        for failed in ("", "pkill"):
+            with self.subTest(failed=failed):
+                self.clear_calls()
+                self.env["FAIL_STEP"] = failed
+                result = self.run_setup("preferences")
+                self.assertEqual(result.returncode, 7 if failed else 0, result.stderr)
+                calls = self.calls()
+                restart = calls.index(["pkill", "-u", "501", "-x", "Dock"])
+                dock_write = calls.index(
+                    [
+                        "defaults",
+                        "write",
+                        "com.apple.dock",
+                        "show-recents",
+                        "-bool",
+                        "false",
+                    ]
+                )
+                self.assertGreater(restart, dock_write)
+
+    def test_dock_detection_failure_stops_setup_and_retries_on_apply(self):
+        self.env.update(FAIL_STEP="pgrep", FAIL_CODE="3")
+        args = (
+            "apply",
+            "--source-path",
+            str(self.home_source / SCRIPTS["preferences"]),
+        )
+        result = self.chezmoi(*args)
+        self.assertNotEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(any(call[0] == "pkill" for call in self.calls()))
+        self.assertFalse(
+            any("com.apple.SoftwareUpdate" in call for call in self.calls())
+        )
+        self.clear_calls()
+        self.env["FAIL_STEP"] = ""
+        result = self.chezmoi(*args)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn(["pkill", "-u", "501", "-x", "Dock"], self.calls())
 
     def test_fresh_apply_disables_natural_scrolling_and_skips_unchanged_setup(self):
         args = (
