@@ -11,6 +11,7 @@ Read when changing the Orchard executable, install or validation flow, cache han
 - **Entrypoint**: `orchard` (Fish script on `PATH`; source path is repository-specific).
 - **Config**: `$XDG_CONFIG_HOME/orchard` (default `~/.config/orchard`). App definitions live in `apps/*.fish`.
 - **Cache**: `$XDG_CACHE_HOME/orchard` (default `~/.cache/orchard`). Downloaded archives and DMG mount points.
+- **State**: `$XDG_STATE_HOME/orchard` (default `~/.local/state/orchard`). Unset, empty, or relative values use the default. Pending after-install callbacks survive download cache cleanup.
 - **Platform**: macOS only (uses `hdiutil`, `ditto`, `installer`, `.app` paths).
 
 ### Commands
@@ -73,6 +74,8 @@ The script is organized in sections (see the header comment):
 - **After-install callback**: Run `orchard_after_install_callback` if defined.
 
 Download failures stop installation before mounting or extraction. DMG and ZIP app replacements copy into a staging directory beside the destination before moving the existing app to a backup and promoting the new bundle. Promotion failure restores the backup; if restoration also fails, Orchard retains the backup and reports its path. Successful replacement removes the backup. This recovery covers app bundle replacement, not PKG installers or callback side effects.
+
+When an app has an after-install callback, Orchard records the `installing` phase before installing the bundle and changes it to `callback` only after installation succeeds. Callback failure retains that record and returns a nonzero status. A later ordinary `orchard install <app_id>` resumes only the pending callback when the bundle exists and the recorded phase is `callback`, without resolving or downloading another archive. An incomplete installation, including a failed forced replacement that retained the old bundle, repeats installation before running the callback. Empty records from earlier versions also repeat installation because they do not prove the installation phase completed. Successful setup removes the record; ordinary installs then skip the completed app as before. Callbacks can be retried after partial failure, so package authors must account for their own partial side effects. Failures that occurred before pending-state tracking was introduced still require `--force` to rerun setup.
 
 ### Homebrew migration failures
 

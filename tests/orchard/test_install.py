@@ -56,11 +56,12 @@ class InstallTests(unittest.TestCase):
             "HOME": str(self.root),
             "XDG_CONFIG_HOME": str(self.root / "config"),
             "XDG_CACHE_HOME": str(self.root / "cache"),
+            "XDG_STATE_HOME": str(self.root / "state"),
             "TMPDIR": str(self.root),
             "PATH": str(self.binaries) + os.pathsep + os.environ["PATH"],
         }
 
-    def run_fish(self, script, **env):
+    def run_fish(self, script, *, cwd=None, **env):
         return subprocess.run(
             [
                 str(FISH),
@@ -68,7 +69,8 @@ class InstallTests(unittest.TestCase):
                 "-c",
                 f"source {shlex.quote(str(self.library))}\n" + script,
             ],
-            env={**self.env, **env},
+            env={k: v for k, v in {**self.env, **env}.items() if v is not None},
+            cwd=cwd,
             text=True,
             capture_output=True,
             check=False,
@@ -106,6 +108,79 @@ class InstallTests(unittest.TestCase):
         )
         return result, target
 
+    def test_state_directory_uses_absolute_override_or_default(self):
+        default = str(self.root / ".local/state/orchard")
+        custom = self.root / "custom state"
+        for value, expected in (
+            (None, default),
+            ("", default),
+            ("relative-state", default),
+            (str(custom), str(custom / "orchard")),
+        ):
+            with self.subTest(value=value):
+                result = self.run_fish(
+                    'printf "%s\\n" "$_orchard_state_dir"', XDG_STATE_HOME=value
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(result.stdout.strip(), expected)
+
+    def test_failed_callback_is_resumed_without_reinstalling_the_bundle(self):
+        self.env["XDG_STATE_HOME"] = "relative-state"
+        first_directory = self.root / "first"
+        retry_directory = self.root / "retry"
+        first_directory.mkdir()
+        retry_directory.mkdir()
+        apps = self.root / "config/orchard/apps"
+        apps.mkdir(parents=True)
+        (apps / "demo.fish").write_text(
+            "set -g orchard_app_id demo\n"
+            "set -g orchard_app_display_name Demo\n"
+            "set -g orchard_app_download_url https://example.invalid/demo.zip\n"
+            "set -g orchard_app_download_type zip\n"
+            'set -g orchard_app_bundle_path "$HOME/Demo.app"\n'
+            "function orchard_after_install_callback\n"
+            ' echo callback >> "$HOME/calls"\n'
+            ' test -e "$HOME/fail-callback"; and return 7\n'
+            ' echo ready > "$HOME/cli"\n'
+            "end\n"
+        )
+        script = (
+            "function _orchard_ensure_archive\n"
+            ' echo download >> "$HOME/calls"\nend\n'
+            "function _orchard_install_zip\n"
+            ' echo install >> "$HOME/calls"\n'
+            ' mkdir -p "$orchard_app_bundle_path"\nend\n'
+            "_orchard_cmd_install install demo\n"
+        )
+        failure = self.root / "fail-callback"
+        failure.touch()
+        pending = self.root / ".local/state/orchard/demo.after-install-pending"
+        result = self.run_fish(script, cwd=first_directory)
+        self.assertEqual(result.returncode, 7, result.stderr)
+        self.assertTrue(pending.exists())
+        self.assertEqual(pending.read_text(), "callback\n")
+        self.assertFalse((self.root / "cli").exists())
+        self.assertTrue((self.root / "Demo.app").is_dir())
+        # Repeated failure keeps the recovery record and skips archive work.
+        result = self.run_fish(script, cwd=retry_directory)
+        self.assertEqual(result.returncode, 7, result.stderr)
+        self.assertTrue(pending.exists())
+        # Cleaning the download cache must not discard pending setup.
+        self.assertEqual(self.run_fish("_orchard_cmd_cleanup").returncode, 0)
+        failure.unlink()
+        result = self.run_fish(script, cwd=retry_directory)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual((self.root / "cli").read_text(), "ready\n")
+        self.assertFalse(pending.exists())
+        self.assertEqual(
+            (self.root / "calls").read_text().splitlines(),
+            ["download", "install", "callback", "callback", "callback"],
+        )
+        # Completed callbacks must not run again on an ordinary install.
+        result = self.run_fish(script, cwd=first_directory)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual((self.root / "calls").read_text().count("callback"), 3)
+
     def test_replacement_failures_preserve_the_original_bundle(self):
         for archive_type in ("dmg", "zip"):
             for fault, status in (("copy", 28), ("backup", 29), ("promote", 30)):
@@ -115,6 +190,80 @@ class InstallTests(unittest.TestCase):
                     self.assertEqual((target / "old").read_text(), "working")
                     self.assertFalse((target / "new").exists())
                     self.assertEqual(list(target.parent.glob(".orchard-install.*")), [])
+
+    def test_partial_install_and_failed_force_retry_install_before_callback(self):
+        apps = self.root / "config/orchard/apps"
+        apps.mkdir(parents=True)
+        (apps / "demo.fish").write_text(
+            "set -g orchard_app_id demo\n"
+            "set -g orchard_app_display_name Demo\n"
+            "set -g orchard_app_download_url https://example.invalid/demo.pkg\n"
+            "set -g orchard_app_download_type pkg\n"
+            'set -g orchard_app_bundle_path "$HOME/Demo.app"\n'
+            "function orchard_after_install_callback\n"
+            " orchard_cli_wrapper demo Demo\nend\n"
+        )
+        script = r"""
+function osascript; return 0; end
+function _orchard_ensure_archive; return 0; end
+function _orchard_install_pkg
+    echo install >> "$HOME/install-calls"
+    mkdir -p "$orchard_app_bundle_path"
+    test -e "$HOME/fail-install"; and return 9
+    mkdir -p "$orchard_app_bundle_path/Contents/MacOS"
+    printf '#!/bin/sh\necho CLI-READY\n' > "$orchard_app_bundle_path/Contents/MacOS/Demo"
+    chmod +x "$orchard_app_bundle_path/Contents/MacOS/Demo"
+end
+function sudo
+    switch $argv[1]
+        case mkdir
+            return 0
+        case tee
+            cat > "$HOME/cli"
+        case chmod
+            command chmod +x "$HOME/cli"
+        case '*'
+            return 99
+    end
+end
+_orchard_cmd_install install demo $force_arg
+"""
+        for existing in (False, True):
+            with self.subTest(existing=existing):
+                target = self.root / "Demo.app"
+                shutil.rmtree(target, ignore_errors=True)
+                if existing:
+                    target.mkdir()
+                    (target / "old").touch()
+                for name in ("install-calls", "cli"):
+                    (self.root / name).unlink(missing_ok=True)
+                failure = self.root / "fail-install"
+                failure.touch()
+                result = self.run_fish(script, force_arg="--force" if existing else "")
+                self.assertNotEqual(result.returncode, 0)
+                self.assertTrue(target.is_dir())
+                self.assertFalse((self.root / "cli").exists())
+                pending = self.root / "state/orchard/demo.after-install-pending"
+                self.assertEqual(pending.read_text(), "installing\n")
+                if existing:
+                    # Earlier versions wrote empty markers before installation.
+                    pending.write_text("")
+                failure.unlink()
+                result = self.run_fish(script, force_arg="")
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(
+                    (self.root / "install-calls").read_text().splitlines(),
+                    ["install", "install"],
+                )
+                cli = subprocess.run(
+                    [str(self.root / "cli")],
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(cli.returncode, 0, cli.stderr)
+                self.assertEqual(cli.stdout, "CLI-READY\n")
+                self.assertFalse(pending.exists())
 
     def test_cleanup_reports_failure_and_handles_present_and_absent_cache(self):
         cache = self.root / "cache/orchard"

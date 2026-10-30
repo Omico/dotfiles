@@ -9,7 +9,7 @@
 #   App bundle and DMG helpers (replace bundle, mount, unmount, cache validation)
 #   Command: list
 #   Command: validate
-#   Command: install (args, download, ensure archive, install by type)
+#   Command: install (args, download, install by type, resume pending callback)
 #   Command: migrate (e.g. from Homebrew casks)
 #   Command: cleanup (remove cache dir)
 #   Main entry (dispatch by subcommand)
@@ -19,9 +19,13 @@
 # -----------------------------------------------------------------------------
 set -q XDG_CONFIG_HOME; or set XDG_CONFIG_HOME "$HOME/.config"
 set -q XDG_CACHE_HOME; or set XDG_CACHE_HOME "$HOME/.cache"
+if not string match -q '/*' -- "$XDG_STATE_HOME"
+    set XDG_STATE_HOME "$HOME/.local/state"
+end
 set -g _orchard_dir "$XDG_CONFIG_HOME/orchard"
 set -g _orchard_apps_dir "$_orchard_dir/apps"
 set -g _orchard_cache_dir "$XDG_CACHE_HOME/orchard"
+set -g _orchard_state_dir "$XDG_STATE_HOME/orchard"
 
 # -----------------------------------------------------------------------------
 # Public API: orchard_fetch_* (callable from app .fish resolve callbacks)
@@ -650,6 +654,13 @@ function _orchard_install_pkg
     return $status
 end
 
+function _orchard_finish_install -a pending_callback
+    if functions -q orchard_after_install_callback
+        orchard_after_install_callback; or return $status
+    end
+    rm -f -- "$pending_callback"
+end
+
 function _orchard_cmd_install
     _orchard_parse_install_args $argv
     if test -z "$_orchard_install_id"
@@ -657,9 +668,20 @@ function _orchard_cmd_install
         exit 1
     end
     _orchard_load_app $_orchard_install_id
+    set -l pending_callback "$_orchard_state_dir/$orchard_app_id.after-install-pending"
     if _orchard_installed; and test "$_orchard_force" != true
-        echo "$orchard_app_display_name is already installed."
-        return 0
+        if test -e "$pending_callback"
+            set -l install_phase (cat -- "$pending_callback"); or return $status
+            if test "$install_phase" = callback
+                echo "Completing setup for $orchard_app_display_name..."
+                _orchard_finish_install "$pending_callback"
+                return $status
+            end
+            echo "Retrying installation of $orchard_app_display_name..."
+        else
+            echo "$orchard_app_display_name is already installed."
+            return 0
+        end
     end
     if _orchard_installed; and test "$_orchard_force" = true
         echo "Reinstalling $orchard_app_display_name..."
@@ -691,6 +713,10 @@ function _orchard_cmd_install
 
     _orchard_ensure_archive
     test $status -ne 0; and exit 1
+    if functions -q orchard_after_install_callback
+        mkdir -p "$_orchard_state_dir"; or return $status
+        printf '%s\n' installing >"$pending_callback"; or return $status
+    end
     switch $orchard_app_download_type
         case dmg
             _orchard_install_dmg
@@ -706,8 +732,9 @@ function _orchard_cmd_install
     echo "$orchard_app_display_name installed."
 
     if functions -q orchard_after_install_callback
-        orchard_after_install_callback
+        printf '%s\n' callback >"$pending_callback"; or return $status
     end
+    _orchard_finish_install "$pending_callback"
 end
 
 # -----------------------------------------------------------------------------
