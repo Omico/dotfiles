@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 CHEZMOI = shutil.which("chezmoi")
 FISH = shutil.which("fish")
 SCRIPTS = {
+    "ssh": "run_onchange_after_30-darwin-ssh.fish.tmpl",
     "touch-id": "run_onchange_after_20-darwin-touch-id.fish.tmpl",
     "preferences": "run_onchange_after_30-darwin-preferences.fish.tmpl",
     "terminal": "run_onchange_after_30-darwin-terminal.fish.tmpl",
@@ -104,6 +105,10 @@ class MacosTests(unittest.TestCase):
                 "elif name == 'osascript':\n"
                 "    if not all(Path(arg).is_file() for arg in args): sys.exit(91)\n"
                 "elif name == 'sudo':\n"
+                "    if args[0] == 'systemsetup':\n"
+                "        if args[1] == '-getremotelogin':\n"
+                "            print('Remote Login: ' + os.environ.get('REMOTE_LOGIN', 'On'))\n"
+                "        sys.exit(0)\n"
                 "    assert args[:8] == ['install', '-S', '-o', 'root', '-g', 'wheel', '-m', '0644']\n"
                 "    shutil.copyfile(args[-2], args[-1])\n"
             )
@@ -168,6 +173,41 @@ class MacosTests(unittest.TestCase):
 
     def clear_calls(self):
         (self.destination / "calls").unlink(missing_ok=True)
+
+    def test_ssh_checks_enabled_state_and_propagates_failures(self):
+        for failed in (
+            "",
+            "sudo systemsetup -setremotelogin on",
+            "sudo systemsetup -getremotelogin",
+        ):
+            with self.subTest(failed=failed):
+                self.clear_calls()
+                self.env["FAIL_STEP"] = failed
+                result = self.run_setup("ssh")
+                self.assertEqual(result.returncode, 7 if failed else 0, result.stderr)
+                self.assertEqual(
+                    self.calls(),
+                    [
+                        ["sudo", "systemsetup", "-setremotelogin", "on"],
+                        ["sudo", "systemsetup", "-getremotelogin"],
+                    ][: 1 if "-setremotelogin" in failed else 2],
+                )
+
+    def test_ssh_retries_when_command_succeeds_but_remote_login_stays_off(self):
+        args = ("apply", "--source-path", str(self.home_source / SCRIPTS["ssh"]))
+        self.env["REMOTE_LOGIN"] = "Off"
+        result = self.chezmoi(*args)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Remote Login is not enabled", result.stderr)
+        self.env["REMOTE_LOGIN"] = "On"
+        self.clear_calls()
+        result = self.chezmoi(*args)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(len(self.calls()), 2)
+        self.clear_calls()
+        result = self.chezmoi(*args)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.calls(), [])
 
     def test_preferences_preserve_all_values_and_stop_on_each_failure(self):
         expected = ["defaults write " + value for value in PREFERENCES]

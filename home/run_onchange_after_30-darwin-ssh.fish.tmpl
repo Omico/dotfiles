@@ -1,0 +1,10 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env fish
+
+sudo systemsetup -setremotelogin on; or exit $status
+set -l remote_login (sudo systemsetup -getremotelogin); or exit $status
+if not contains -- 'Remote Login: On' $remote_login
+    echo "SSH setup failed: Remote Login is not enabled. Check Full Disk Access for the terminal running chezmoi, then retry." >&2
+    exit 1
+end
+{{ end -}}
