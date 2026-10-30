@@ -74,7 +74,7 @@ class MacosTests(unittest.TestCase):
             binary = shutil.which(name)
             assert binary
             (self.binaries / name).symlink_to(binary)
-        for name in ("id", "launchctl", "defaults", "osascript", "sudo"):
+        for name in ("id", "launchctl", "defaults", "osascript", "sudo", "sysctl"):
             binary = self.binaries / name
             binary.write_text(
                 f"#!{sys.executable}\n"
@@ -85,6 +85,9 @@ class MacosTests(unittest.TestCase):
                 "if os.environ.get('FAIL_STEP') in (name, ' '.join([name, *args])):\n"
                 "    sys.exit(7)\n"
                 "if name == 'id': print('501')\n"
+                "elif name == 'sysctl':\n"
+                "    assert args == ['-n', 'kern.hv_vmm_present']\n"
+                "    print(os.environ.get('VMM_PRESENT', '0'))\n"
                 "elif name == 'launchctl': sys.exit(0 if os.environ['GUI_ACTIVE'] == '1' else 1)\n"
                 "elif name == 'osascript':\n"
                 "    if not all(Path(arg).is_file() for arg in args): sys.exit(91)\n"
@@ -177,6 +180,21 @@ class MacosTests(unittest.TestCase):
         result = self.run_setup("preferences")
         self.assertEqual(result.returncode, 7, result.stderr)
         self.assertFalse(any(call[0] == "defaults" for call in self.calls()))
+
+    def test_virtual_machine_disables_dock_autohide(self):
+        self.env["VMM_PRESENT"] = "1"
+        result = self.run_setup("preferences")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn(
+            ["defaults", "write", "com.apple.dock", "autohide", "-bool", "false"],
+            self.calls(),
+        )
+
+    def test_vm_detection_failure_does_not_write_dock_preferences(self):
+        self.env["FAIL_STEP"] = "sysctl"
+        result = self.run_setup("preferences")
+        self.assertEqual(result.returncode, 7, result.stderr)
+        self.assertFalse(any("com.apple.dock" in call for call in self.calls()))
 
     def test_fresh_apply_disables_natural_scrolling_and_skips_unchanged_setup(self):
         args = (

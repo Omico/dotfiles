@@ -20,8 +20,11 @@ defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true; or
 defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true; or exit $status
 
 # Dock
+set -l vmm_present (sysctl -n kern.hv_vmm_present); or exit $status
+set -l dock_autohide true
+test "$vmm_present" = 1; and set dock_autohide false
 defaults write com.apple.dock tilesize -int 48; or exit $status
-defaults write com.apple.dock autohide -bool true; or exit $status
+defaults write com.apple.dock autohide -bool $dock_autohide; or exit $status
 defaults write com.apple.dock show-recents -bool false; or exit $status
 
 # Automatic updates
