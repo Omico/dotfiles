@@ -11,6 +11,8 @@ brew "aria2"
 brew "ast-grep"
 # User-friendly launcher for Bazel
 brew "bazelisk"
+# Toolchain of the web
+brew "biome"
 # Manage your dotfiles across multiple diverse machines, securely
 brew "chezmoi"
 # Statistics utility to count lines of code

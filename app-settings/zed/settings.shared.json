@@ -2,10 +2,8 @@
   "diff_view_style": "split",
   "restore_on_startup": "launchpad",
   "show_whitespaces": "boundary",
-  "features": {
-    "edit_predictions": {
-      "provider": "none"
-    }
+  "edit_predictions": {
+    "provider": "none"
   },
   "title_bar": {
     "show_onboarding_banner": false,
@@ -33,7 +31,64 @@
   "gutter": {
     "runnables": true
   },
+  "lsp": {
+    "biome": {
+      "settings": {
+        "require_config_file": true
+      }
+    }
+  },
   "languages": {
+    "CSS": {
+      "format_on_save": "on",
+      "formatter": {
+        "language_server": {
+          "name": "biome"
+        }
+      }
+    },
+    "HTML": {
+      "format_on_save": "on",
+      "formatter": {
+        "language_server": {
+          "name": "biome"
+        }
+      }
+    },
+    "JSON": {
+      "format_on_save": "on",
+      "formatter": {
+        "language_server": {
+          "name": "biome"
+        }
+      },
+      "code_actions_on_format": {
+        "source.fixAll.biome": true
+      }
+    },
+    "JSONC": {
+      "format_on_save": "on",
+      "formatter": {
+        "language_server": {
+          "name": "biome"
+        }
+      },
+      "code_actions_on_format": {
+        "source.fixAll.biome": true
+      }
+    },
+    "JavaScript": {
+      "format_on_save": "on",
+      "formatter": {
+        "language_server": {
+          "name": "biome"
+        }
+      },
+      "code_actions_on_format": {
+        "source.fixAll.biome": true,
+        "source.organizeImports.biome": true
+      }
+    },
     "Markdown": {
       "remove_trailing_whitespace_on_save": true,
       "soft_wrap": "editor_width"
@@ -41,6 +96,30 @@
     "Shell Script": {
       "tab_size": 2,
       "hard_tabs": false
+    },
+    "TSX": {
+      "format_on_save": "on",
+      "formatter": {
+        "language_server": {
+          "name": "biome"
+        }
+      },
+      "code_actions_on_format": {
+        "source.fixAll.biome": true,
+        "source.organizeImports.biome": true
+      }
+    },
+    "TypeScript": {
+      "format_on_save": "on",
+      "formatter": {
+        "language_server": {
+          "name": "biome"
+        }
+      },
+      "code_actions_on_format": {
+        "source.fixAll.biome": true,
+        "source.organizeImports.biome": true
+      }
     }
   },
   "cli_default_open_behavior": "existing_window",
