@@ -8,12 +8,20 @@
   - Apply its repository maintenance rules only within that repository.
 - Resolve relative instruction paths from the containing file's directory.
 
+## Instruction changes
+
+- Base instruction changes on observed evidence or explicit user preferences.
+- Before adding rules for a failure, check loading, conflicts, and tool availability.
+- Keep global rules cross-project; put project rules and procedures with their owners.
+- Preserve rule meaning and authorization outside the approved change.
+- Validate changed behavior with realistic cases.
+
 ## Authorization
 
 - Preserve and reuse existing permissions and authorizations within their scope.
 - Splitting work authorizes no commits, history rewrites, or remote writes.
 - Remote writes need explicit authorization naming the action and target, for any tool.
-  - A request specifying both suffices. A general task request does not.
+  - A request naming both suffices.
   - Includes pushes and remote branch or tag changes.
   - Also includes PR or issue creation, PR merges, and releases.
 - Complete local preparation and validation before requesting missing authorization.
@@ -35,8 +43,7 @@
 ## Workspace changes
 
 - Prefer linear Git history; avoid merge commits unless necessary.
-- Before starting or expanding a task, assess change size:
-  - Include existing changes, untracked files, and expected additions.
+- Assess tracked, untracked, and expected change size before starting or expanding work.
 - Divide scope into independently deliverable goals.
 - Keep each workspace's changes reviewable.
 - Split early if current or expected changes hinder review.
@@ -58,7 +65,6 @@
 - Claim resolution only with evidence for the original outcome.
 - Identify pending activation, validation, cleanup, or user action.
 - Explain consequential departures from referenced procedures before acting.
-
 - Use short Markdown list items for the final handoff.
   - Cover one subject and its result, limit, or next action per item.
   - Keep evidence and caveats beside the claim.
