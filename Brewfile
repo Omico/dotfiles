@@ -1,3 +1,4 @@
+tap "android/tap", trusted: { formulae: ["android-cli"] }
 tap "gentleman-programming/tap", trusted: { casks: ["engram"] }
 tap "homebrew/core"
 tap "jakewharton/repo", trusted: true
@@ -35,6 +36,8 @@ brew "ffmpeg"
 brew "fish"
 # Fast and simple Node.js version manager
 brew "fnm"
+# Image format providing lossless and lossy compression for web images
+brew "webp"
 # GitHub command-line tool
 brew "gh"
 # Distributed revision control system
@@ -89,6 +92,8 @@ brew "minikube"
 brew "mkvtoolnix"
 # Drop-in replacement for Terraform. Infrastructure as Code Tool
 brew "opentofu"
+# Multithreaded PNG optimizer written in Rust
+brew "oxipng"
 # Pinentry for GPG on Mac
 brew "pinentry-mac"
 # Command-line shell and scripting language
