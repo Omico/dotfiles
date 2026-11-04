@@ -144,8 +144,6 @@
   "buffer_line_height": "standard",
   "agent": {
     "dock": "right",
-    "favorite_models": [],
-    "model_parameters": [],
     "enable_feedback": false
   },
   "text_rendering_mode": "platform_default",
