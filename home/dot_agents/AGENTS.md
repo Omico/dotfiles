@@ -25,6 +25,7 @@
 
 ## Problem solving
 
+- Default to `ast-grep` for code searches; use text search if unsuitable or unavailable.
 - Define user-observable success before choosing a solution.
 - For reported failures, collect evidence along the actual failure path.
 - When a failure cannot be reproduced, state the resulting verification gap.
@@ -33,7 +34,7 @@
 
 ## Workspace changes
 
-- Avoid Git merges unless necessary.
+- Prefer linear Git history; avoid merge commits unless necessary.
 - Before starting or expanding a task, assess change size:
   - Include existing changes, untracked files, and expected additions.
 - Divide scope into independently deliverable goals.
