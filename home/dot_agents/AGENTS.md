@@ -2,10 +2,6 @@
 
 ## Instruction sources
 
-- Before each task, check `~/Git/Omico/memory/AGENTS.md`.
-  - Read it if present. Silently continue if absent.
-  - Apply its memory workflow to every task.
-  - Apply its repository maintenance rules only within that repository.
 - Resolve relative instruction paths from the containing file's directory.
 
 ## Instruction changes
