@@ -24,6 +24,16 @@ Ensure `~/.bun/bin/bun` exists (official install script on first use), then forw
 
 Ensure `~/.local/bin/codex` exists (official install script on first use), then forward arguments to Codex.
 
+## `elan`
+
+**Platforms:** Unix (`linux`, `darwin`, `wsl`)
+
+Ensure `~/.elan/bin/elan` exists, then forward arguments to elan. First use runs the [official installer](https://github.com/leanprover/elan/blob/master/elan-init.sh) with `-y --no-modify-path` to accept defaults and keep shell profile changes under chezmoi's control.
+
+Fish adds `~/.elan/bin` to `PATH` after installation and in later sessions when the directory exists, making `lean`, `lake`, and the other elan proxies available.
+
+After first use or an elan upgrade, run `chezmoi apply` to [generate Fish completions](../chezmoi-scripts#elan-fish-completions) for the installed version.
+
 ## `flutter-init`
 
 **Platforms:** Unix (`linux`, `darwin`, `wsl`)

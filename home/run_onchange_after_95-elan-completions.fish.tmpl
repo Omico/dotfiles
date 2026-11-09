@@ -1,0 +1,24 @@
+{{ if or (eq .chezmoi.os "darwin") (eq .chezmoi.os "linux") -}}
+#!/usr/bin/env fish
+
+# Regenerate when the installed elan version changes.
+# Probe through Fish so version detection uses the generation PATH.
+# CLI version SHA-256: {{ output "fish" "-c" "command -q elan; or exit 0; command elan --version" | sha256sum }}
+
+command -q elan; or exit 0
+
+set -l completion_dir "$__fish_config_dir/completions"
+mkdir -p "$completion_dir"; or exit $status
+set -l temporary_file (mktemp "$completion_dir/.elan.fish.XXXXXX")
+or exit $status
+
+command elan completions fish >"$temporary_file"
+and test -s "$temporary_file"
+and fish --no-execute "$temporary_file"
+and command mv -f "$temporary_file" "$completion_dir/elan.fish"
+or begin
+    set -l result $status
+    command rm -f "$temporary_file"
+    exit $result
+end
+{{ end -}}

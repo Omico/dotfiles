@@ -75,6 +75,14 @@ uv run --quiet --no-project --managed-python --no-python-downloads --python 3.13
 
 After generating, new Fish shells load the result automatically. Reload it in an existing shell with `source ~/.config/fish/completions/android.fish`.
 
+## Elan Fish completions
+
+`run_onchange_after_95-elan-completions.fish.tmpl` runs on macOS and Linux. Its rendered content includes a hash of `command elan --version` from Fish's PATH, so `chezmoi apply` regenerates completions when the installed version changes. If elan is absent, generation is skipped without invoking the installer wrapper.
+
+The script runs `elan completions fish`, checks that the output is nonempty and valid Fish syntax, then atomically replaces `~/.config/fish/completions/elan.fish`. Failures preserve the previous file. Generated completions remain local through `.chezmoiignore.tmpl`.
+
+After first using the [`elan` wrapper](./commands/toolchains#elan), or after upgrading elan, run `chezmoi apply`. Templates render before scripts execute; if an upgrade happens during the same apply, run apply again to detect the new version. New Fish sessions load the generated file automatically. Existing sessions can load it with `source ~/.config/fish/completions/elan.fish`.
+
 ## Managed directories
 
 Fish startup snippets and functions, Ghostty configuration, and Orchard packages use `exact_` source directories. Chezmoi removes unmanaged entries in those directories during file application, and includes those removals in `diff` and dry-run output. Nested directories that need the same policy also carry `exact_`; the policy is not recursive by itself. Keep installer-owned files such as Fish's `conf.d/apm.fish` in `.chezmoiignore.tmpl`. Other configuration directories retain their existing ownership.
