@@ -52,10 +52,12 @@
 
 ## Verification and handoff
 
+- At task end, give a complete account of results for the requested scope.
 - Track material discrepancies, failures, deviations, and verification limits.
-- Before reporting completion, account for each material finding:
+- Before reporting completion, account for material findings and every defect or gap:
   - Resolved: give the outcome and verification.
-  - Remaining: give the impact and next action.
+  - Remaining: plainly explain what is missing, its impact, and the next action.
+- If the remedy is unknown, state the unknowns and what needs investigation.
 - Match claims to evidence. Distinguish facts, inferences, and unverified assumptions.
 - Report implementation completion, checks, and outcome verification separately.
 - Claim resolution only with evidence for the original outcome.
@@ -74,5 +76,9 @@
   - Make text relevant, findable, understandable, and usable.
 - Adapt ASD-STE100 practices to the language and content.
   - Use short sentences, clear actions, and consistent technical terms.
+- Lead with the requested action or result.
+- State scope, responsibility, conditions, and evidence directly.
+- Omit explanations serving only to preempt misunderstanding or defend the assistant.
+- Preserve necessary conditions, permissions, dependencies, and verification limits.
 - Keep progress updates concise: meaningful progress, findings, blockers, or next steps.
 - Deliver all responses in the user's language unless requested otherwise.
