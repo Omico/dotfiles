@@ -21,6 +21,7 @@ $kotlin\
 $haskell\
 $python\
 [](fg:green bg:sapphire)\
+$docker_context\
 $conda\
 $gradle\
 [ ](fg:sapphire)\
@@ -56,7 +57,7 @@ style = "bg:red fg:crust bold"
 format = "[ $path ]($style)"
 style = "bg:peach fg:crust"
 truncate_to_repo = false
-truncation_symbol = "~/"
+truncation_symbol = "…/"
 
 [directory.substitutions]
 "Developer" = "󰲋"
@@ -136,12 +137,6 @@ format = '[[ $symbol( $version) ](fg:crust bg:sapphire)]($style)'
 style = "bg:sapphire"
 symbol = ""
 
-[time]
-disabled = false
-format = '[[  $time ](fg:crust bg:lavender)]($style)'
-style = "bg:lavender"
-time_format = "%R"
-
 [character]
 disabled = false
 error_symbol = '[❯](bold fg:red)'
@@ -153,11 +148,11 @@ vimcmd_visual_symbol = '[❮](bold fg:yellow)'
 
 [cmd_duration]
 disabled = false
-format = " in $duration "
+format = "[ in $duration ]($style)"
 min_time_to_notify = 45000
 show_milliseconds = true
 show_notifications = true
-style = "bg:lavender"
+style = "fg:lavender"
 
 [palettes.catppuccin_mocha]
 base = "#1e1e2e"
