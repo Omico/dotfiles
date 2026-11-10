@@ -1,6 +1,6 @@
 # APM
 
-**Platforms:** All
+**Platforms:** Unix (`linux`, `darwin`, `wsl`)
 
 Install and update agent skills with [APM](https://aka.ms/apm-unix).
 

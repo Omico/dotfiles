@@ -543,7 +543,7 @@ class ShellToolchainTests(unittest.TestCase):
             "shutil.copyfile(Path(os.environ['HOME']) / source, destination)\n",
         )
         return self.run_fish(
-            "exact_unix/flutter-init.fish",
+            "flutter-init.fish",
             f"set -g fish_platform {platform}\n"
             "function fish_add_path_if_exists; fish_add_path --path $argv; end\n"
             "flutter-init; or exit $status\n"

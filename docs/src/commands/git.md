@@ -4,7 +4,7 @@ Repository workflows, Git clients, and macOS-specific sync helpers.
 
 ## `gcl`
 
-**Platforms:** All
+**Platforms:** Unix (`linux`, `darwin`, `wsl`)
 
 Clone a repository into a directory layout derived from its remote URL. Unconfigured hosts use `$HOME/Git/<remote-path>`.
 
@@ -24,7 +24,7 @@ set -g gcl_remote_host_base_dirs \
 
 ## `gi`
 
-**Platforms:** All
+**Platforms:** Unix (`linux`, `darwin`, `wsl`)
 
 Initialize a repository in the current directory: `git init`, stage all files, create an initial commit, and rename `master` to `main` when needed. Prompts before deleting an existing `.git` directory.
 

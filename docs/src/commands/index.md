@@ -16,13 +16,13 @@ Source definitions live under [`home/dot_config/fish/exact_functions/`](https://
 
 | Topic | Platforms | Summary |
 | --- | --- | --- |
-| [APM](./apm) | All | APM CLI and agent skill packages |
+| [APM](./apm) | Unix | APM CLI and agent skill packages |
 | [Cloudflare WARP](./cloudflare-warp) | macOS | WARP install and Tailscale split tunneling |
 | [Git](./git) | Mixed | Clone, init, reset, GitKraken, iCloud sync |
 | [GNOME](./gnome) | Linux | Login keyring and Remote Desktop |
 | [Homebrew](./homebrew) | macOS | Brewfile backup, restore, upgrades |
 | [MLflow](./mlflow) | macOS | Local tracking server via launchd |
-| [Shell](./shell) | Mixed | Reload Fish and sync configs to chezmoi |
+| [Shell](./shell) | Unix | Reload Fish and sync configs to chezmoi |
 | [Toolchains](./toolchains) | Mixed | Android CLI, Node.js, Bun, elan (Lean), mise, Python (uv), Rust, Flutter, Java, Gradle |
 | [Xcode](./xcode) | macOS | Switch Xcode versions and open downloads |
 

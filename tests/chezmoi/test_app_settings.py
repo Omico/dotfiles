@@ -51,7 +51,7 @@ class AppSettingsTests(unittest.TestCase):
             "source " + shlex.quote(str(ROOT / path))
             for path in (
                 "home/dot_config/fish/exact_conf.d/00-core-functions.fish",
-                "home/dot_config/fish/exact_functions/exact_unix/uv.fish",
+                "home/dot_config/fish/exact_functions/uv.fish",
             )
         )
         prelude += """

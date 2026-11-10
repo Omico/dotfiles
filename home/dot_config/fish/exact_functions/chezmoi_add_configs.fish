@@ -1,29 +1,18 @@
 #!/usr/bin/env fish
 
 function chezmoi_add_configs --description 'Add local configuration files to chezmoi'
-    set -l fish_config_dir "$HOME/.config/fish"
-    set -l fish_config_scopes
-
-    if contains "$fish_platform" linux darwin wsl
-        set -a fish_config_scopes unix
-    end
-    set -a fish_config_scopes "$fish_platform"
-
-    if test -d "$fish_config_dir"
-        set -l fish_files "$fish_config_dir"/**/*.fish
+    if test -d "$__fish_config_dir"
+        set -l fish_files "$__fish_config_dir"/**/*.fish
         if test (count $fish_files) -gt 0
             fish_indent -w $fish_files; or return 1
         end
 
-        find "$fish_config_dir" -type d -exec chmod 755 {} +; or return 1
-        find "$fish_config_dir" -type f -exec chmod 644 {} +; or return 1
+        find "$__fish_config_dir" -type d -exec chmod 755 {} +; or return 1
+        find "$__fish_config_dir" -type f -exec chmod 644 {} +; or return 1
 
-        __chezmoi_add_files_by_extension "$fish_config_dir/conf.d" fish; or return 1
-        __chezmoi_add_files_by_extension "$fish_config_dir/functions" fish; or return 1
-
-        for scope in $fish_config_scopes
-            __chezmoi_add_files_by_extension "$fish_config_dir/conf.d/$scope" fish; or return 1
-            __chezmoi_add_files_by_extension "$fish_config_dir/functions/$scope" fish; or return 1
+        for dir in "$__fish_config_dir/conf.d" "$__fish_config_dir/functions" \
+            "$__fish_config_dir/conf.d/$fish_platform" "$__fish_config_dir/functions/$fish_platform"
+            __chezmoi_add_files_by_extension "$dir" fish; or return 1
         end
     end
 

@@ -52,7 +52,7 @@ Downloads use unique temporary files in `$TMPDIR` (or `/tmp` when unset or empty
 
 ## `fnm-upgrade-latest-lts`
 
-**Platforms:** All
+**Platforms:** Unix (`linux`, `darwin`, `wsl`)
 
 Install the latest Node.js LTS with `fnm`, set it as default, remove other installed versions, and enable `pnpm` through `corepack` when needed.
 
@@ -60,7 +60,7 @@ Stop at the first failed install, activation, removal, or Corepack setup step an
 
 ## `gradle-or-gradlew`
 
-**Platforms:** All
+**Platforms:** Unix (`linux`, `darwin`, `wsl`)
 
 Walk up from the current directory for an executable `gradlew`, stopping at a `.git` directory or file, including worktree and submodule roots. Run the wrapper when found; otherwise invoke `gradle`.
 
@@ -68,7 +68,7 @@ Walk up from the current directory for an executable `gradlew`, stopping at a `.
 
 **Platforms:** Unix (`linux`, `darwin`, `wsl`)
 
-Ensure `~/.local/bin/mise` exists (official install script on first use), then forward arguments to mise. First install also activates mise in the current session. Later shells activate from `conf.d/unix` when `mise` is on `PATH`. Global `auto_update` is tracked in `~/.config/mise/config.toml`.
+Ensure `~/.local/bin/mise` exists (official install script on first use), then forward arguments to mise. First install also activates mise in the current session. Later shells activate from `conf.d/20-mise.fish` when `mise` is on `PATH`. Global `auto_update` is tracked in `~/.config/mise/config.toml`.
 
 ## `rustup`
 

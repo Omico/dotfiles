@@ -60,7 +60,7 @@ The former root `macos` script is now part of `chezmoi apply`, split into macOS-
 The [`android` Fish wrapper](./commands/toolchains#android) installs the CLI on first use. Completion generation checks for an installed executable and does not trigger the wrapper's installer. After first use, apply the completion script to generate completions. To apply only the wrapper and completion script from a specific checkout, replace `/path/to/chezmoi` below with its absolute path:
 
 ```shell
-chezmoi --source /path/to/chezmoi apply --source-path /path/to/chezmoi/home/dot_config/fish/exact_functions/exact_unix/android.fish.tmpl /path/to/chezmoi/home/run_onchange_after_95-android-completions.fish.tmpl
+chezmoi --source /path/to/chezmoi apply --source-path /path/to/chezmoi/home/dot_config/fish/exact_functions/android.fish.tmpl /path/to/chezmoi/home/run_onchange_after_95-android-completions.fish.tmpl
 ```
 
 The generator is `scripts/android-fish-completions.py`. The update script locates it through `CHEZMOI_SOURCE_DIR` and runs it with uv-managed Python 3.13, independently of the caller's Python project and with interpreter downloads disabled. It reads the full CLI help tree, joins wrapped descriptions, syntax-checks the generated Fish definitions, and atomically installs `~/.config/fish/completions/android.fish`. Failures preserve the previous file. The generated file stays local through `.chezmoiignore.tmpl`; each machine uses its installed CLI. Opening a terminal and completing commands never runs Python or invokes Android CLI, including version queries.

@@ -87,6 +87,13 @@ class SourceStateTests(unittest.TestCase):
                 "orchard/apps",
             )
         ]
+        stale.extend(
+            self.write_target(name)
+            for name in (
+                ".config/fish/conf.d/20-unix.fish",
+                ".config/fish/functions/unix/chezmoi.fish",
+            )
+        )
         preserved = [
             self.write_target(name)
             for name in (
@@ -159,14 +166,15 @@ class SourceStateTests(unittest.TestCase):
     def test_capture_keeps_exact_directories_and_records_local_deletions(self):
         fixtures = {
             "dot_config/fish/exact_conf.d/removed.fish": ".config/fish/conf.d/removed.fish",
-            "dot_config/fish/exact_functions/exact_unix/removed.fish": ".config/fish/functions/unix/removed.fish",
+            "dot_config/fish/exact_functions/exact_darwin/removed.fish": ".config/fish/functions/darwin/removed.fish",
             "dot_config/exact_ghostty/exact_include/removed.ghostty": ".config/ghostty/include/removed.ghostty",
         }
         for source in fixtures:
             path = self.source / "home" / source
             path.write_text("# Removed local file\n")
         changed_source = (
-            self.source / "home/dot_config/fish/exact_functions/exact_unix/changed.fish"
+            self.source
+            / "home/dot_config/fish/exact_functions/exact_darwin/changed.fish"
         )
         changed_source.write_text("# Previously applied\n")
         existing_source = (
@@ -188,13 +196,13 @@ class SourceStateTests(unittest.TestCase):
         (self.destination / ".config/ghostty/config.ghostty").unlink()
         (self.destination / ".config/fish/conf.d/00-environment.fish").unlink()
         (self.destination / ".config/fish/functions/linux/grd-rdp.fish").unlink()
-        (self.destination / ".config/fish/functions/unix/changed.fish").unlink()
+        (self.destination / ".config/fish/functions/darwin/changed.fish").unlink()
         changed_source.write_text("# Source changes not yet applied\n")
         pending_sources = [
             self.source / "home" / name
             for name in (
                 "dot_config/fish/exact_functions/pending.fish",
-                "dot_config/fish/exact_functions/exact_unix/pending-scoped.fish",
+                "dot_config/fish/exact_functions/exact_darwin/pending-scoped.fish",
                 "dot_config/exact_ghostty/exact_include/pending.ghostty",
             )
         ]
@@ -213,7 +221,7 @@ class SourceStateTests(unittest.TestCase):
                 "-c",
                 """
 set -g fish_platform darwin
-source "$REVIEW_FUNCTION"
+set -p fish_function_path "$REVIEW_FUNCTIONS"
 function chezmoi
     command "$REVIEW_CHEZMOI" --source "$REVIEW_SOURCE" --destination "$HOME" \
         --config "$REVIEW_CONFIG" --persistent-state "$REVIEW_STATE" $argv
@@ -224,9 +232,9 @@ chezmoi_add_configs
             env={
                 **os.environ,
                 "HOME": str(self.destination),
-                "REVIEW_FUNCTION": str(
-                    self.source
-                    / "home/dot_config/fish/exact_functions/exact_unix/chezmoi.fish"
+                "XDG_CONFIG_HOME": str(self.destination / ".config"),
+                "REVIEW_FUNCTIONS": str(
+                    self.source / "home/dot_config/fish/exact_functions"
                 ),
                 "REVIEW_CHEZMOI": str(CHEZMOI),
                 "REVIEW_SOURCE": str(self.source),

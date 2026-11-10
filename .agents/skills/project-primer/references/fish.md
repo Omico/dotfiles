@@ -36,7 +36,7 @@ Source directories use `exact_` attributes; applied Fish paths omit those attrib
 
 - Keep autoloaded public commands as flat `functions/<command>.fish` files.
 - Do not create feature- or tool-specific subdirectories under `functions/`, such as `functions/apm/`.
-- The only allowed subdirectories under `functions/` are platform routers: `darwin/`, `linux/`, `unix/`, and future platform names.
+- The only allowed subdirectories under `functions/` are platform routers: `darwin/`, `linux/`, and future platform names.
 - Put shared private helpers for a feature in `conf.d/` startup snippets when they must load before autoload, or colocate them with the public command file when autoload order is sufficient.
 - Prefix private helpers with `__` and keep one primary public function per autoload file.
 - Before extracting a private helper, check whether it will have more than one caller. If it would be referenced only once, evaluate whether the split is necessary; prefer inlining when it only wraps a short call chain without reuse, shared setup, or a distinct responsibility boundary.
@@ -49,7 +49,7 @@ Source directories use `exact_` attributes; applied Fish paths omit those attrib
 - Prefer `fish_platform` over direct `uname` checks in Fish code.
 - Treat `fish_platform` as read-only outside its initializer.
 - Put platform-specific startup or function files under `conf.d/<platform>/` or `functions/<platform>/`, following the script placement rule in Contract.
-- Put shared Unix Fish files under `conf.d/unix/` or `functions/unix/`; they are loaded for `linux`, `darwin`, and `wsl`.
+- Put shared Fish startup snippets and functions directly under `conf.d/` and `functions/`. Fish configuration targets macOS, Linux, and WSL; native Windows shell configuration is separate.
 - If a function may run before config loading, check `set -q fish_platform` and fail fast with a clear error when it is missing.
 
 ## Installer wrappers
@@ -63,7 +63,7 @@ __ensure_binary_and_forward --bin <path> --name <short_name> --install <function
 - Pass `--install` with a function that installs the binary; the function receives the binary path.
 - Put first-time session setup in that function when the current shell must be activated after install.
 - Put `--` before `$argv` so user flags are forwarded to the installed command.
-- Follow `home/dot_config/fish/exact_functions/exact_unix/rustup.fish` and `home/dot_config/fish/exact_functions/exact_unix/bun.fish` as examples, and `home/dot_config/fish/exact_functions/exact_unix/mise.fish` when install also activates the current session.
+- Follow `home/dot_config/fish/exact_functions/rustup.fish` and `home/dot_config/fish/exact_functions/bun.fish` as examples, and `home/dot_config/fish/exact_functions/mise.fish` when install also activates the current session.
 
 ## Commands docs
 

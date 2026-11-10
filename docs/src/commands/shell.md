@@ -12,7 +12,7 @@ For Fish and Ghostty, forget managed non-template files that are missing locally
 
 ## `fish-reload`
 
-**Platforms:** All
+**Platforms:** Unix (`linux`, `darwin`, `wsl`)
 
 Re-source `config.fish` and every file under `conf.d/*.fish` without starting a new shell.
 
