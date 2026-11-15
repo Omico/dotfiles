@@ -34,7 +34,11 @@
 - For reported failures, collect evidence along the actual failure path.
 - When a failure cannot be reproduced, state the resulting verification gap.
 - Test the smallest direct change first.
+- Before adding artifacts or rules, identify their users and unmet needs.
+- Reuse the existing owner when the addition serves no independent need.
 - Reassess necessity when adding abstractions or accumulating exceptions.
+- After local feedback, check for the same problem across the authorized scope.
+  - Fix confirmed instances within edit authority.
 
 ## Workspace changes
 
