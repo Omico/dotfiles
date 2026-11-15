@@ -4,4 +4,5 @@ dependencies:
     - mattpocock/skills/skills/engineering/codebase-design
     - mattpocock/skills/skills/engineering/research
     - mattpocock/skills/skills/productivity/handoff
+    - mattpocock/skills/skills/productivity/writing-for-agents
     - op7418/humanizer-zh
