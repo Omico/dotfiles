@@ -43,6 +43,8 @@
 ## Workspace changes
 
 - Prefer linear Git history; avoid merge commits unless necessary.
+- When commits are authorized, group them by independent delivery purpose.
+  - Keep each purpose complete and unrelated changes in separate commits.
 - Assess tracked, untracked, and expected change size before starting or expanding work.
 - Divide scope into independently deliverable goals.
 - Keep each workspace's changes reviewable.
