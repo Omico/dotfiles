@@ -1,0 +1,20 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env fish
+
+command -q sccache; or exit 0
+
+set -l domain gui/(id -u)
+if not launchctl print "$domain" >/dev/null 2>&1
+    echo "sccache will load at the next graphical login."
+    exit 0
+end
+
+set -l label me.omico.sccache
+launchctl print "$domain/$label" >/dev/null 2>&1; and exit 0
+
+mkdir -p "$HOME/Library/Logs"; or exit $status
+
+# Release the listener if a client previously started a standalone server.
+command sccache --stop-server >/dev/null 2>&1
+exec launchctl bootstrap "$domain" "$HOME/Library/LaunchAgents/$label.plist"
+{{ end -}}

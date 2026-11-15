@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>me.omico.sccache</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/env</string>
+        <string>sccache</string>
+    </array>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>{{ env "PATH" | html }}</string>
+        <key>SCCACHE_START_SERVER</key>
+        <string>1</string>
+        <key>SCCACHE_NO_DAEMON</key>
+        <string>1</string>
+        <key>SCCACHE_IDLE_TIMEOUT</key>
+        <string>0</string>
+    </dict>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>5</integer>
+    <key>StandardErrorPath</key>
+    <string>{{ .chezmoi.homeDir | html }}/Library/Logs/sccache.log</string>
+</dict>
+</plist>
