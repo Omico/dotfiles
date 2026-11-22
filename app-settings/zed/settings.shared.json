@@ -3,6 +3,8 @@
   "restore_on_startup": "launchpad",
   "show_whitespaces": "boundary",
   "edit_predictions": {
+    "mode": "subtle",
+    "allow_data_collection": "no",
     "provider": "none"
   },
   "title_bar": {
@@ -21,7 +23,7 @@
   "git": {
     "diff_base": "default_branch",
     "inline_blame": {
-      "enabled": false
+      "enabled": true
     }
   },
   "toolbar": {
