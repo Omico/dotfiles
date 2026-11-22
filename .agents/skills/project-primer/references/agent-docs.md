@@ -10,14 +10,7 @@ Read this before editing `.agents/`, `docs/`, `docs/scripts/generate-docs.mjs`, 
 - `docs/scripts/markdownlint.mjs` lints repository Markdown via markdownlint-cli2 and enforces the no-hard-wrap rule from [markdown](markdown.md).
 - Do not hand-edit generated VitePress sidebar files (`sidebar.generated.mts`, `nav.generated.mts`).
 - Commands docs under `docs/src/commands/` are hand-maintained; when Fish autoload commands change, see [commands-docs](commands-docs.md).
-- Use the VitePress docs skill (`vitepress-cursor-docs`) for detailed docs workflow guidance.
-- If that skill is unavailable, follow this reference and the existing docs scripts.
-
-Install that skill if needed:
-
-```bash
-npx skills add OmicoDev/skills --skill vitepress-cursor-docs
-```
+- Use the `vitepress` skill for detailed guidance when working with VitePress. Follow this reference and the existing docs scripts for the repository workflow.
 
 ## Verification
 
