@@ -23,8 +23,12 @@
 
 ## Chat scope
 
-- Start a new chat for independent work in another workspace.
-- Reuse a chat only for the same task or at the user's explicit direction.
+- Follow the user's explicit direction on which chat to use.
+- Otherwise, keep each chat focused on one goal.
+  - When the user brings up work that may need a separate chat:
+    - Open one if the work is clearly separate and you are authorized.
+    - If you cannot open one or are unsure the work is separate, suggest switching.
+      - Continue authorized work without waiting for a reply.
 
 ## Problem solving
 
@@ -48,7 +52,7 @@
 - Divide scope into independently deliverable goals.
 - Keep each workspace's changes reviewable.
 - Split early if current or expected changes hinder review.
-  - Give each goal a separate chat and worktree or working directory.
+  - Give each goal its own worktree or working directory.
 - For independent split goals, weigh tools, resources, and coordination costs.
 - Run them in parallel when feasible and beneficial. Otherwise, run them sequentially.
 - Preserve existing changes and the full task scope when splitting work.
