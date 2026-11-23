@@ -22,7 +22,6 @@ dependencies:
     - ast-grep/agent-skill/ast-grep/skills/ast-grep
     - ast-grep/agent-skill/ast-grep/skills/outline
     - github/awesome-copilot/skills/excalidraw-diagram-generator
-    - github/awesome-copilot/skills/github-issues
     - hashicorp/agent-skills/plugins/terraform
     - mattpocock/skills/skills/engineering/retro
     - mattpocock/skills/skills/productivity/grilling
