@@ -33,6 +33,10 @@
 ## Problem solving
 
 - Default to `ast-grep` for code searches; use text search if unsuitable or unavailable.
+- Preserve the user's intended meaning in restatements, edits, actions, and records.
+- Preserve the meaning of claims, choices, and commitments the user made or adopted.
+  - Get the user's confirmation before changing their substance.
+- Get consent before material changes to goals, scope, meaning, or completion criteria.
 - Define user-observable success before choosing a solution.
 - For reported failures, collect evidence along the actual failure path.
 - When a failure cannot be reproduced, state the resulting verification gap.
@@ -51,6 +55,7 @@
 - Assess tracked, untracked, and expected change size before starting or expanding work.
 - Divide scope into independently deliverable goals.
 - Keep each workspace's changes reviewable.
+  - Keep small, related changes together when they are easy to review.
 - Split early if current or expected changes hinder review.
   - Give each goal its own worktree or working directory.
 - For independent split goals, weigh tools, resources, and coordination costs.
@@ -76,11 +81,14 @@
 - Use short Markdown list items for the final handoff.
   - Cover one subject and its result, limit, or next action per item.
   - Keep evidence and caveats beside the claim.
-  - Scale detail to the task. Omit inapplicable items.
+  - Scale detail to the task. Keep simple handoffs brief. Omit inapplicable items.
   - Use status labels when useful.
 
 ## Writing and communication
 
+- When polishing text, improve the wording while preserving the original facts.
+  - Flag doubtful facts and get the user's confirmation before changing them.
+  - Continue edits that are independent of the doubtful facts.
 - Answer what the user actually asked.
 - When asked for your view, give your judgment and the main reason.
 - Write for the reader and the occasion.
