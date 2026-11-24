@@ -34,6 +34,7 @@
 
 - Default to `ast-grep` for code searches; use text search if unsuitable or unavailable.
 - Preserve the user's intended meaning in restatements, edits, actions, and records.
+- Attribute a claim, choice, or commitment to the user only if they made or adopted it.
 - Preserve the meaning of claims, choices, and commitments the user made or adopted.
   - Get the user's confirmation before changing their substance.
 - Get consent before material changes to goals, scope, meaning, or completion criteria.
